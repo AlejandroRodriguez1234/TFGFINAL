@@ -1,11 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
 import { authService } from '@services/authService'
-import { tryDemoLogin, socialDemoLogin } from '@services/demoAuth'
+import { tryDemoLogin } from '@services/demoAuth'
 import { useAuthStore } from '@store/authStore'
 import { Eye, EyeOff, Loader2, Zap } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -25,6 +25,21 @@ export default function LoginPage() {
   const [showPass, setShowPass]  = useState(false)
   const [loading, setLoading]    = useState(false)
   const [need2fa, setNeed2fa]    = useState(false)
+  const popupRef = useRef<Window | null>(null)
+
+  useEffect(() => {
+    const handleMessage = (e: MessageEvent) => {
+      if (e.origin !== window.location.origin) return
+      if (e.data?.type !== 'OAUTH_SUCCESS') return
+      const { user, tokens } = e.data
+      setAuth(user, tokens)
+      toast.success(`¡Bienvenido de vuelta, ${user.firstName}!`)
+      navigate('/dashboard')
+    }
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [])
+
 
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -65,12 +80,16 @@ export default function LoginPage() {
   }
 
   const handleSocialLogin = (provider: string) => {
-    const demo = socialDemoLogin(provider)
-    if (demo) {
-      setAuth(demo.user, demo.tokens)
-      toast.success(`¡Bienvenido de vuelta, ${demo.user.firstName}!`)
-      navigate('/dashboard')
-    }
+    const w = 480
+    const h = 600
+    const left = window.screenX + (window.outerWidth - w) / 2
+    const top = window.screenY + (window.outerHeight - h) / 2
+    popupRef.current?.close()
+    popupRef.current = window.open(
+      `/oauth?provider=${provider}`,
+      `oauth_${provider}`,
+      `width=${w},height=${h},left=${left},top=${top},toolbar=no,menubar=no,scrollbars=no`,
+    )
   }
 
   return (

@@ -22,6 +22,7 @@ const Settings       = lazy(() => import('@pages/Profile/SettingsPage'))
 const Admin          = lazy(() => import('@pages/Admin/AdminPage'))
 const AdminUsers     = lazy(() => import('@pages/Admin/UsersPage'))
 const NotFound       = lazy(() => import('@pages/NotFound'))
+const OAuthMock      = lazy(() => import('@pages/Auth/OAuthMockPage'))
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated } = useAuthStore()
@@ -44,6 +45,9 @@ export default function App() {
   return (
     <Suspense fallback={<PageLoader />}>
       <Routes>
+        {/* OAuth popup pages (no layout) */}
+        <Route path="/oauth" element={<OAuthMock />} />
+
         {/* Public */}
         <Route path="/" element={<Landing />} />
         <Route element={<AuthLayout />}>
