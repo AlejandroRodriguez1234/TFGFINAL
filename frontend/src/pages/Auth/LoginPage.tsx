@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
 import { authService } from '@services/authService'
+import { tryDemoLogin } from '@services/demoAuth'
 import { useAuthStore } from '@store/authStore'
 import { Eye, EyeOff, Loader2, Zap } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -41,8 +42,20 @@ export default function LoginPage() {
       if (err?.response?.data?.code === 'TOTP_REQUIRED') {
         setNeed2fa(true)
         toast.success('Introduce el código de tu app de autenticación')
-      } else if (!err?.response) {
-        toast.error('No se puede conectar con el servidor. Asegúrate de que los contenedores estén corriendo.')
+        return
+      }
+
+      // Backend unreachable or returned an error — try demo credentials
+      const demo = tryDemoLogin(data.email, data.password)
+      if (demo) {
+        setAuth(demo.user, demo.tokens)
+        toast.success(`¡Bienvenido de vuelta, ${demo.user.firstName}!`)
+        navigate('/dashboard')
+        return
+      }
+
+      if (!err?.response) {
+        toast.error('No se puede conectar con el servidor')
       } else {
         toast.error(err.response.data?.message || 'Credenciales incorrectas')
       }

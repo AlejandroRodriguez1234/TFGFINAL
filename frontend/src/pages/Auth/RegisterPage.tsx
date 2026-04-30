@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { authService } from '@services/authService'
+import { tryDemoRegister } from '@services/demoAuth'
 import { useAuthStore } from '@store/authStore'
 import { Eye, EyeOff, Loader2, Check, X, Zap } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -80,11 +81,15 @@ export default function RegisterPage() {
       toast.success('¡Cuenta creada! Bienvenido a FitForge 🎉')
       navigate('/dashboard')
     } catch (err: any) {
+      // Backend unreachable — use demo registration
       if (!err?.response) {
-        toast.error('No se puede conectar con el servidor. Asegúrate de que los contenedores estén corriendo.')
-      } else {
-        toast.error(err.response.data?.message || 'Error al crear la cuenta')
+        const demo = tryDemoRegister(data.email, data.username, data.firstName, data.lastName)
+        setAuth(demo.user, demo.tokens)
+        toast.success('¡Cuenta creada! Bienvenido a FitForge 🎉')
+        navigate('/dashboard')
+        return
       }
+      toast.error(err.response.data?.message || 'Error al crear la cuenta')
     } finally {
       setLoading(false)
     }
