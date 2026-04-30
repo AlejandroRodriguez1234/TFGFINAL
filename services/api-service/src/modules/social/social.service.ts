@@ -56,7 +56,7 @@ export class SocialService {
       where: {
         OR: [
           { creatorId: userId },
-          { participants: { path: '$[*].userId', array_contains: userId } },
+          { participants: { array_contains: [{ userId }] } },
         ],
         status: { in: ['PENDING', 'ACTIVE'] },
       },

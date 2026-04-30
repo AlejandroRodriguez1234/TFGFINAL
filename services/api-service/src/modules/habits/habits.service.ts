@@ -18,7 +18,7 @@ export class HabitsService {
 
   async create(userId: string, dto: CreateHabitDto) {
     return this.prisma.habit.create({
-      data: { ...dto, userId, targetDays: dto.targetDays ?? [1, 2, 3, 4, 5] },
+      data: { ...dto, userId, targetDays: dto.targetDays ?? [1, 2, 3, 4, 5] } as any,
     })
   }
 
@@ -48,7 +48,7 @@ export class HabitsService {
 
   async update(userId: string, habitId: string, dto: Partial<CreateHabitDto>) {
     await this.findOwned(userId, habitId)
-    return this.prisma.habit.update({ where: { id: habitId }, data: dto })
+    return this.prisma.habit.update({ where: { id: habitId }, data: dto as any })
   }
 
   async remove(userId: string, habitId: string) {
