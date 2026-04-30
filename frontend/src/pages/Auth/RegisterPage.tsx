@@ -80,7 +80,11 @@ export default function RegisterPage() {
       toast.success('¡Cuenta creada! Bienvenido a FitForge 🎉')
       navigate('/dashboard')
     } catch (err: any) {
-      toast.error(err?.response?.data?.message || 'Error al crear la cuenta')
+      if (!err?.response) {
+        toast.error('No se puede conectar con el servidor. Asegúrate de que los contenedores estén corriendo.')
+      } else {
+        toast.error(err.response.data?.message || 'Error al crear la cuenta')
+      }
     } finally {
       setLoading(false)
     }

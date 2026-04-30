@@ -29,10 +29,11 @@ public class DataLoader implements ApplicationRunner {
         userRepository.findByEmail(adminEmail).ifPresentOrElse(
             admin -> {
                 admin.setPasswordHash(passwordEncoder.encode(adminPassword));
+                admin.setRole(User.Role.ADMIN);
                 admin.setActive(true);
                 admin.setVerified(true);
                 userRepository.save(admin);
-                log.info("Admin user password updated");
+                log.info("Admin user updated");
             },
             () -> {
                 User admin = User.builder()

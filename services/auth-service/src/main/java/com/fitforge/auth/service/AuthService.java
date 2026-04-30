@@ -54,6 +54,7 @@ public class AuthService {
                 .passwordHash(passwordEncoder.encode(req.getPassword()))
                 .role(User.Role.CLIENT)
                 .build();
+        user.setActive(true);
 
         user = userRepository.save(user);
         log.info("New user registered: {}", user.getEmail());
