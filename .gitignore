@@ -1,0 +1,70 @@
+# Dependencies
+node_modules/
+vendor/
+.pnp
+.pnp.js
+
+# Build outputs
+dist/
+build/
+out/
+target/
+*.class
+*.jar
+*.war
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+.env.production
+!.env.example
+
+# IDE / OS
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+laravel.log
+
+# Cache
+.cache/
+.gradle/
+.m2/
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+.pytest_cache/
+.mypy_cache/
+
+# Docker
+.docker/volumes/
+
+# Uploads
+storage/app/public/
+public/storage
+frontend/public/uploads/
+
+# Test coverage
+coverage/
+.nyc_output/
+htmlcov/
+
+# Misc
+*.pid
+*.seed
+*.pid.lock
+.vite/
