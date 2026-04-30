@@ -20,7 +20,7 @@
   <properties>
     <java.version>21</java.version>
     <jjwt.version>0.12.6</jjwt.version>
-    <google.totp.version>1.5.1</google.totp.version>
+    <google.totp.version>1.7.1</google.totp.version>
   </properties>
 
   <dependencies>
