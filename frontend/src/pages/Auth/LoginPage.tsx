@@ -5,7 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
 import { authService } from '@services/authService'
-import { tryDemoLogin } from '@services/demoAuth'
+import { tryDemoLogin, socialDemoLogin } from '@services/demoAuth'
 import { useAuthStore } from '@store/authStore'
 import { Eye, EyeOff, Loader2, Zap } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -65,7 +65,12 @@ export default function LoginPage() {
   }
 
   const handleSocialLogin = (provider: string) => {
-    toast('Inicio de sesión con ' + provider + ' próximamente', { icon: '🚧' })
+    const demo = socialDemoLogin(provider)
+    if (demo) {
+      setAuth(demo.user, demo.tokens)
+      toast.success(`¡Bienvenido de vuelta, ${demo.user.firstName}!`)
+      navigate('/dashboard')
+    }
   }
 
   return (

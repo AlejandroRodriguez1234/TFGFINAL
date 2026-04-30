@@ -45,10 +45,55 @@ const DEMO_USERS: Array<{ email: string; password: string; user: User; tokens: A
   },
 ]
 
+const SOCIAL_DEMO_USERS: Record<string, { user: User; tokens: AuthTokens }> = {
+  Google: {
+    user: {
+      id: '00000000-0000-0000-0000-000000000003',
+      email: 'google.user@gmail.com',
+      username: 'google_user',
+      firstName: 'Alex',
+      lastName: 'Google',
+      role: 'CLIENT',
+      level: 3,
+      xp: 1800,
+      streakDays: 5,
+      createdAt: new Date().toISOString(),
+    },
+    tokens: {
+      accessToken: 'demo-token-google',
+      refreshToken: 'demo-refresh-google',
+      expiresIn: 86400000,
+    },
+  },
+  GitHub: {
+    user: {
+      id: '00000000-0000-0000-0000-000000000004',
+      email: 'github.user@github.com',
+      username: 'github_user',
+      firstName: 'Alex',
+      lastName: 'GitHub',
+      role: 'CLIENT',
+      level: 4,
+      xp: 2500,
+      streakDays: 12,
+      createdAt: new Date().toISOString(),
+    },
+    tokens: {
+      accessToken: 'demo-token-github',
+      refreshToken: 'demo-refresh-github',
+      expiresIn: 86400000,
+    },
+  },
+}
+
 export function tryDemoLogin(email: string, password: string) {
   return DEMO_USERS.find(
     (u) => u.email.toLowerCase() === email.toLowerCase() && u.password === password,
   ) ?? null
+}
+
+export function socialDemoLogin(provider: string) {
+  return SOCIAL_DEMO_USERS[provider] ?? null
 }
 
 export function tryDemoRegister(email: string, username: string, firstName: string, lastName: string) {
