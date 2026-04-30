@@ -20,7 +20,7 @@ function createClient(baseURL: string): AxiosInstance {
         original._retry = true
         const { tokens, updateTokens, logout } = useAuthStore.getState()
         try {
-          const { data } = await axios.post(`${import.meta.env.VITE_AUTH_URL}/auth/refresh`, {
+          const { data } = await axios.post(`${import.meta.env.VITE_AUTH_URL || '/auth'}/refresh`, {
             refreshToken: tokens?.refreshToken,
           })
           updateTokens(data.data)
