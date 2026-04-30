@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, Search, Camera, Droplets, ChevronRight, Flame, Beef, Wheat, Droplet } from 'lucide-react'
+import { Plus, Search, Camera, Droplets, Flame, Beef, Wheat, Droplet, Coffee, Utensils, Apple, Moon, X } from 'lucide-react'
 import { cn } from '@utils/cn'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
+import toast from 'react-hot-toast'
 
 const todayMacros = { calories: 1840, protein: 148, carbs: 186, fat: 52 }
 const targetMacros = { calories: 2200, protein: 165, carbs: 220, fat: 73 }
@@ -36,21 +37,38 @@ const meals = [
 
 const macroColors = { protein: '#0ea5e9', carbs: '#f97316', fat: '#a855f7' }
 const piData = [
-  { name: 'Proteína',     value: todayMacros.protein * 4,  color: macroColors.protein },
+  { name: 'Proteína',      value: todayMacros.protein * 4, color: macroColors.protein },
   { name: 'Carbohidratos', value: todayMacros.carbs * 4,   color: macroColors.carbs },
-  { name: 'Grasas',       value: todayMacros.fat * 9,      color: macroColors.fat },
+  { name: 'Grasas',        value: todayMacros.fat * 9,     color: macroColors.fat },
 ]
 
-const MEAL_ICONS: Record<string, string> = {
-  breakfast: '🌅', lunch: '☀️', snack: '🍎', dinner: '🌙',
+const MEAL_ICON_MAP: Record<string, React.ElementType> = {
+  breakfast: Coffee,
+  lunch: Utensils,
+  snack: Apple,
+  dinner: Moon,
 }
 
 export default function DietPage() {
-  const [water, setWater]     = useState(6)
+  const [water, setWater]       = useState(6)
   const [addModal, setAddModal] = useState<string | null>(null)
-  const [barcodeMode, setBarcodeMode] = useState(false)
+  const [barcodeModal, setBarcodeModal] = useState(false)
+
+  // Add food form state
+  const [foodName, setFoodName]     = useState('')
+  const [foodCals, setFoodCals]     = useState('')
+  const [foodProt, setFoodProt]     = useState('')
+  const [foodCarbs, setFoodCarbs]   = useState('')
+  const [foodFat, setFoodFat]       = useState('')
 
   const pct = (val: number, target: number) => Math.min(100, (val / target) * 100)
+
+  const handleAddFood = (e: React.FormEvent) => {
+    e.preventDefault()
+    setAddModal(null)
+    setFoodName(''); setFoodCals(''); setFoodProt(''); setFoodCarbs(''); setFoodFat('')
+    toast.success('Alimento añadido')
+  }
 
   return (
     <div className="space-y-6">
@@ -60,7 +78,7 @@ export default function DietPage() {
           <p className="text-white/40 text-sm mt-1">Registro de hoy</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={() => setBarcodeMode(true)} className="btn-secondary text-sm px-3 py-2">
+          <button onClick={() => setBarcodeModal(true)} className="btn-secondary text-sm px-3 py-2">
             <Camera size={16} /> Escanear
           </button>
         </div>
@@ -123,7 +141,7 @@ export default function DietPage() {
                 <button
                   key={i}
                   onClick={() => setWater(i < water ? i : i + 1)}
-                  className={cn('w-8 h-10 rounded-lg flex items-center justify-center transition-all text-lg', i < water ? 'bg-cyan-500/30 text-cyan-400' : 'bg-surface-100 text-white/20 hover:bg-cyan-500/10')}
+                  className={cn('w-8 h-10 rounded-lg flex items-center justify-center transition-all', i < water ? 'bg-cyan-500/30 text-cyan-400' : 'bg-surface-100 text-white/20 hover:bg-cyan-500/10')}
                 >
                   <Droplets size={16} />
                 </button>
@@ -136,48 +154,74 @@ export default function DietPage() {
 
       {/* Meals */}
       <div className="space-y-4">
-        {meals.map((meal) => (
-          <motion.div key={meal.type} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xl">{MEAL_ICONS[meal.type]}</span>
-                <div>
-                  <h3 className="font-semibold text-sm">{meal.label}</h3>
-                  {meal.time && <p className="text-xs text-white/40">{meal.time}</p>}
+        {meals.map((meal) => {
+          const MealIcon = MEAL_ICON_MAP[meal.type] ?? Coffee
+          return (
+            <motion.div key={meal.type} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-surface-100 flex items-center justify-center shrink-0">
+                    <MealIcon size={16} className="text-brand-400" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-sm">{meal.label}</h3>
+                    {meal.time && <p className="text-xs text-white/40">{meal.time}</p>}
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  {meal.calories > 0 && (
+                    <span className="flex items-center gap-1 text-sm text-white/50">
+                      <Flame size={13} className="text-orange-400" /> {meal.calories} kcal
+                    </span>
+                  )}
+                  <button onClick={() => setAddModal(meal.type)} className="btn-ghost p-1.5">
+                    <Plus size={16} />
+                  </button>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                {meal.calories > 0 && (
-                  <span className="flex items-center gap-1 text-sm text-white/50">
-                    <Flame size={13} className="text-orange-400" /> {meal.calories} kcal
-                  </span>
-                )}
-                <button onClick={() => setAddModal(meal.type)} className="btn-ghost p-1.5">
-                  <Plus size={16} />
-                </button>
-              </div>
-            </div>
 
-            {meal.items.length > 0 ? (
-              <div className="space-y-2">
-                {meal.items.map((item) => (
-                  <div key={item.name} className="flex items-center justify-between p-2.5 rounded-lg bg-surface-100 hover:bg-surface-200 transition-colors group cursor-pointer">
-                    <div>
-                      <p className="text-sm font-medium">{item.name}</p>
-                      <p className="text-xs text-white/30">{item.quantity} · P:{item.protein}g C:{item.carbs}g G:{item.fat}g</p>
+              {meal.items.length > 0 ? (
+                <div className="space-y-2">
+                  {meal.items.map((item) => (
+                    <div key={item.name} className="flex items-center justify-between p-2.5 rounded-lg bg-surface-100 hover:bg-surface-200 transition-colors group cursor-pointer">
+                      <div>
+                        <p className="text-sm font-medium">{item.name}</p>
+                        <p className="text-xs text-white/30">{item.quantity} · P:{item.protein}g C:{item.carbs}g G:{item.fat}g</p>
+                      </div>
+                      <span className="text-sm text-white/50">{item.calories} kcal</span>
                     </div>
-                    <span className="text-sm text-white/50">{item.calories} kcal</span>
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <button onClick={() => setAddModal(meal.type)} className="w-full py-4 rounded-xl border border-dashed border-white/10 text-white/30 hover:border-brand-500/30 hover:text-brand-400 transition-all text-sm flex items-center justify-center gap-2">
-                <Plus size={16} /> Añadir alimento
-              </button>
-            )}
-          </motion.div>
-        ))}
+                  ))}
+                </div>
+              ) : (
+                <button onClick={() => setAddModal(meal.type)} className="w-full py-4 rounded-xl border border-dashed border-white/10 text-white/30 hover:border-brand-500/30 hover:text-brand-400 transition-all text-sm flex items-center justify-center gap-2">
+                  <Plus size={16} /> Añadir alimento
+                </button>
+              )}
+            </motion.div>
+          )
+        })}
       </div>
+
+      {/* Barcode modal */}
+      {barcodeModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={() => setBarcodeModal(false)}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            onClick={(e) => e.stopPropagation()}
+            className="glass border border-white/10 rounded-2xl p-6 w-full max-w-sm text-center"
+          >
+            <div className="w-14 h-14 rounded-xl bg-brand-500/20 flex items-center justify-center mx-auto mb-4">
+              <Camera size={28} className="text-brand-400" />
+            </div>
+            <h3 className="font-semibold text-lg mb-2">Escanear código de barras</h3>
+            <p className="text-white/50 text-sm mb-6">Función de escaneo disponible en la app móvil</p>
+            <button onClick={() => setBarcodeModal(false)} className="btn-secondary w-full">
+              <X size={16} /> Cerrar
+            </button>
+          </motion.div>
+        </div>
+      )}
 
       {/* Add food modal */}
       {addModal && (
@@ -188,17 +232,94 @@ export default function DietPage() {
             onClick={(e) => e.stopPropagation()}
             className="glass border border-white/10 rounded-2xl p-6 w-full max-w-md"
           >
-            <h3 className="font-semibold mb-4">Añadir alimento</h3>
-            <div className="relative mb-3">
-              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-              <input placeholder="Buscar alimento o escanear código..." className="input pl-9" autoFocus />
-            </div>
-            <div className="flex gap-2 mb-4">
-              <button onClick={() => setBarcodeMode(true)} className="btn-secondary text-sm px-3 py-2 flex-1">
-                <Camera size={15} /> Escanear código
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold">Añadir alimento</h3>
+              <button onClick={() => setAddModal(null)} className="btn-ghost p-1.5">
+                <X size={16} />
               </button>
             </div>
-            <p className="text-xs text-white/30 text-center">Base de datos: 500,000+ alimentos · Open Food Facts</p>
+
+            {/* Quick search row */}
+            <div className="relative mb-3">
+              <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+              <input placeholder="Buscar alimento..." className="input pl-9" />
+            </div>
+
+            <div className="relative flex items-center gap-2 mb-5">
+              <div className="flex-1 h-px bg-white/10" />
+              <span className="text-xs text-white/30 shrink-0">o introduce manualmente</span>
+              <div className="flex-1 h-px bg-white/10" />
+            </div>
+
+            <form onSubmit={handleAddFood} className="space-y-3">
+              <div>
+                <label className="text-xs text-white/40 mb-1 block">Nombre del alimento</label>
+                <input
+                  required
+                  value={foodName}
+                  onChange={(e) => setFoodName(e.target.value)}
+                  placeholder="Ej. Pechuga de pollo"
+                  className="input text-sm"
+                />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-white/40 mb-1 block">Calorías (kcal)</label>
+                  <input
+                    required
+                    type="number"
+                    min="0"
+                    value={foodCals}
+                    onChange={(e) => setFoodCals(e.target.value)}
+                    placeholder="0"
+                    className="input text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-white/40 mb-1 block">Proteína (g)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={foodProt}
+                    onChange={(e) => setFoodProt(e.target.value)}
+                    placeholder="0"
+                    className="input text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-white/40 mb-1 block">Carbohidratos (g)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={foodCarbs}
+                    onChange={(e) => setFoodCarbs(e.target.value)}
+                    placeholder="0"
+                    className="input text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-white/40 mb-1 block">Grasas (g)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={foodFat}
+                    onChange={(e) => setFoodFat(e.target.value)}
+                    placeholder="0"
+                    className="input text-sm"
+                  />
+                </div>
+              </div>
+              <div className="flex gap-2 pt-1">
+                <button type="button" onClick={() => setAddModal(null)} className="btn-secondary flex-1 text-sm">
+                  Cancelar
+                </button>
+                <button type="submit" className="btn-primary flex-1 text-sm">
+                  <Plus size={15} /> Añadir
+                </button>
+              </div>
+            </form>
+
+            <p className="text-xs text-white/30 text-center mt-4">Base de datos: 500,000+ alimentos · Open Food Facts</p>
           </motion.div>
         </div>
       )}

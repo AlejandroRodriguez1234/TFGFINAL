@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { TrendingUp, TrendingDown, Camera, Scale, Award, BarChart2, ChevronRight } from 'lucide-react'
-import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, ReferenceLine } from 'recharts'
+import { TrendingUp, TrendingDown, Camera, Scale, BarChart2, Flame, Trophy, Leaf, Activity, X, Plus } from 'lucide-react'
+import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { cn } from '@utils/cn'
+import toast from 'react-hot-toast'
 
 const weightData = [
   { date: 'Mar 1',  weight: 82.5, fat: 18.2, muscle: 42.1 },
@@ -21,22 +22,45 @@ const liftData = [
   { exercise: 'Press militar', pr: 75, current: 70 },
 ]
 
-const achievements: { icon: string; name: string; desc: string; xp: number; date: string }[] = [
-  { icon: '🔥', name: 'On Fire',       desc: '7 días de racha',        xp: 50,  date: 'Hoy' },
-  { icon: '💪', name: 'Primer 100kg',  desc: 'Press banca 100kg',      xp: 200, date: 'Hace 2 días' },
-  { icon: '🥗', name: 'Semana verde',  desc: '7 días objetivo nutri.', xp: 100, date: 'Hace 5 días' },
-  { icon: '🏃', name: '5K Runner',     desc: 'Cardio 5km completado',  xp: 75,  date: 'Hace 1 semana' },
+type Achievement = {
+  Icon: React.ElementType
+  iconClass: string
+  name: string
+  desc: string
+  xp: number
+  date: string
+}
+
+const achievements: Achievement[] = [
+  { Icon: Flame,    iconClass: 'text-orange-400', name: 'On Fire',      desc: '7 días de racha',        xp: 50,  date: 'Hoy' },
+  { Icon: Trophy,   iconClass: 'text-yellow-400', name: 'Primer 100kg', desc: 'Press banca 100kg',      xp: 200, date: 'Hace 2 días' },
+  { Icon: Leaf,     iconClass: 'text-green-400',  name: 'Semana verde', desc: '7 días objetivo nutri.', xp: 100, date: 'Hace 5 días' },
+  { Icon: Activity, iconClass: 'text-brand-400',  name: '5K Runner',    desc: 'Cardio 5km completado',  xp: 75,  date: 'Hace 1 semana' },
 ]
 
 const tabs = ['Peso', 'Fuerza', 'Logros'] as const
 
 export default function ProgressPage() {
   const [tab, setTab] = useState<typeof tabs[number]>('Peso')
+  const [measureModal, setMeasureModal] = useState(false)
+
+  // Measurement form state
+  const [mWeight, setMWeight]   = useState('')
+  const [mFat, setMFat]         = useState('')
+  const [mMuscle, setMuscle]    = useState('')
+  const [mNotes, setMNotes]     = useState('')
 
   const latest = weightData[weightData.length - 1]
   const first  = weightData[0]
   const diffWeight = latest.weight - first.weight
   const diffFat    = latest.fat - first.fat
+
+  const handleMeasureSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    setMeasureModal(false)
+    setMWeight(''); setMFat(''); setMuscle(''); setMNotes('')
+    toast.success('Medición registrada correctamente')
+  }
 
   return (
     <div className="space-y-6">
@@ -45,7 +69,7 @@ export default function ProgressPage() {
           <h1 className="text-3xl font-display font-bold">Progreso</h1>
           <p className="text-white/40 text-sm mt-1">Tu evolución en el tiempo</p>
         </div>
-        <button className="btn-secondary text-sm px-4 py-2.5">
+        <button onClick={() => setMeasureModal(true)} className="btn-secondary text-sm px-4 py-2.5">
           <Scale size={16} /> Añadir medición
         </button>
       </div>
@@ -53,10 +77,10 @@ export default function ProgressPage() {
       {/* Key metrics */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
-          { label: 'Peso actual',  value: `${latest.weight} kg`, change: diffWeight, unit: 'kg', good: diffWeight < 0 },
-          { label: '% Grasa',      value: `${latest.fat}%`,      change: diffFat,    unit: '%',  good: diffFat < 0 },
-          { label: 'Masa muscular', value: `${latest.muscle} kg`, change: latest.muscle - first.muscle, unit: 'kg', good: true },
-          { label: 'IMC',          value: '24.8',                change: -0.8,       unit: '',   good: true },
+          { label: 'Peso actual',   value: `${latest.weight} kg`, change: diffWeight,                        unit: 'kg', good: diffWeight < 0 },
+          { label: '% Grasa',       value: `${latest.fat}%`,      change: diffFat,                           unit: '%',  good: diffFat < 0 },
+          { label: 'Masa muscular', value: `${latest.muscle} kg`, change: latest.muscle - first.muscle,      unit: 'kg', good: true },
+          { label: 'IMC',           value: '24.8',                change: -0.8,                              unit: '',   good: true },
         ].map(({ label, value, change, unit, good }) => (
           <motion.div key={label} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card">
             <p className="text-xs text-white/40 mb-1">{label}</p>
@@ -145,7 +169,9 @@ export default function ProgressPage() {
             <motion.div key={a.name} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
               className="card flex items-center gap-4"
             >
-              <div className="text-3xl">{a.icon}</div>
+              <div className="w-12 h-12 rounded-xl bg-surface-100 flex items-center justify-center shrink-0">
+                <a.Icon size={24} className={a.iconClass} />
+              </div>
               <div className="flex-1">
                 <p className="font-semibold text-sm">{a.name}</p>
                 <p className="text-xs text-white/40">{a.desc}</p>
@@ -156,6 +182,85 @@ export default function ProgressPage() {
               </div>
             </motion.div>
           ))}
+        </div>
+      )}
+
+      {/* Measurement modal */}
+      {measureModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={() => setMeasureModal(false)}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            onClick={(e) => e.stopPropagation()}
+            className="glass border border-white/10 rounded-2xl p-6 w-full max-w-md"
+          >
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="font-semibold text-lg">Nueva medición</h3>
+              <button onClick={() => setMeasureModal(false)} className="btn-ghost p-1.5">
+                <X size={16} />
+              </button>
+            </div>
+            <form onSubmit={handleMeasureSubmit} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-white/40 mb-1 block">Peso (kg)</label>
+                  <input
+                    required
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    value={mWeight}
+                    onChange={(e) => setMWeight(e.target.value)}
+                    placeholder="79.5"
+                    className="input text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-white/40 mb-1 block">% Grasa corporal</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="100"
+                    value={mFat}
+                    onChange={(e) => setMFat(e.target.value)}
+                    placeholder="16.2"
+                    className="input text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-white/40 mb-1 block">Masa muscular (kg)</label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    value={mMuscle}
+                    onChange={(e) => setMuscle(e.target.value)}
+                    placeholder="43.7"
+                    className="input text-sm"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="text-xs text-white/40 mb-1 block">Notas (opcional)</label>
+                <textarea
+                  value={mNotes}
+                  onChange={(e) => setMNotes(e.target.value)}
+                  placeholder="Cómo te has sentido, condiciones..."
+                  rows={3}
+                  className="input text-sm resize-none"
+                />
+              </div>
+              <div className="flex gap-2 pt-1">
+                <button type="button" onClick={() => setMeasureModal(false)} className="btn-secondary flex-1 text-sm">
+                  Cancelar
+                </button>
+                <button type="submit" className="btn-primary flex-1 text-sm">
+                  <Plus size={15} /> Guardar
+                </button>
+              </div>
+            </form>
+          </motion.div>
         </div>
       )}
     </div>

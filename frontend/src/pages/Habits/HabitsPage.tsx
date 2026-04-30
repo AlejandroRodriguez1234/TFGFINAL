@@ -1,20 +1,64 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Check, Flame, Target, TrendingUp, X, Loader2 } from 'lucide-react'
+import {
+  Plus, Check, Flame, Target, X,
+  Dumbbell, Droplets, Brain, BookOpen, Apple, Moon,
+  Footprints, Music, Leaf, Sun, Heart,
+} from 'lucide-react'
 import { cn } from '@utils/cn'
+import type { LucideProps } from 'lucide-react'
+import type { FC } from 'react'
 
-interface Habit { id: string; name: string; icon: string; color: string; streak: number; completedToday: boolean; completionRate: number; description?: string }
+type IconName =
+  | 'Dumbbell' | 'Droplets' | 'Brain' | 'BookOpen' | 'Apple' | 'Moon'
+  | 'Footprints' | 'Target' | 'Music' | 'Leaf' | 'Sun' | 'Heart'
+
+const iconMap: Record<IconName, FC<LucideProps>> = {
+  Dumbbell,
+  Droplets,
+  Brain,
+  BookOpen,
+  Apple,
+  Moon,
+  Footprints,
+  Target,
+  Music,
+  Leaf,
+  Sun,
+  Heart,
+}
+
+const iconNames: IconName[] = [
+  'Dumbbell', 'Droplets', 'Brain', 'BookOpen', 'Apple', 'Moon',
+  'Footprints', 'Target', 'Music', 'Leaf', 'Sun', 'Heart',
+]
+
+interface Habit {
+  id: string
+  name: string
+  iconName: IconName
+  color: string
+  streak: number
+  completedToday: boolean
+  completionRate: number
+  description?: string
+}
 
 const initialHabits: Habit[] = [
-  { id: '1', name: 'Entrenar',       icon: '💪', color: 'from-brand-500 to-cyan-400',    streak: 7,  completedToday: true,  completionRate: 85 },
-  { id: '2', name: 'Beber agua',     icon: '💧', color: 'from-cyan-500 to-blue-400',     streak: 14, completedToday: true,  completionRate: 92 },
-  { id: '3', name: 'Meditar',        icon: '🧘', color: 'from-purple-500 to-pink-400',   streak: 3,  completedToday: false, completionRate: 60 },
-  { id: '4', name: 'Leer 30 min',    icon: '📚', color: 'from-yellow-500 to-orange-400', streak: 5,  completedToday: false, completionRate: 70 },
-  { id: '5', name: 'Registro comida',icon: '🥗', color: 'from-green-500 to-emerald-400', streak: 10, completedToday: true,  completionRate: 78 },
-  { id: '6', name: 'Dormir 8h',      icon: '😴', color: 'from-indigo-500 to-violet-400', streak: 2,  completedToday: false, completionRate: 55 },
+  { id: '1', name: 'Entrenar',        iconName: 'Dumbbell',  color: 'from-brand-500 to-cyan-400',    streak: 7,  completedToday: true,  completionRate: 85 },
+  { id: '2', name: 'Beber agua',      iconName: 'Droplets',  color: 'from-cyan-500 to-blue-400',     streak: 14, completedToday: true,  completionRate: 92 },
+  { id: '3', name: 'Meditar',         iconName: 'Brain',     color: 'from-purple-500 to-pink-400',   streak: 3,  completedToday: false, completionRate: 60 },
+  { id: '4', name: 'Leer 30 min',     iconName: 'BookOpen',  color: 'from-yellow-500 to-orange-400', streak: 5,  completedToday: false, completionRate: 70 },
+  { id: '5', name: 'Registro comida', iconName: 'Apple',     color: 'from-green-500 to-emerald-400', streak: 10, completedToday: true,  completionRate: 78 },
+  { id: '6', name: 'Dormir 8h',       iconName: 'Moon',      color: 'from-indigo-500 to-violet-400', streak: 2,  completedToday: false, completionRate: 55 },
 ]
 
 const weekDays = ['L', 'M', 'X', 'J', 'V', 'S', 'D']
+
+function HabitIcon({ name, size = 18, className }: { name: IconName; size?: number; className?: string }) {
+  const Icon = iconMap[name]
+  return <Icon size={size} className={className} />
+}
 
 function HabitCard({ habit, onToggle }: { habit: Habit; onToggle: (id: string) => void }) {
   return (
@@ -26,8 +70,8 @@ function HabitCard({ habit, onToggle }: { habit: Habit; onToggle: (id: string) =
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3">
-          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${habit.color} flex items-center justify-center text-xl`}>
-            {habit.icon}
+          <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${habit.color} flex items-center justify-center`}>
+            <HabitIcon name={habit.iconName} size={18} className="text-white" />
           </div>
           <div>
             <h3 className="font-semibold text-sm">{habit.name}</h3>
@@ -53,7 +97,7 @@ function HabitCard({ habit, onToggle }: { habit: Habit; onToggle: (id: string) =
       {/* Weekly view */}
       <div className="flex gap-1 mb-3">
         {weekDays.map((day, i) => {
-          const done = i < 5 ? Math.random() > 0.3 : i === 6 && habit.completedToday
+          const done = i < 4 || (i === 5 && habit.streak > 5) || (i === 6 && habit.completedToday)
           return (
             <div key={day} className="flex-1 flex flex-col items-center gap-1">
               <div className={cn('w-full aspect-square rounded-md', done ? `bg-gradient-to-br ${habit.color}` : 'bg-surface-200')} />
@@ -81,29 +125,42 @@ function HabitCard({ habit, onToggle }: { habit: Habit; onToggle: (id: string) =
 }
 
 export default function HabitsPage() {
-  const [habits, setHabits] = useState<Habit[]>(initialHabits)
-  const [showAdd, setShowAdd] = useState(false)
-  const [newName, setNewName] = useState('')
-  const [newIcon, setNewIcon] = useState('⭐')
+  const [habits, setHabits]       = useState<Habit[]>(initialHabits)
+  const [showAdd, setShowAdd]     = useState(false)
+  const [newName, setNewName]     = useState('')
+  const [newIcon, setNewIcon]     = useState<IconName>('Dumbbell')
 
   const completed = habits.filter((h) => h.completedToday).length
   const total     = habits.length
 
   const toggleHabit = (id: string) => {
-    setHabits((prev) => prev.map((h) => h.id === id ? { ...h, completedToday: !h.completedToday, streak: h.completedToday ? Math.max(0, h.streak - 1) : h.streak + 1 } : h))
+    setHabits((prev) =>
+      prev.map((h) =>
+        h.id === id
+          ? { ...h, completedToday: !h.completedToday, streak: h.completedToday ? Math.max(0, h.streak - 1) : h.streak + 1 }
+          : h,
+      ),
+    )
   }
 
   const addHabit = () => {
     if (!newName.trim()) return
-    setHabits((prev) => [...prev, {
-      id: Date.now().toString(), name: newName, icon: newIcon, color: 'from-brand-500 to-cyan-400',
-      streak: 0, completedToday: false, completionRate: 0,
-    }])
+    setHabits((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        name: newName,
+        iconName: newIcon,
+        color: 'from-brand-500 to-cyan-400',
+        streak: 0,
+        completedToday: false,
+        completionRate: 0,
+      },
+    ])
     setNewName('')
+    setNewIcon('Dumbbell')
     setShowAdd(false)
   }
-
-  const emojis = ['💪', '💧', '🧘', '📚', '🥗', '😴', '🏃', '🎯', '✍️', '🎵', '🌿', '☀️']
 
   return (
     <div className="space-y-6">
@@ -165,7 +222,10 @@ export default function HabitsPage() {
       {/* Add modal */}
       <AnimatePresence>
         {showAdd && (
-          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={() => setShowAdd(false)}>
+          <div
+            className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
+            onClick={() => setShowAdd(false)}
+          >
             <motion.div
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -180,16 +240,42 @@ export default function HabitsPage() {
               <div className="space-y-4">
                 <div>
                   <label className="text-sm text-white/60 mb-1 block">Nombre</label>
-                  <input value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="ej: Meditar 10 min" className="input" autoFocus />
+                  <input
+                    value={newName}
+                    onChange={(e) => setNewName(e.target.value)}
+                    placeholder="ej: Meditar 10 min"
+                    className="input"
+                    autoFocus
+                  />
                 </div>
                 <div>
                   <label className="text-sm text-white/60 mb-2 block">Ícono</label>
                   <div className="flex flex-wrap gap-2">
-                    {emojis.map((e) => (
-                      <button key={e} onClick={() => setNewIcon(e)} className={cn('w-10 h-10 rounded-lg text-xl flex items-center justify-center transition-all', newIcon === e ? 'bg-brand-500/30 border border-brand-500' : 'bg-surface-100 hover:bg-surface-200')}>
-                        {e}
-                      </button>
-                    ))}
+                    {iconNames.map((name) => {
+                      const Icon = iconMap[name]
+                      return (
+                        <button
+                          key={name}
+                          onClick={() => setNewIcon(name)}
+                          title={name}
+                          className={cn(
+                            'w-10 h-10 rounded-lg flex items-center justify-center transition-all',
+                            newIcon === name
+                              ? 'bg-brand-500/30 border border-brand-500 text-brand-400'
+                              : 'bg-surface-100 hover:bg-surface-200 text-white/50 hover:text-white',
+                          )}
+                        >
+                          <Icon size={18} />
+                        </button>
+                      )
+                    })}
+                  </div>
+                  {/* Preview */}
+                  <div className="mt-3 flex items-center gap-2 p-2 rounded-lg bg-surface-100">
+                    <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-cyan-400 flex items-center justify-center">
+                      <HabitIcon name={newIcon} size={16} className="text-white" />
+                    </div>
+                    <span className="text-sm text-white/60">Vista previa: <span className="text-white">{newName || 'Mi hábito'}</span></span>
                   </div>
                 </div>
                 <button onClick={addHabit} className="btn-primary w-full">

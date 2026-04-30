@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { apiClient } from '@services/api'
 import {
   Activity, Dumbbell, Flame, Droplets, Moon, TrendingUp,
-  Target, Award, ChevronRight, Zap, Trophy,
+  Target, Award, ChevronRight, Zap, Trophy, Leaf,
 } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { RadialBarChart, RadialBar, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
@@ -26,9 +26,24 @@ const activityRings = [
 ]
 
 const recentAchievements = [
-  { icon: '🔥', title: 'Racha de 7 días', desc: '¡7 días consecutivos entrenando!' },
-  { icon: '💪', title: 'Primer PR',        desc: 'Press banca: 80kg x 5 reps' },
-  { icon: '🥗', title: 'Semana verde',     desc: 'Objetivos nutricionales cumplidos' },
+  {
+    iconComponent: <Flame size={16} className="text-orange-400" />,
+    iconBg: 'bg-orange-500/15',
+    title: 'Racha de 7 días',
+    desc: '¡7 días consecutivos entrenando!',
+  },
+  {
+    iconComponent: <Trophy size={16} className="text-yellow-400" />,
+    iconBg: 'bg-yellow-500/15',
+    title: 'Primer PR',
+    desc: 'Press banca: 80kg x 5 reps',
+  },
+  {
+    iconComponent: <Leaf size={16} className="text-green-400" />,
+    iconBg: 'bg-green-500/15',
+    title: 'Semana verde',
+    desc: 'Objetivos nutricionales cumplidos',
+  },
 ]
 
 const upcomingWorkouts = [
@@ -50,7 +65,7 @@ export default function DashboardPage() {
         <div>
           <p className="text-white/50 text-sm">{greeting},</p>
           <h1 className="text-3xl font-display font-bold mt-0.5">
-            {user?.firstName} <span className="text-gradient">💪</span>
+            <span className="text-gradient">{user?.firstName}</span>
           </h1>
           <p className="text-white/40 text-sm mt-1">Aquí está tu resumen de hoy</p>
         </div>
@@ -177,7 +192,9 @@ export default function DashboardPage() {
           <div className="space-y-3">
             {recentAchievements.map((a) => (
               <div key={a.title} className="flex items-center gap-3 p-3 rounded-xl bg-surface-100">
-                <div className="text-2xl">{a.icon}</div>
+                <div className={`w-9 h-9 rounded-lg ${a.iconBg} flex items-center justify-center shrink-0`}>
+                  {a.iconComponent}
+                </div>
                 <div>
                   <p className="text-sm font-medium">{a.title}</p>
                   <p className="text-xs text-white/40">{a.desc}</p>
