@@ -1,32 +1,76 @@
 import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Play, Pause, Square, Plus, Minus, Check, Timer, ChevronDown, ChevronUp, Flame } from 'lucide-react'
+import {
+  Play, Pause, Square, Plus, Minus, Check,
+  Timer, ChevronDown, ChevronUp, Flame,
+} from 'lucide-react'
 import { cn } from '@utils/cn'
 
-interface Set { reps: number; weight: number; completed: boolean }
+interface Set      { reps: number; weight: number; completed: boolean }
 interface Exercise { id: string; name: string; sets: Set[]; restSeconds: number }
 
 const mockWorkout = {
   name: 'Push Day A',
   exercises: [
-    { id: 'e1', name: 'Press de banca', sets: [{ reps: 8, weight: 70, completed: false }, { reps: 8, weight: 70, completed: false }, { reps: 6, weight: 75, completed: false }], restSeconds: 120 },
-    { id: 'e2', name: 'Press inclinado con mancuernas', sets: [{ reps: 10, weight: 22, completed: false }, { reps: 10, weight: 22, completed: false }, { reps: 8, weight: 24, completed: false }], restSeconds: 90 },
-    { id: 'e3', name: 'Fondos en paralelas', sets: [{ reps: 12, weight: 0, completed: false }, { reps: 10, weight: 0, completed: false }, { reps: 10, weight: 0, completed: false }], restSeconds: 90 },
-    { id: 'e4', name: 'Extensión tríceps polea', sets: [{ reps: 12, weight: 20, completed: false }, { reps: 12, weight: 20, completed: false }], restSeconds: 60 },
+    {
+      id: 'e1',
+      name: 'Press de banca',
+      sets: [
+        { reps: 8, weight: 70, completed: false },
+        { reps: 8, weight: 70, completed: false },
+        { reps: 6, weight: 75, completed: false },
+      ],
+      restSeconds: 120,
+    },
+    {
+      id: 'e2',
+      name: 'Press inclinado con mancuernas',
+      sets: [
+        { reps: 10, weight: 22, completed: false },
+        { reps: 10, weight: 22, completed: false },
+        { reps: 8,  weight: 24, completed: false },
+      ],
+      restSeconds: 90,
+    },
+    {
+      id: 'e3',
+      name: 'Fondos en paralelas',
+      sets: [
+        { reps: 12, weight: 0, completed: false },
+        { reps: 10, weight: 0, completed: false },
+        { reps: 10, weight: 0, completed: false },
+      ],
+      restSeconds: 90,
+    },
+    {
+      id: 'e4',
+      name: 'Extensión tríceps polea',
+      sets: [
+        { reps: 12, weight: 20, completed: false },
+        { reps: 12, weight: 20, completed: false },
+      ],
+      restSeconds: 60,
+    },
   ] as Exercise[],
 }
 
 function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void }) {
   const [left, setLeft] = useState(seconds)
+
   useEffect(() => {
     if (left <= 0) { onDone(); return }
     const t = setTimeout(() => setLeft((p) => p - 1), 1000)
     return () => clearTimeout(t)
   }, [left, onDone])
+
   const pct = (left / seconds) * 100
+
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }}
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0 }}
       className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm"
     >
       <div className="text-center">
@@ -34,10 +78,14 @@ function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void })
         <div className="relative w-36 h-36 mx-auto">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
             <circle cx="50" cy="50" r="45" fill="none" stroke="#2e2e2e" strokeWidth="8" />
-            <circle cx="50" cy="50" r="45" fill="none" stroke="#0ea5e9" strokeWidth="8"
+            <circle
+              cx="50" cy="50" r="45"
+              fill="none" stroke="#0ea5e9" strokeWidth="8"
               strokeDasharray={`${2 * Math.PI * 45}`}
               strokeDashoffset={`${2 * Math.PI * 45 * (1 - pct / 100)}`}
-              strokeLinecap="round" className="transition-all duration-1000" />
+              strokeLinecap="round"
+              className="transition-all duration-1000"
+            />
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-4xl font-bold">{left}</span>
@@ -50,14 +98,14 @@ function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void })
 }
 
 export default function WorkoutPage() {
-  const { id } = useParams()
-  const navigate = useNavigate()
+  const { id }       = useParams()
+  const navigate     = useNavigate()
   const [exercises, setExercises] = useState<Exercise[]>(mockWorkout.exercises)
-  const [elapsed, setElapsed]   = useState(0)
-  const [running, setRunning]   = useState(false)
-  const [resting, setResting]   = useState(false)
-  const [restSecs, setRestSecs] = useState(90)
-  const [expanded, setExpanded] = useState<string | null>(exercises[0]?.id ?? null)
+  const [elapsed, setElapsed]     = useState(0)
+  const [running, setRunning]     = useState(false)
+  const [resting, setResting]     = useState(false)
+  const [restSecs, setRestSecs]   = useState(90)
+  const [expanded, setExpanded]   = useState<string | null>(exercises[0]?.id ?? null)
   const intervalRef = useRef<ReturnType<typeof setInterval>>()
 
   useEffect(() => {
@@ -69,7 +117,8 @@ export default function WorkoutPage() {
     return () => clearInterval(intervalRef.current)
   }, [running])
 
-  const fmt = (s: number) => `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
+  const fmt = (s: number) =>
+    `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`
 
   const toggleSet = (exIdx: number, setIdx: number) => {
     setExercises((prev) => {
@@ -106,9 +155,11 @@ export default function WorkoutPage() {
 
   return (
     <div className="space-y-6 pb-24">
-      {resting && <RestTimer seconds={restSecs} onDone={() => setResting(false)} />}
+      <AnimatePresence>
+        {resting && <RestTimer seconds={restSecs} onDone={() => setResting(false)} />}
+      </AnimatePresence>
 
-      {/* Header */}
+      {/* Header card */}
       <div className="card">
         <div className="flex items-center justify-between mb-4">
           <div>
@@ -120,6 +171,8 @@ export default function WorkoutPage() {
             <p className="text-xs text-white/40">Duración</p>
           </div>
         </div>
+
+        {/* Progress bar */}
         <div className="h-2 bg-surface-200 rounded-full overflow-hidden mb-4">
           <motion.div
             animate={{ width: `${progress}%` }}
@@ -127,8 +180,12 @@ export default function WorkoutPage() {
             className="h-full bg-gradient-to-r from-brand-500 to-cyan-400 rounded-full"
           />
         </div>
+
         <div className="flex gap-3">
-          <button onClick={() => setRunning(!running)} className={cn('btn-primary flex-1 py-2.5', running ? 'bg-warning hover:bg-yellow-400' : '')}>
+          <button
+            onClick={() => setRunning(!running)}
+            className={cn('btn-primary flex-1 py-2.5', running ? 'bg-warning hover:bg-yellow-400' : '')}
+          >
             {running ? <Pause size={16} /> : <Play size={16} />}
             {running ? 'Pausar' : 'Reanudar'}
           </button>
@@ -139,19 +196,28 @@ export default function WorkoutPage() {
         </div>
       </div>
 
-      {/* Exercises */}
+      {/* Exercise list */}
       <div className="space-y-4">
         {exercises.map((ex, exIdx) => {
           const isExpanded = expanded === ex.id
-          const doneEx = ex.sets.filter((s) => s.completed).length
+          const doneEx     = ex.sets.filter((s) => s.completed).length
+
           return (
             <div key={ex.id} className="card overflow-hidden">
+              {/* Exercise header - click to expand/collapse */}
               <button
                 onClick={() => setExpanded(isExpanded ? null : ex.id)}
                 className="w-full flex items-center justify-between"
               >
                 <div className="flex items-center gap-3">
-                  <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold', doneEx === ex.sets.length ? 'bg-success/20 text-success' : 'bg-brand-500/20 text-brand-400')}>
+                  <div
+                    className={cn(
+                      'w-8 h-8 rounded-lg flex items-center justify-center text-sm font-bold',
+                      doneEx === ex.sets.length
+                        ? 'bg-success/20 text-success'
+                        : 'bg-brand-500/20 text-brand-400',
+                    )}
+                  >
                     {doneEx === ex.sets.length ? <Check size={16} /> : exIdx + 1}
                   </div>
                   <div className="text-left">
@@ -159,48 +225,84 @@ export default function WorkoutPage() {
                     <p className="text-xs text-white/40">{doneEx}/{ex.sets.length} series</p>
                   </div>
                 </div>
-                {isExpanded ? <ChevronUp size={16} className="text-white/30" /> : <ChevronDown size={16} className="text-white/30" />}
+                {isExpanded
+                  ? <ChevronUp size={16} className="text-white/30" />
+                  : <ChevronDown size={16} className="text-white/30" />}
               </button>
 
               <AnimatePresence>
                 {isExpanded && (
-                  <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
                     className="overflow-hidden"
                   >
                     <div className="pt-4 space-y-2">
-                      {/* Header row */}
+                      {/* Column headers */}
                       <div className="grid grid-cols-4 text-xs text-white/40 px-1 text-center">
                         <span>Serie</span><span>Reps</span><span>Kg</span><span></span>
                       </div>
+
                       {ex.sets.map((s, setIdx) => (
-                        <div key={setIdx} className={cn('grid grid-cols-4 items-center gap-2 p-2 rounded-lg transition-colors', s.completed ? 'bg-success/10' : 'bg-surface-100')}>
+                        <div
+                          key={setIdx}
+                          className={cn(
+                            'grid grid-cols-4 items-center gap-2 p-2 rounded-lg transition-colors',
+                            s.completed ? 'bg-success/10' : 'bg-surface-100',
+                          )}
+                        >
                           <span className="text-center text-sm font-mono text-white/60">{setIdx + 1}</span>
+
+                          {/* Reps adjuster */}
                           <div className="flex items-center justify-center gap-1">
-                            <button onClick={() => updateSet(exIdx, setIdx, 'reps', -1)} className="w-6 h-6 rounded-md bg-surface-200 hover:bg-surface-300 flex items-center justify-center">
+                            <button
+                              onClick={() => updateSet(exIdx, setIdx, 'reps', -1)}
+                              className="w-6 h-6 rounded-md bg-surface-200 hover:bg-surface-300 flex items-center justify-center"
+                            >
                               <Minus size={10} />
                             </button>
                             <span className="w-6 text-center text-sm font-semibold">{s.reps}</span>
-                            <button onClick={() => updateSet(exIdx, setIdx, 'reps', 1)} className="w-6 h-6 rounded-md bg-surface-200 hover:bg-surface-300 flex items-center justify-center">
+                            <button
+                              onClick={() => updateSet(exIdx, setIdx, 'reps', 1)}
+                              className="w-6 h-6 rounded-md bg-surface-200 hover:bg-surface-300 flex items-center justify-center"
+                            >
                               <Plus size={10} />
                             </button>
                           </div>
+
+                          {/* Weight adjuster */}
                           <div className="flex items-center justify-center gap-1">
-                            <button onClick={() => updateSet(exIdx, setIdx, 'weight', -2.5)} className="w-6 h-6 rounded-md bg-surface-200 hover:bg-surface-300 flex items-center justify-center">
+                            <button
+                              onClick={() => updateSet(exIdx, setIdx, 'weight', -2.5)}
+                              className="w-6 h-6 rounded-md bg-surface-200 hover:bg-surface-300 flex items-center justify-center"
+                            >
                               <Minus size={10} />
                             </button>
                             <span className="w-8 text-center text-sm font-semibold">{s.weight}</span>
-                            <button onClick={() => updateSet(exIdx, setIdx, 'weight', 2.5)} className="w-6 h-6 rounded-md bg-surface-200 hover:bg-surface-300 flex items-center justify-center">
+                            <button
+                              onClick={() => updateSet(exIdx, setIdx, 'weight', 2.5)}
+                              className="w-6 h-6 rounded-md bg-surface-200 hover:bg-surface-300 flex items-center justify-center"
+                            >
                               <Plus size={10} />
                             </button>
                           </div>
+
+                          {/* Complete set button */}
                           <button
                             onClick={() => toggleSet(exIdx, setIdx)}
-                            className={cn('w-8 h-8 rounded-lg flex items-center justify-center mx-auto transition-all', s.completed ? 'bg-success text-white' : 'bg-surface-200 text-white/30 hover:bg-brand-500/30 hover:text-brand-400')}
+                            className={cn(
+                              'w-8 h-8 rounded-lg flex items-center justify-center mx-auto transition-all',
+                              s.completed
+                                ? 'bg-success text-white'
+                                : 'bg-surface-200 text-white/30 hover:bg-brand-500/30 hover:text-brand-400',
+                            )}
                           >
                             <Check size={14} />
                           </button>
                         </div>
                       ))}
+
                       <div className="flex items-center gap-2 text-xs text-white/40 pt-1">
                         <Timer size={12} />
                         <span>Descanso: {ex.restSeconds}s</span>
@@ -214,7 +316,7 @@ export default function WorkoutPage() {
         })}
       </div>
 
-      {/* Summary bar */}
+      {/* Fixed bottom summary bar */}
       <div className="fixed bottom-0 left-0 right-0 p-4 glass border-t border-white/5 z-10">
         <div className="max-w-3xl mx-auto flex items-center justify-between">
           <div className="flex items-center gap-4 text-sm">
