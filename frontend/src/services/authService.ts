@@ -17,29 +17,29 @@ export interface RegisterDto {
 
 export const authService = {
   login: (dto: LoginDto) =>
-    authApi.post<{ data: { user: User; tokens: AuthTokens } }>('/auth/login', dto),
+    authApi.post<{ data: { user: User; tokens: AuthTokens } }>('/login', dto),
 
   register: (dto: RegisterDto) =>
-    authApi.post<{ data: { user: User; tokens: AuthTokens } }>('/auth/register', dto),
+    authApi.post<{ data: { user: User; tokens: AuthTokens } }>('/register', dto),
 
   logout: (refreshToken: string) =>
-    authApi.post('/auth/logout', { refreshToken }),
+    authApi.post('/logout', { refreshToken }),
 
   me: () =>
-    authApi.get<{ data: User }>('/auth/me'),
+    authApi.get<{ data: User }>('/me'),
 
   setup2fa: () =>
-    authApi.post<{ data: { secret: string; qrCode: string } }>('/auth/2fa/setup'),
+    authApi.post<{ data: { secret: string; qrCode: string } }>('/2fa/setup'),
 
   verify2fa: (code: string) =>
-    authApi.post('/auth/2fa/verify', { code }),
+    authApi.post('/2fa/verify', { code }),
 
   disable2fa: (code: string) =>
-    authApi.post('/auth/2fa/disable', { code }),
+    authApi.post('/2fa/disable', { code }),
 
   forgotPassword: (email: string) =>
-    authApi.post('/auth/forgot-password', { email }),
+    authApi.post('/forgot-password', { email }),
 
   resetPassword: (token: string, password: string) =>
-    authApi.post('/auth/reset-password', { token, password }),
+    authApi.post('/reset-password', { token, password }),
 }
