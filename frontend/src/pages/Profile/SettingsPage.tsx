@@ -37,7 +37,7 @@ export default function SettingsPage() {
   }
 
   const handleChangePhoto = () => {
-    toast('Función disponible en la app móvil', { icon: '📱' })
+    toast('Función disponible en la app móvil', { icon: <Smartphone size={14} /> })
   }
 
   return (
@@ -168,7 +168,7 @@ export default function SettingsPage() {
           {active === 'language' && (
             <div className="space-y-4">
               <h2 className="font-semibold">Idioma</h2>
-              {([['es', '🇪🇸 Español'], ['en', '🇬🇧 English']] as [string, string][]).map(([code, label]) => (
+              {([['es', 'ES', 'Español'], ['en', 'EN', 'English']] as [string, string, string][]).map(([code, flag, label]) => (
                 <button
                   key={code}
                   onClick={() => {
@@ -182,7 +182,10 @@ export default function SettingsPage() {
                       : 'glass border-white/10 text-white/70 hover:border-white/30'
                   )}
                 >
-                  <span className="text-sm font-medium">{label}</span>
+                  <div className="flex items-center gap-3">
+                    <span className="w-8 h-8 rounded-lg bg-surface-100 flex items-center justify-center text-xs font-bold text-white">{flag}</span>
+                    <span className="text-sm font-medium">{label}</span>
+                  </div>
                   {i18n.language === code && <Check size={16} className="text-brand-400" />}
                 </button>
               ))}

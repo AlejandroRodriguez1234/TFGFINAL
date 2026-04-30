@@ -37,6 +37,9 @@ i18n
           week: 'Semana',
           month: 'Mes',
           year: 'Año',
+          progress: 'Progreso',
+          settings: 'Ajustes',
+          profile: 'Perfil',
         },
         auth: {
           login: 'Iniciar sesión',
@@ -157,6 +160,9 @@ i18n
           week: 'Week',
           month: 'Month',
           year: 'Year',
+          progress: 'Progress',
+          settings: 'Settings',
+          profile: 'Profile',
         },
         auth: {
           login: 'Sign in',

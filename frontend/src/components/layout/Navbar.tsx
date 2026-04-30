@@ -3,10 +3,15 @@ import { useAuthStore } from '@store/authStore'
 import { useAppStore } from '@store/appStore'
 import { authService } from '@services/authService'
 import { useNavigate } from 'react-router-dom'
-import { Bell, Menu, Search, LogOut, User, Settings, Globe } from 'lucide-react'
+import { Bell, Menu, Search, LogOut, User, Settings, Globe, Check } from 'lucide-react'
 import { useState } from 'react'
 import { cn } from '@utils/cn'
 import toast from 'react-hot-toast'
+
+const LANGS = [
+  { code: 'es', label: 'Español', short: 'ES' },
+  { code: 'en', label: 'English', short: 'EN' },
+]
 
 export default function Navbar() {
   const { t, i18n } = useTranslation()
@@ -14,6 +19,7 @@ export default function Navbar() {
   const { toggleSidebar, unreadCount } = useAppStore()
   const navigate = useNavigate()
   const [profileOpen, setProfileOpen] = useState(false)
+  const [langOpen, setLangOpen] = useState(false)
 
   const handleLogout = async () => {
     try {
@@ -25,10 +31,7 @@ export default function Navbar() {
     }
   }
 
-  const toggleLang = () => {
-    const newLang = i18n.language === 'es' ? 'en' : 'es'
-    i18n.changeLanguage(newLang)
-  }
+  const currentLang = LANGS.find((l) => l.code === i18n.language) ?? LANGS[0]
 
   return (
     <header className="h-16 flex items-center justify-between px-4 md:px-6 border-b border-white/5 bg-surface-50/50 backdrop-blur-sm sticky top-0 z-10">
@@ -47,10 +50,45 @@ export default function Navbar() {
       </div>
 
       <div className="flex items-center gap-2">
-        {/* Language */}
-        <button onClick={toggleLang} className="btn-ghost p-2 text-xs font-medium text-white/60">
-          <Globe size={18} />
-        </button>
+        {/* Language dropdown */}
+        <div className="relative">
+          <button
+            onClick={() => setLangOpen(!langOpen)}
+            className="btn-ghost px-2.5 py-2 flex items-center gap-1.5 text-xs font-semibold text-white/60 hover:text-white"
+          >
+            <Globe size={16} />
+            <span className="hidden md:block">{currentLang.short}</span>
+          </button>
+          {langOpen && (
+            <>
+              <div className="fixed inset-0 z-10" onClick={() => setLangOpen(false)} />
+              <div className="absolute right-0 top-full mt-1 w-36 rounded-xl glass border border-white/10 shadow-xl z-20 py-1 overflow-hidden">
+                {LANGS.map(({ code, label, short }) => (
+                  <button
+                    key={code}
+                    onClick={() => {
+                      i18n.changeLanguage(code)
+                      setLangOpen(false)
+                      toast.success(`Idioma: ${label}`)
+                    }}
+                    className={cn(
+                      'w-full flex items-center justify-between px-3 py-2 text-sm transition-colors text-left',
+                      i18n.language === code
+                        ? 'text-brand-300 bg-brand-500/10'
+                        : 'text-white/70 hover:bg-white/10',
+                    )}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold bg-surface-200 rounded px-1 py-0.5">{short}</span>
+                      {label}
+                    </div>
+                    {i18n.language === code && <Check size={13} className="text-brand-400" />}
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
 
         {/* Notifications */}
         <button className="btn-ghost p-2 relative">
@@ -90,9 +128,7 @@ export default function Navbar() {
           {profileOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setProfileOpen(false)} />
-              <div className={cn(
-                'absolute right-0 top-full mt-1 w-52 rounded-xl glass border border-white/10 shadow-xl z-20 py-1',
-              )}>
+              <div className="absolute right-0 top-full mt-1 w-52 rounded-xl glass border border-white/10 shadow-xl z-20 py-1">
                 <div className="px-3 py-2 border-b border-white/5">
                   <p className="text-sm font-semibold">{user?.firstName} {user?.lastName}</p>
                   <p className="text-xs text-white/40">{user?.email}</p>
