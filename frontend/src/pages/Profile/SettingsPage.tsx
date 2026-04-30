@@ -4,7 +4,7 @@ import { Shield, Bell, Globe, Palette, User, Key, Smartphone, LogOut, ChevronRig
 import { cn } from '@utils/cn'
 import { useAuthStore } from '@store/authStore'
 import { useTranslation } from 'react-i18next'
-import QRCode from 'qrcode.react'
+import { QRCodeSVG as QRCode } from 'qrcode.react'
 
 type Section = 'profile' | 'security' | 'notifications' | 'language' | 'appearance'
 

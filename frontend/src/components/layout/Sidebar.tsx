@@ -26,7 +26,7 @@ export default function Sidebar() {
   const { user } = useAuthStore()
   const location = useLocation()
 
-  const visible = navItems.filter((item) => item.roles.includes(user?.role ?? 'CLIENT'))
+  const visible = navItems.filter((item) => (item.roles as readonly string[]).includes(user?.role ?? 'CLIENT'))
 
   return (
     <>
