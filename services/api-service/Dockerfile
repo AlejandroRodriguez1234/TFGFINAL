@@ -13,6 +13,7 @@ COPY --from=builder /app/dist ./dist
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY package*.json ./
+RUN chown -R fitforge:fitforge /app
 USER fitforge
 EXPOSE 3001
 CMD ["node", "dist/main"]
