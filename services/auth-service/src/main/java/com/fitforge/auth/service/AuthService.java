@@ -131,6 +131,24 @@ public class AuthService {
         userRepository.save(user);
     }
 
+    @Transactional
+    public void disable2fa(UUID userId, String code) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AuthException("USER_NOT_FOUND", "Usuario no encontrado", 404));
+
+        if (!user.isTotpEnabled()) {
+            throw new AuthException("2FA_NOT_ENABLED", "El 2FA no está activado", 400);
+        }
+
+        if (!verifyTotp(user.getTotpSecret(), code)) {
+            throw new AuthException("INVALID_TOTP", "Código 2FA incorrecto", 401);
+        }
+
+        user.setTotpEnabled(false);
+        user.setTotpSecret(null);
+        userRepository.save(user);
+    }
+
     private boolean verifyTotp(String secret, String code) {
         CodeGenerator codeGenerator = new DefaultCodeGenerator();
         CodeVerifier   codeVerifier  = new DefaultCodeVerifier(codeGenerator, new SystemTimeProvider());

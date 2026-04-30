@@ -1,4 +1,5 @@
 import { useAuthStore } from '@store/authStore'
+import { cn } from '@utils/cn'
 import { motion } from 'framer-motion'
 import { Edit, Dumbbell, Flame, Trophy, Zap, TrendingUp, Calendar } from 'lucide-react'
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts'
@@ -107,6 +108,3 @@ export default function ProfilePage() {
   )
 }
 
-function cn(...classes: (string | undefined | false)[]) {
-  return classes.filter(Boolean).join(' ')
-}
