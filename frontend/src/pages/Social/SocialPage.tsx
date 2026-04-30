@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Heart, MessageCircle, Share2, Trophy, UserPlus, Zap, Users, Swords } from 'lucide-react'
+import { Heart, MessageCircle, Share2, Trophy, UserPlus, Swords, Users, X, Medal, Dumbbell } from 'lucide-react'
 import { cn } from '@utils/cn'
+import toast from 'react-hot-toast'
 
 const feed = [
   { id: '1', user: { name: 'Carlos R.', avatar: 'CR', level: 12 }, content: '¡Nuevo PR en sentadilla! 130kg x 5 💪 Después de meses de trabajo duro', workout: { name: 'Leg Day', duration: '72 min', volume: '12,400 kg' }, likes: 24, comments: 8, liked: false, time: 'hace 2h' },
@@ -24,12 +25,34 @@ const leaderboard = [
 
 type Tab = 'feed' | 'challenges' | 'leaderboard'
 
+function RankBadge({ rank }: { rank: number }) {
+  if (rank === 1) return <Trophy size={20} className="text-yellow-400" />
+  if (rank === 2) return <Medal size={20} className="text-gray-300" />
+  if (rank === 3) return <Medal size={20} className="text-amber-600" />
+  return <span className="text-white/30 font-bold text-sm w-5 text-center">{rank}</span>
+}
+
 export default function SocialPage() {
-  const [tab, setTab] = useState<Tab>('feed')
-  const [posts, setPosts] = useState(feed)
+  const [tab, setTab]                   = useState<Tab>('feed')
+  const [posts, setPosts]               = useState(feed)
+  const [addFriendModal, setAddFriendModal] = useState(false)
+  const [friendInput, setFriendInput]   = useState('')
 
   const toggleLike = (id: string) => {
-    setPosts((p) => p.map((post) => post.id === id ? { ...post, liked: !post.liked, likes: post.liked ? post.likes - 1 : post.likes + 1 } : post))
+    setPosts((p) => p.map((post) =>
+      post.id === id ? { ...post, liked: !post.liked, likes: post.liked ? post.likes - 1 : post.likes + 1 } : post
+    ))
+  }
+
+  const handleAddFriend = (e: React.FormEvent) => {
+    e.preventDefault()
+    setAddFriendModal(false)
+    setFriendInput('')
+    toast.success('Solicitud enviada')
+  }
+
+  const handleJoinChallenge = () => {
+    toast.success('¡Te has unido al reto!')
   }
 
   return (
@@ -39,7 +62,7 @@ export default function SocialPage() {
           <h1 className="text-3xl font-display font-bold">Social</h1>
           <p className="text-white/40 text-sm mt-1">Tu comunidad fitness</p>
         </div>
-        <button className="btn-primary text-sm px-4 py-2.5">
+        <button onClick={() => setAddFriendModal(true)} className="btn-primary text-sm px-4 py-2.5">
           <UserPlus size={16} /> Añadir amigo
         </button>
       </div>
@@ -72,7 +95,9 @@ export default function SocialPage() {
               <p className="text-sm text-white/80 mb-3 leading-relaxed">{post.content}</p>
               {post.workout && (
                 <div className="p-3 rounded-xl bg-surface-100 mb-3 flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-brand-500/20 flex items-center justify-center shrink-0">💪</div>
+                  <div className="w-8 h-8 rounded-lg bg-brand-500/20 flex items-center justify-center shrink-0">
+                    <Dumbbell size={16} className="text-brand-400" />
+                  </div>
                   <div>
                     <p className="text-sm font-medium">{post.workout.name}</p>
                     <p className="text-xs text-white/40">{post.workout.duration} · {post.workout.volume}</p>
@@ -80,13 +105,16 @@ export default function SocialPage() {
                 </div>
               )}
               <div className="flex items-center gap-4 text-sm text-white/50">
-                <button onClick={() => toggleLike(post.id)} className={cn('flex items-center gap-1.5 hover:text-red-400 transition-colors', post.liked && 'text-red-400')}>
+                <button
+                  onClick={() => toggleLike(post.id)}
+                  className={cn('flex items-center gap-1.5 transition-colors hover:text-red-400', post.liked && 'text-red-400')}
+                >
                   <Heart size={15} className={post.liked ? 'fill-current' : ''} /> {post.likes}
                 </button>
-                <button className="flex items-center gap-1.5 hover:text-brand-400 transition-colors">
+                <button className="flex items-center gap-1.5 transition-colors hover:text-brand-400">
                   <MessageCircle size={15} /> {post.comments}
                 </button>
-                <button className="flex items-center gap-1.5 hover:text-white transition-colors ml-auto">
+                <button className="flex items-center gap-1.5 transition-colors hover:text-white ml-auto">
                   <Share2 size={15} />
                 </button>
               </div>
@@ -120,7 +148,10 @@ export default function SocialPage() {
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-xs text-white/40">{c.participants} participantes</span>
-                <button className="btn-primary text-xs px-3 py-1.5">Ver reto</button>
+                <div className="flex gap-2">
+                  <button className="btn-secondary text-xs px-3 py-1.5">Ver reto</button>
+                  <button onClick={handleJoinChallenge} className="btn-primary text-xs px-3 py-1.5">Unirse</button>
+                </div>
               </div>
             </div>
           ))}
@@ -136,9 +167,9 @@ export default function SocialPage() {
             <motion.div key={u.rank} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
               className={cn('flex items-center gap-4 p-4 rounded-xl transition-all', u.isMe ? 'bg-brand-500/10 border border-brand-500/30' : 'bg-surface-100 hover:bg-surface-200')}
             >
-              <span className={cn('text-lg font-bold w-6 text-center', u.rank === 1 ? 'text-yellow-400' : u.rank === 2 ? 'text-gray-300' : u.rank === 3 ? 'text-amber-600' : 'text-white/30')}>
-                {u.rank === 1 ? '🥇' : u.rank === 2 ? '🥈' : u.rank === 3 ? '🥉' : u.rank}
-              </span>
+              <div className="w-6 flex items-center justify-center shrink-0">
+                <RankBadge rank={u.rank} />
+              </div>
               <div className={cn('w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold shrink-0', u.isMe ? 'bg-gradient-to-br from-brand-500 to-cyan-400' : 'bg-surface-300')}>
                 {u.avatar}
               </div>
@@ -154,6 +185,45 @@ export default function SocialPage() {
               </div>
             </motion.div>
           ))}
+        </div>
+      )}
+
+      {/* Add friend modal */}
+      {addFriendModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={() => setAddFriendModal(false)}>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            onClick={(e) => e.stopPropagation()}
+            className="glass border border-white/10 rounded-2xl p-6 w-full max-w-sm"
+          >
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="font-semibold text-lg">Añadir amigo</h3>
+              <button onClick={() => setAddFriendModal(false)} className="btn-ghost p-1.5">
+                <X size={16} />
+              </button>
+            </div>
+            <form onSubmit={handleAddFriend} className="space-y-4">
+              <div>
+                <label className="text-xs text-white/40 mb-1 block">Email o nombre de usuario</label>
+                <input
+                  required
+                  value={friendInput}
+                  onChange={(e) => setFriendInput(e.target.value)}
+                  placeholder="usuario@email.com o @username"
+                  className="input text-sm"
+                />
+              </div>
+              <div className="flex gap-2">
+                <button type="button" onClick={() => setAddFriendModal(false)} className="btn-secondary flex-1 text-sm">
+                  Cancelar
+                </button>
+                <button type="submit" className="btn-primary flex-1 text-sm">
+                  <UserPlus size={15} /> Enviar solicitud
+                </button>
+              </div>
+            </form>
+          </motion.div>
         </div>
       )}
     </div>

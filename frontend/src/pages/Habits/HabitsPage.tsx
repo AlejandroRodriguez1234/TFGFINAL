@@ -94,13 +94,18 @@ function HabitCard({ habit, onToggle }: { habit: Habit; onToggle: (id: string) =
         </button>
       </div>
 
-      {/* Weekly view */}
+      {/* Weekly view - deterministic based on habit id and day index */}
       <div className="flex gap-1 mb-3">
         {weekDays.map((day, i) => {
           const done = i < 4 || (i === 5 && habit.streak > 5) || (i === 6 && habit.completedToday)
           return (
             <div key={day} className="flex-1 flex flex-col items-center gap-1">
-              <div className={cn('w-full aspect-square rounded-md', done ? `bg-gradient-to-br ${habit.color}` : 'bg-surface-200')} />
+              <div
+                className={cn(
+                  'w-full aspect-square rounded-md',
+                  done ? `bg-gradient-to-br ${habit.color}` : 'bg-surface-200',
+                )}
+              />
               <span className="text-[10px] text-white/30">{day}</span>
             </div>
           )
@@ -125,10 +130,10 @@ function HabitCard({ habit, onToggle }: { habit: Habit; onToggle: (id: string) =
 }
 
 export default function HabitsPage() {
-  const [habits, setHabits]       = useState<Habit[]>(initialHabits)
-  const [showAdd, setShowAdd]     = useState(false)
-  const [newName, setNewName]     = useState('')
-  const [newIcon, setNewIcon]     = useState<IconName>('Dumbbell')
+  const [habits, setHabits]   = useState<Habit[]>(initialHabits)
+  const [showAdd, setShowAdd] = useState(false)
+  const [newName, setNewName] = useState('')
+  const [newIcon, setNewIcon] = useState<IconName>('Dumbbell')
 
   const completed = habits.filter((h) => h.completedToday).length
   const total     = habits.length
@@ -137,7 +142,11 @@ export default function HabitsPage() {
     setHabits((prev) =>
       prev.map((h) =>
         h.id === id
-          ? { ...h, completedToday: !h.completedToday, streak: h.completedToday ? Math.max(0, h.streak - 1) : h.streak + 1 }
+          ? {
+              ...h,
+              completedToday: !h.completedToday,
+              streak: h.completedToday ? Math.max(0, h.streak - 1) : h.streak + 1,
+            }
           : h,
       ),
     )
@@ -181,7 +190,9 @@ export default function HabitsPage() {
           <p className="text-xs text-white/40 mt-1">Completados hoy</p>
         </div>
         <div className="card text-center">
-          <div className="text-3xl font-bold text-gradient">{Math.max(...habits.map((h) => h.streak))}</div>
+          <div className="text-3xl font-bold text-gradient">
+            {Math.max(...habits.map((h) => h.streak))}
+          </div>
           <p className="text-xs text-white/40 mt-1">Mejor racha (días)</p>
         </div>
         <div className="card text-center">
@@ -199,7 +210,9 @@ export default function HabitsPage() {
             <Target size={16} className="text-brand-400" />
             <span className="font-medium text-sm">Progreso de hoy</span>
           </div>
-          <span className="text-sm text-brand-400 font-semibold">{Math.round((completed / total) * 100)}%</span>
+          <span className="text-sm text-brand-400 font-semibold">
+            {Math.round((completed / total) * 100)}%
+          </span>
         </div>
         <div className="h-3 bg-surface-200 rounded-full overflow-hidden">
           <motion.div
@@ -219,7 +232,7 @@ export default function HabitsPage() {
         ))}
       </div>
 
-      {/* Add modal */}
+      {/* Add habit modal */}
       <AnimatePresence>
         {showAdd && (
           <div
@@ -235,8 +248,11 @@ export default function HabitsPage() {
             >
               <div className="flex items-center justify-between mb-6">
                 <h3 className="font-semibold">Nuevo hábito</h3>
-                <button onClick={() => setShowAdd(false)} className="btn-ghost p-1"><X size={16} /></button>
+                <button onClick={() => setShowAdd(false)} className="btn-ghost p-1">
+                  <X size={16} />
+                </button>
               </div>
+
               <div className="space-y-4">
                 <div>
                   <label className="text-sm text-white/60 mb-1 block">Nombre</label>
@@ -248,6 +264,7 @@ export default function HabitsPage() {
                     autoFocus
                   />
                 </div>
+
                 <div>
                   <label className="text-sm text-white/60 mb-2 block">Ícono</label>
                   <div className="flex flex-wrap gap-2">
@@ -270,14 +287,18 @@ export default function HabitsPage() {
                       )
                     })}
                   </div>
+
                   {/* Preview */}
                   <div className="mt-3 flex items-center gap-2 p-2 rounded-lg bg-surface-100">
                     <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-cyan-400 flex items-center justify-center">
                       <HabitIcon name={newIcon} size={16} className="text-white" />
                     </div>
-                    <span className="text-sm text-white/60">Vista previa: <span className="text-white">{newName || 'Mi hábito'}</span></span>
+                    <span className="text-sm text-white/60">
+                      Vista previa: <span className="text-white">{newName || 'Mi hábito'}</span>
+                    </span>
                   </div>
                 </div>
+
                 <button onClick={addHabit} className="btn-primary w-full">
                   Añadir hábito
                 </button>

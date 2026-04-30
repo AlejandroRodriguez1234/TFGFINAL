@@ -7,7 +7,10 @@ import {
   Target, Award, ChevronRight, Zap, Trophy, Leaf,
 } from 'lucide-react'
 import { motion } from 'framer-motion'
-import { RadialBarChart, RadialBar, ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
+import {
+  RadialBarChart, RadialBar, ResponsiveContainer,
+  AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
+} from 'recharts'
 
 const weekData = [
   { day: 'L', calories: 2100, target: 2200 },
@@ -20,9 +23,9 @@ const weekData = [
 ]
 
 const activityRings = [
-  { name: 'Movimiento', value: 78, fill: '#ef4444', max: 100 },
-  { name: 'Ejercicio',  value: 65, fill: '#0ea5e9', max: 100 },
-  { name: 'Estar en pie', value: 90, fill: '#22c55e', max: 100 },
+  { name: 'Movimiento',    value: 78, fill: '#ef4444', max: 100 },
+  { name: 'Ejercicio',     value: 65, fill: '#0ea5e9', max: 100 },
+  { name: 'Estar en pie',  value: 90, fill: '#22c55e', max: 100 },
 ]
 
 const recentAchievements = [
@@ -61,7 +64,11 @@ export default function DashboardPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="flex items-start justify-between">
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex items-start justify-between"
+      >
         <div>
           <p className="text-white/50 text-sm">{greeting},</p>
           <h1 className="text-3xl font-display font-bold mt-0.5">
@@ -81,10 +88,10 @@ export default function DashboardPage() {
       {/* Quick stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { icon: Flame,    label: 'Calorías',  value: '1,840', sub: 'de 2,200 kcal', color: 'text-orange-400',  bg: 'bg-orange-500/10' },
-          { icon: Dumbbell, label: 'Ejercicios', value: '3',     sub: 'de 4 completados', color: 'text-brand-400', bg: 'bg-brand-500/10' },
-          { icon: Droplets, label: 'Agua',       value: '1.8L',  sub: 'de 2.5L objetivo', color: 'text-cyan-400',  bg: 'bg-cyan-500/10' },
-          { icon: Moon,     label: 'Sueño',      value: '7h 20m', sub: 'Buena calidad',   color: 'text-purple-400', bg: 'bg-purple-500/10' },
+          { icon: Flame,    label: 'Calorías',   value: '1,840',  sub: 'de 2,200 kcal',      color: 'text-orange-400',  bg: 'bg-orange-500/10' },
+          { icon: Dumbbell, label: 'Ejercicios',  value: '3',      sub: 'de 4 completados',   color: 'text-brand-400',   bg: 'bg-brand-500/10'  },
+          { icon: Droplets, label: 'Agua',        value: '1.8L',   sub: 'de 2.5L objetivo',   color: 'text-cyan-400',    bg: 'bg-cyan-500/10'   },
+          { icon: Moon,     label: 'Sueño',       value: '7h 20m', sub: 'Buena calidad',       color: 'text-purple-400',  bg: 'bg-purple-500/10' },
         ].map(({ icon: Icon, label, value, sub, color, bg }, i) => (
           <motion.div
             key={label}
@@ -163,11 +170,16 @@ export default function DashboardPage() {
         <div className="card">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold">Próximos entrenamientos</h2>
-            <a href="/gym" className="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1">Ver todos <ChevronRight size={12} /></a>
+            <a href="/gym" className="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1">
+              Ver todos <ChevronRight size={12} />
+            </a>
           </div>
           <div className="space-y-3">
             {upcomingWorkouts.map((w) => (
-              <div key={w.name} className="flex items-center justify-between p-3 rounded-xl bg-surface-100 hover:bg-surface-200 transition-colors cursor-pointer group">
+              <div
+                key={w.name}
+                className="flex items-center justify-between p-3 rounded-xl bg-surface-100 hover:bg-surface-200 transition-colors cursor-pointer group"
+              >
                 <div className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-lg bg-brand-500/20 flex items-center justify-center">
                     <Dumbbell size={16} className="text-brand-400" />
@@ -187,7 +199,9 @@ export default function DashboardPage() {
         <div className="card">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-semibold">Logros recientes</h2>
-            <a href="/progress" className="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1">Ver todos <ChevronRight size={12} /></a>
+            <a href="/progress" className="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1">
+              Ver todos <ChevronRight size={12} />
+            </a>
           </div>
           <div className="space-y-3">
             {recentAchievements.map((a) => (
@@ -206,7 +220,10 @@ export default function DashboardPage() {
       </div>
 
       {/* XP Progress */}
-      <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.5 }}
         className="card flex items-center justify-between gap-6"
       >
         <div className="flex items-center gap-4">
