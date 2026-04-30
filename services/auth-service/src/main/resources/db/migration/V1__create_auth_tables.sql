@@ -67,7 +67,7 @@ VALUES (
     'admin',
     'Admin',
     'FitForge',
-    '$2a$12$LQv3c1yqBWVHxkd0LHAkCOYz6TtxMQJqhN8/LewYpR1IOBSmMmFG.',  -- admin123
+    '$2b$10$3kT9XXTilmnMU90Ne.RSuOAAZjh4ViqDLB/wOWBaoReDIU.Nq0wGK',  -- admin123
     'ADMIN',
     TRUE,
     TRUE,
