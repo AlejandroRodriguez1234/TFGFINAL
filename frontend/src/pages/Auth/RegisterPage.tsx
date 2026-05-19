@@ -78,14 +78,14 @@ export default function RegisterPage() {
       const res = await authService.register(data)
       const { user, tokens } = res.data.data
       setAuth(user, tokens)
-      toast.success('¡Cuenta creada! Bienvenido a FitForge 🎉')
+      toast.success('¡Cuenta creada! Bienvenido a FitForge')
       navigate('/dashboard')
     } catch (err: any) {
       // Backend unreachable — use demo registration
       if (!err?.response) {
         const demo = tryDemoRegister(data.email, data.username, data.firstName, data.lastName)
         setAuth(demo.user, demo.tokens)
-        toast.success('¡Cuenta creada! Bienvenido a FitForge 🎉')
+        toast.success('¡Cuenta creada! Bienvenido a FitForge')
         navigate('/dashboard')
         return
       }

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { Brain, Loader2, Check, ChevronRight, Flame, Beef, Wheat, Droplet, Coffee, Utensils, Apple, Moon } from 'lucide-react'
+import { Brain, Loader2, Check, ChevronRight, Flame, Beef, Wheat, Droplet, Coffee, Utensils, Apple, Moon, TrendingDown, TrendingUp, Scale, Zap, Sparkles } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { dietApi } from '@services/api'
@@ -37,10 +37,10 @@ export default function DietPlannerPage() {
   })
 
   const GOALS = [
-    { id: 'lose_weight',  emoji: '📉', label: t('diet:loseWeight'),   desc: t('diet:loseWeightDesc')   },
-    { id: 'gain_muscle',  emoji: '📈', label: t('diet:gainMuscle'),   desc: t('diet:gainMuscleDesc')   },
-    { id: 'maintain',     emoji: '⚖️', label: t('diet:maintain'),     desc: t('diet:maintainDesc')     },
-    { id: 'performance',  emoji: '⚡', label: t('diet:performance'),  desc: t('diet:performanceDesc')  },
+    { id: 'lose_weight',  Icon: TrendingDown, color: 'text-orange-400', label: t('diet:loseWeight'),   desc: t('diet:loseWeightDesc')   },
+    { id: 'gain_muscle',  Icon: TrendingUp,   color: 'text-sky-400',    label: t('diet:gainMuscle'),   desc: t('diet:gainMuscleDesc')   },
+    { id: 'maintain',     Icon: Scale,        color: 'text-green-400',  label: t('diet:maintain'),     desc: t('diet:maintainDesc')     },
+    { id: 'performance',  Icon: Zap,          color: 'text-yellow-400', label: t('diet:performance'),  desc: t('diet:performanceDesc')  },
   ]
 
   const generatePlan = async () => {
@@ -60,8 +60,40 @@ export default function DietPlannerPage() {
       })
       setGenerated(r.data.data)
       setStep(3)
-    } catch (err: any) {
-      toast.error(err?.response?.data?.message ?? t('diet:errorGenerating'))
+    } catch {
+      const w = parseFloat(form.weight)
+      const h = parseFloat(form.height)
+      const a = parseInt(form.age)
+      const bmr = form.gender === 'male'
+        ? Math.round(10 * w + 6.25 * h - 5 * a + 5)
+        : Math.round(10 * w + 6.25 * h - 5 * a - 161)
+      const mults: Record<string, number> = { sedentary: 1.2, light: 1.375, moderate: 1.55, active: 1.725, very_active: 1.9 }
+      const tdee = Math.round(bmr * (mults[form.activity] ?? 1.55))
+      const adj = selectedGoal === 'lose_weight' ? -400 : selectedGoal === 'gain_muscle' ? 300 : 0
+      const cals = tdee + adj
+      const demoPlan: GeneratedPlan = {
+        name: `Plan ${t(`diet:${selectedGoal === 'lose_weight' ? 'loseWeight' : selectedGoal === 'gain_muscle' ? 'gainMuscle' : selectedGoal === 'maintain' ? 'maintain' : 'performance'}`)}`,
+        target_calories: cals,
+        target_protein:  Math.round(w * 2),
+        target_carbs:    Math.round((cals * 0.4) / 4),
+        target_fat:      Math.round((cals * 0.25) / 9),
+        bmr, tdee,
+        goal: selectedGoal,
+        meal_split: {
+          breakfast: Math.round(cals * 0.25),
+          lunch:     Math.round(cals * 0.35),
+          snack:     Math.round(cals * 0.15),
+          dinner:    Math.round(cals * 0.25),
+        },
+        tips: [
+          'Distribuye las proteínas a lo largo del día para maximizar la síntesis muscular.',
+          'Hidratación: bebe al menos 35 ml de agua por kg de peso corporal.',
+          'Prioriza alimentos sin procesar: pollo, arroz, verduras, huevos y frutos secos.',
+          'Registra tus comidas diariamente para mantener el seguimiento calórico.',
+        ],
+      }
+      setGenerated(demoPlan)
+      setStep(3)
     } finally {
       setLoading(false)
     }
@@ -116,7 +148,7 @@ export default function DietPlannerPage() {
             {GOALS.map((g) => (
               <button key={g.id} onClick={() => setGoal(g.id)}
                 className={`p-4 rounded-xl border text-left transition-all ${selectedGoal === g.id ? 'border-brand-500 bg-brand-500/10' : 'glass border-white/10 hover:border-white/30'}`}>
-                <div className="text-3xl mb-2">{g.emoji}</div>
+                <g.Icon size={24} className={`${g.color} mb-2`} />
                 <p className="font-semibold text-sm">{g.label}</p>
                 <p className="text-xs text-white/40 mt-0.5">{g.desc}</p>
               </button>
@@ -189,7 +221,9 @@ export default function DietPlannerPage() {
       {step === 3 && generatedPlan && (
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
           <div className="card border border-success/20 bg-success/5 text-center py-5">
-            <div className="text-4xl mb-2">🎉</div>
+            <div className="w-12 h-12 rounded-xl bg-success/20 flex items-center justify-center mx-auto mb-3">
+              <Sparkles size={24} className="text-success" />
+            </div>
             <h2 className="text-xl font-bold mb-1">{generatedPlan.name}</h2>
             <p className="text-white/40 text-xs">BMR: {generatedPlan.bmr} kcal · TDEE: {generatedPlan.tdee} kcal</p>
           </div>
@@ -234,7 +268,7 @@ export default function DietPlannerPage() {
               <ul className="space-y-2">
                 {generatedPlan.tips.map((tip, i) => (
                   <li key={i} className="flex items-start gap-2 text-sm text-white/60">
-                    <span className="text-brand-400 mt-0.5 shrink-0">✓</span>
+                    <Check size={14} className="text-brand-400 mt-0.5 shrink-0" />
                     {tip}
                   </li>
                 ))}

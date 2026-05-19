@@ -71,6 +71,10 @@ export default function DietPage() {
 
   const [addModal, setAddModal]           = useState<string | null>(null)
   const [barcodeModal, setBarcodeModal]   = useState(false)
+  const [barcodeQuery, setBarcodeQuery]   = useState('')
+  const [barcodeLoading, setBarcodeLoading] = useState(false)
+  const [barcodeResult, setBarcodeResult] = useState<FoodResult | null | undefined>(undefined)
+  const [barcodeMeal, setBarcodeMeal]     = useState('breakfast')
 
   const [searchQuery, setSearchQuery]     = useState('')
   const [searchResults, setSearchResults] = useState<FoodResult[]>([])
@@ -208,6 +212,79 @@ export default function DietPage() {
       toast.success(t('diet:foodDeleted'))
     } catch {
       toast.error(t('diet:errorDeleting'))
+    }
+  }
+
+  const closeBarcodeModal = () => {
+    setBarcodeModal(false)
+    setBarcodeQuery('')
+    setBarcodeResult(undefined)
+  }
+
+  const handleBarcodeSearch = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!barcodeQuery.trim()) return
+    setBarcodeLoading(true)
+    setBarcodeResult(undefined)
+    try {
+      const res = await fetch(
+        `https://world.openfoodfacts.org/api/v0/product/${barcodeQuery.trim()}.json`,
+      )
+      const data = await res.json()
+      if (data.status === 1 && data.product) {
+        const p = data.product
+        const n = p.nutriments ?? {}
+        setBarcodeResult({
+          name:         p.product_name || 'Producto',
+          brand:        p.brands       || undefined,
+          calories:     n['energy-kcal_100g'] ?? n['energy-kcal'] ?? 0,
+          protein:      n.proteins_100g       ?? n.proteins        ?? 0,
+          carbs:        n.carbohydrates_100g  ?? n.carbohydrates   ?? 0,
+          fat:          n.fat_100g            ?? n.fat             ?? 0,
+          serving_size: 100,
+          serving_unit: 'g',
+        })
+      } else {
+        setBarcodeResult(null)
+      }
+    } catch {
+      setBarcodeResult(null)
+    } finally {
+      setBarcodeLoading(false)
+    }
+  }
+
+  const handleBarcodeAdd = async () => {
+    if (!barcodeResult) return
+    const demoEntry: MealEntry = {
+      id:         crypto.randomUUID(),
+      meal_type:  barcodeMeal as MealEntry['meal_type'],
+      quantity:   100,
+      logged_at:  new Date().toISOString(),
+      food_item: {
+        id:           crypto.randomUUID(),
+        name:         barcodeResult.name,
+        brand:        barcodeResult.brand,
+        calories:     barcodeResult.calories,
+        protein:      barcodeResult.protein,
+        carbs:        barcodeResult.carbs,
+        fat:          barcodeResult.fat,
+        serving_size: 100,
+        serving_unit: 'g',
+      },
+    }
+    try {
+      const rf = await dietApi.post<{ success: boolean; data: FoodItem }>('/api/foods', {
+        name: barcodeResult.name, brand: barcodeResult.brand,
+        calories: barcodeResult.calories, protein: barcodeResult.protein,
+        carbs: barcodeResult.carbs, fat: barcodeResult.fat,
+        serving_size: 100, serving_unit: 'g',
+      })
+      await addEntry(rf.data.data.id, barcodeMeal, 100)
+    } catch {
+      setEntries(prev => [...prev, demoEntry])
+      toast.success(t('diet:foodAdded'))
+      closeBarcodeModal()
     }
   }
 
@@ -372,18 +449,69 @@ export default function DietPage() {
 
       {/* Barcode modal */}
       {barcodeModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={() => setBarcodeModal(false)}>
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={closeBarcodeModal}>
           <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
             onClick={e => e.stopPropagation()}
-            className="glass border border-white/10 rounded-2xl p-6 w-full max-w-sm text-center">
-            <div className="w-14 h-14 rounded-xl bg-brand-500/20 flex items-center justify-center mx-auto mb-4">
-              <Camera size={28} className="text-brand-400" />
+            className="glass border border-white/10 rounded-2xl p-6 w-full max-w-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <Camera size={18} className="text-brand-400" />
+                <h3 className="font-semibold">{t('diet:barcodeTitle')}</h3>
+              </div>
+              <button onClick={closeBarcodeModal} className="btn-ghost p-1.5"><X size={16} /></button>
             </div>
-            <h3 className="font-semibold text-lg mb-2">{t('diet:barcodeTitle')}</h3>
-            <p className="text-white/50 text-sm mb-6">{t('diet:barcodeSubtitle')}</p>
-            <button onClick={() => setBarcodeModal(false)} className="btn-secondary w-full">
-              <X size={16} /> {t('common:close')}
-            </button>
+            <p className="text-white/50 text-xs mb-4">{t('diet:barcodeSubtitle')}</p>
+
+            <form onSubmit={handleBarcodeSearch} className="flex gap-2 mb-4">
+              <input
+                value={barcodeQuery}
+                onChange={e => setBarcodeQuery(e.target.value)}
+                placeholder="8410188036148"
+                inputMode="numeric"
+                className="input flex-1 text-sm font-mono"
+                autoFocus
+              />
+              <button type="submit" disabled={barcodeLoading} className="btn-primary px-3">
+                {barcodeLoading ? <Loader2 size={15} className="animate-spin" /> : <Search size={15} />}
+              </button>
+            </form>
+
+            {barcodeResult === null && (
+              <p className="text-xs text-danger text-center mb-4">{t('diet:barcodeNotFound')}</p>
+            )}
+
+            {barcodeResult && (
+              <div className="space-y-4">
+                <div className="p-3 rounded-xl bg-surface-100 border border-brand-500/20">
+                  <p className="text-sm font-semibold">{barcodeResult.name}</p>
+                  {barcodeResult.brand && <p className="text-xs text-white/40 mt-0.5">{barcodeResult.brand}</p>}
+                  <div className="grid grid-cols-4 gap-2 mt-3 text-xs text-center">
+                    {[
+                      { label: 'kcal', value: Math.round(barcodeResult.calories), color: 'text-white' },
+                      { label: 'prot', value: `${Math.round(barcodeResult.protein)}g`, color: 'text-sky-400' },
+                      { label: 'carb', value: `${Math.round(barcodeResult.carbs)}g`, color: 'text-orange-400' },
+                      { label: 'gras', value: `${Math.round(barcodeResult.fat)}g`, color: 'text-purple-400' },
+                    ].map(({ label, value, color }) => (
+                      <div key={label} className="p-1.5 rounded-lg bg-surface-200">
+                        <p className={cn('font-bold', color)}>{value}</p>
+                        <p className="text-white/40">{label}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs text-white/40 mb-1 block">{t('diet:addFood')}</label>
+                  <select value={barcodeMeal} onChange={e => setBarcodeMeal(e.target.value)} className="input w-full text-sm mb-3">
+                    {MEAL_TYPES.map(m => (
+                      <option key={m.type} value={m.type}>{t(`diet:${m.type}`)}</option>
+                    ))}
+                  </select>
+                  <button onClick={handleBarcodeAdd} className="btn-primary w-full text-sm">
+                    <Plus size={15} /> {t('common:add')} (100g)
+                  </button>
+                </div>
+              </div>
+            )}
           </motion.div>
         </div>
       )}

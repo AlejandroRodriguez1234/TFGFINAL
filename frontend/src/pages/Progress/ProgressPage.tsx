@@ -37,7 +37,25 @@ const liftData = [
   { exercise: 'Press militar', pr: 75,  current: 70  },
 ]
 
-type TabKey = 'weight' | 'strength' | 'achievements'
+type TabKey = 'weight' | 'strength' | 'achievements' | 'calculator'
+
+const ACTIVITY_LEVELS = [
+  { key: 'sedentary',   label: 'Sedentario',         multiplier: 1.2   },
+  { key: 'light',       label: 'Ligero (1-3 días/s)', multiplier: 1.375 },
+  { key: 'moderate',    label: 'Moderado (3-5 días)', multiplier: 1.55  },
+  { key: 'active',      label: 'Activo (6-7 días)',   multiplier: 1.725 },
+  { key: 'very_active', label: 'Muy activo',          multiplier: 1.9   },
+] as const
+
+const DEMO_CHART: ChartPoint[] = [
+  { date: '1 abr', weight: 83.2, fat: 19.5, muscle: 62.1, bmi: 26.3 },
+  { date: '8 abr', weight: 82.5, fat: 19.1, muscle: 62.3, bmi: 26.1 },
+  { date: '15 abr', weight: 81.8, fat: 18.6, muscle: 62.5, bmi: 25.9 },
+  { date: '22 abr', weight: 81.0, fat: 18.2, muscle: 62.8, bmi: 25.6 },
+  { date: '29 abr', weight: 80.4, fat: 17.8, muscle: 63.0, bmi: 25.4 },
+  { date: '6 may', weight: 79.8, fat: 17.5, muscle: 63.2, bmi: 25.2 },
+  { date: '13 may', weight: 79.2, fat: 17.2, muscle: 63.5, bmi: 25.0 },
+]
 
 function fmtDate(iso: string): string {
   const d = new Date(iso)
@@ -59,6 +77,13 @@ export default function ProgressPage() {
   const [bmiChange, setBmiChange]   = useState(0)
   const [loading, setLoading]       = useState(true)
   const [saving, setSaving]         = useState(false)
+
+  const [calcWeight, setCalcWeight]     = useState('')
+  const [calcHeight, setCalcHeight]     = useState('')
+  const [calcAge, setCalcAge]           = useState('')
+  const [calcGender, setCalcGender]     = useState<'male' | 'female'>('male')
+  const [calcActivity, setCalcActivity] = useState<string>('moderate')
+  const [calcResult, setCalcResult]     = useState<null | { bmr: number; tdee: number; protein: number; fatGoal: string; bmi: number; bmiCategory: string; idealWeight: string }>(null)
 
   const fetchWeightData = useCallback(async () => {
     try {
@@ -86,7 +111,12 @@ export default function ProgressPage() {
         }
       }
     } catch {
-      toast.error('Error cargando datos de peso')
+      setChartData(DEMO_CHART)
+      setBodyComp({
+        current: { id: 'demo', date: new Date().toISOString(), weight: 79.2, bodyFat: 17.2, muscleMass: 63.5, bmi: 25.0 },
+        changes: { weight: -4.0, bodyFat: -2.3, muscleMass: 1.4 },
+      })
+      setBmiChange(-1.3)
     } finally {
       setLoading(false)
     }
@@ -101,7 +131,34 @@ export default function ProgressPage() {
     { key: 'weight',       label: t('progress:tabWeight')       },
     { key: 'strength',     label: t('progress:tabStrength')     },
     { key: 'achievements', label: t('progress:tabAchievements') },
+    { key: 'calculator',   label: 'Calculadora'                 },
   ]
+
+  const handleCalcSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    const w = parseFloat(calcWeight)
+    const h = parseFloat(calcHeight)
+    const a = parseInt(calcAge)
+    if (isNaN(w) || isNaN(h) || isNaN(a)) return
+
+    const bmr = calcGender === 'male'
+      ? 10 * w + 6.25 * h - 5 * a + 5
+      : 10 * w + 6.25 * h - 5 * a - 161
+
+    const level = ACTIVITY_LEVELS.find(l => l.key === calcActivity) ?? ACTIVITY_LEVELS[2]
+    const tdee = Math.round(bmr * level.multiplier)
+    const bmi  = parseFloat((w / ((h / 100) ** 2)).toFixed(1))
+    const bmiCategory =
+      bmi < 18.5 ? 'Bajo peso' :
+      bmi < 25   ? 'Normopeso' :
+      bmi < 30   ? 'Sobrepeso' : 'Obesidad'
+    const minIdeal = parseFloat((18.5 * ((h / 100) ** 2)).toFixed(1))
+    const maxIdeal = parseFloat((24.9 * ((h / 100) ** 2)).toFixed(1))
+    const protein = Math.round(w * 2.0)
+    const fatGoal = bmi < 18.5 ? 'Volumen' : bmi >= 25 ? 'Definición' : 'Mantenimiento'
+
+    setCalcResult({ bmr: Math.round(bmr), tdee, protein, fatGoal, bmi, bmiCategory, idealWeight: `${minIdeal}–${maxIdeal} kg` })
+  }
 
   const achievements = [
     { Icon: Flame,    iconClass: 'text-orange-400', name: 'On Fire',      desc: t('progress:achieveStreakDesc'), xp: 50,  date: t('progress:dateToday')  },
@@ -299,6 +356,88 @@ export default function ProgressPage() {
               </div>
             </motion.div>
           ))}
+        </div>
+      )}
+
+      {tab === 'calculator' && (
+        <div className="card">
+          <h2 className="font-semibold mb-1">Calculadora Nutricional</h2>
+          <p className="text-white/40 text-sm mb-5">TMB · TDEE · IMC · Peso ideal</p>
+          <form onSubmit={handleCalcSubmit} className="space-y-4">
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs text-white/40 mb-1 block">Peso (kg)</label>
+                <input required type="number" step="0.1" min="30" max="300" value={calcWeight} onChange={e => setCalcWeight(e.target.value)} placeholder="80" className="input text-sm" />
+              </div>
+              <div>
+                <label className="text-xs text-white/40 mb-1 block">Altura (cm)</label>
+                <input required type="number" step="1" min="100" max="250" value={calcHeight} onChange={e => setCalcHeight(e.target.value)} placeholder="175" className="input text-sm" />
+              </div>
+              <div>
+                <label className="text-xs text-white/40 mb-1 block">Edad</label>
+                <input required type="number" min="10" max="120" value={calcAge} onChange={e => setCalcAge(e.target.value)} placeholder="25" className="input text-sm" />
+              </div>
+              <div>
+                <label className="text-xs text-white/40 mb-1 block">Sexo</label>
+                <select value={calcGender} onChange={e => setCalcGender(e.target.value as 'male' | 'female')} className="input text-sm">
+                  <option value="male">Hombre</option>
+                  <option value="female">Mujer</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <label className="text-xs text-white/40 mb-1 block">Nivel de actividad</label>
+              <select value={calcActivity} onChange={e => setCalcActivity(e.target.value)} className="input text-sm">
+                {ACTIVITY_LEVELS.map(l => (
+                  <option key={l.key} value={l.key}>{l.label}</option>
+                ))}
+              </select>
+            </div>
+            <button type="submit" className="btn-primary w-full text-sm">
+              Calcular
+            </button>
+          </form>
+
+          {calcResult && (
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-3">
+              <div className="h-px bg-white/10" />
+              <h3 className="font-semibold text-sm text-white/70">Resultados</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: 'TMB (Mifflin)', value: `${calcResult.bmr} kcal`, color: 'text-brand-400' },
+                  { label: 'TDEE (mantenimiento)', value: `${calcResult.tdee} kcal`, color: 'text-cyan-400' },
+                  { label: 'Proteína diaria', value: `${calcResult.protein} g`, color: 'text-sky-400' },
+                  { label: 'IMC', value: `${calcResult.bmi}`, color: calcResult.bmi < 18.5 || calcResult.bmi >= 25 ? 'text-warning' : 'text-success' },
+                ].map(({ label, value, color }) => (
+                  <div key={label} className="p-3 rounded-xl bg-surface-100">
+                    <p className="text-xs text-white/40 mb-0.5">{label}</p>
+                    <p className={cn('text-xl font-bold', color)}>{value}</p>
+                  </div>
+                ))}
+              </div>
+              <div className="p-3 rounded-xl bg-surface-100 flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-white/40">Categoría IMC</p>
+                  <p className="font-semibold text-sm">{calcResult.bmiCategory}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-white/40">Peso ideal</p>
+                  <p className="font-semibold text-sm">{calcResult.idealWeight}</p>
+                </div>
+              </div>
+              <div className="p-3 rounded-xl bg-brand-500/10 border border-brand-500/20">
+                <p className="text-xs text-white/50 mb-1">Objetivo recomendado</p>
+                <p className="text-sm font-semibold text-brand-400">{calcResult.fatGoal}</p>
+                <p className="text-xs text-white/30 mt-0.5">
+                  {calcResult.fatGoal === 'Definición'
+                    ? `Déficit ~300-500 kcal → ${calcResult.tdee - 400} kcal/día`
+                    : calcResult.fatGoal === 'Volumen'
+                    ? `Superávit ~300 kcal → ${calcResult.tdee + 300} kcal/día`
+                    : `Mantenimiento → ${calcResult.tdee} kcal/día`}
+                </p>
+              </div>
+            </motion.div>
+          )}
         </div>
       )}
 

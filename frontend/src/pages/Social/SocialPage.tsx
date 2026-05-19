@@ -26,22 +26,22 @@ interface FakeComment {
 
 const FAKE_COMMENTS: Record<string, FakeComment[]> = {
   '1': [
-    { id: 'f1a', username: 'María L.', avatar: 'ML', content: '¡Brutal tío! Tú puedes llegar a los 140 💪', fake: true },
-    { id: 'f1b', username: 'Juan M.',  avatar: 'JM', content: 'Máquina 🔥 ¿Cuánto tardaste en llegar a eso?', fake: true },
+    { id: 'f1a', username: 'María L.', avatar: 'ML', content: '¡Brutal! Seguro llegas a los 140 en poco tiempo.', fake: true },
+    { id: 'f1b', username: 'Juan M.',  avatar: 'JM', content: 'Eres una máquina. ¿Cuánto tardaste en llegar a eso?', fake: true },
   ],
   '2': [
-    { id: 'f2a', username: 'Carlos R.', avatar: 'CR', content: '¡Muy bien! La constancia es la clave 🥗', fake: true },
+    { id: 'f2a', username: 'Carlos R.', avatar: 'CR', content: '¡Muy bien! La constancia es la clave.', fake: true },
   ],
   '3': [
-    { id: 'f3a', username: 'María L.',  avatar: 'ML', content: '¡Increíble para ser el primero! A por el sub-25 🏃', fake: true },
-    { id: 'f3b', username: 'Carlos R.', avatar: 'CR', content: 'El primer 5K es especial, enhorabuena 👏', fake: true },
+    { id: 'f3a', username: 'María L.',  avatar: 'ML', content: '¡Increíble para ser el primero! A por el sub-25.', fake: true },
+    { id: 'f3b', username: 'Carlos R.', avatar: 'CR', content: 'El primer 5K es especial, enhorabuena.', fake: true },
   ],
 }
 
 const feed = [
-  { id: '1', user: { name: 'Carlos R.', avatar: 'CR', level: 12 }, content: '¡Nuevo PR en sentadilla! 130kg x 5 💪 Después de meses de trabajo duro', workout: { name: 'Leg Day', duration: '72 min', volume: '12,400 kg' }, likes: 24, liked: false, time: 'hace 2h' },
-  { id: '2', user: { name: 'María L.',  avatar: 'ML', level: 8  }, content: '5ª semana seguida cumpliendo mis objetivos nutricionales 🥗', likes: 18, liked: true, time: 'hace 4h' },
-  { id: '3', user: { name: 'Juan M.',   avatar: 'JM', level: 6  }, content: 'Completé mi primer 5K hoy! Tiempo: 28:32 🏃', likes: 31, liked: false, time: 'hace 6h' },
+  { id: '1', user: { name: 'Carlos R.', avatar: 'CR', level: 12 }, content: '¡Nuevo PR en sentadilla! 130 kg x 5. Después de meses de trabajo duro, por fin lo conseguí.', workout: { name: 'Leg Day', duration: '72 min', volume: '12,400 kg' }, likes: 24, liked: false, time: 'hace 2h' },
+  { id: '2', user: { name: 'María L.',  avatar: 'ML', level: 8  }, content: '5ª semana seguida cumpliendo mis objetivos nutricionales. La constancia da sus frutos.', likes: 18, liked: true, time: 'hace 4h' },
+  { id: '3', user: { name: 'Juan M.',   avatar: 'JM', level: 6  }, content: 'Completé mi primer 5K hoy. Tiempo: 28:32. Muy contento con el resultado para ser el primero.', likes: 31, liked: false, time: 'hace 6h' },
 ]
 
 const challenges = [
