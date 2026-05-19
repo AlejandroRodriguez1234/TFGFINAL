@@ -1,4 +1,5 @@
 import { useAuthStore } from '@store/authStore'
+import { useTranslation } from 'react-i18next'
 import {
   Activity, Dumbbell, Flame, Droplets, Moon,
   ChevronRight, Trophy, Leaf, TrendingUp,
@@ -21,37 +22,43 @@ const weekData = [
   { day: 'D', calories: 2150, target: 2200 },
 ]
 
-const activityRings = [
-  { name: 'Movimiento', value: 78, fill: '#ef4444' },
-  { name: 'Ejercicio',  value: 65, fill: '#0ea5e9' },
-  { name: 'Pie',        value: 90, fill: '#22c55e' },
-]
-
-const recentAchievements = [
-  { Icon: Flame,  bg: 'bg-orange-500/15', color: 'text-orange-400', title: 'Racha de 7 días',  desc: '7 días consecutivos entrenando' },
-  { Icon: Trophy, bg: 'bg-yellow-500/15', color: 'text-yellow-400', title: 'Primer PR',        desc: 'Press banca: 80 kg x 5 reps' },
-  { Icon: Leaf,   bg: 'bg-green-500/15',  color: 'text-green-400',  title: 'Semana verde',     desc: 'Objetivos nutricionales al 100%' },
-]
-
-const upcomingWorkouts = [
-  { name: 'Pecho y Tríceps', time: 'Hoy 18:00', duration: '60 min', difficulty: 'Intermedio' },
-  { name: 'Piernas',         time: 'Mañana',     duration: '75 min', difficulty: 'Avanzado' },
-]
-
-const statsCards = [
-  { Icon: Flame,    label: 'Calorías',   value: '1,840', sub: 'de 2,200 kcal',    color: 'text-orange-400', bg: 'bg-orange-500/10', bar: 84 },
-  { Icon: Dumbbell, label: 'Ejercicios', value: '3',     sub: 'de 4 completados', color: 'text-brand-400',  bg: 'bg-brand-500/10',  bar: 75 },
-  { Icon: Droplets, label: 'Agua',       value: '1.8 L', sub: 'de 2.5 L',         color: 'text-cyan-400',   bg: 'bg-cyan-500/10',   bar: 72 },
-  { Icon: Moon,     label: 'Sueño',      value: '7h 20', sub: 'Buena calidad',    color: 'text-purple-400', bg: 'bg-purple-500/10', bar: 92 },
-]
-
 export default function DashboardPage() {
   const { user } = useAuthStore()
+  const { t } = useTranslation()
 
   const hour = new Date().getHours()
-  const greeting = hour < 12 ? 'Buenos días' : hour < 20 ? 'Buenas tardes' : 'Buenas noches'
+  const greeting = hour < 12
+    ? t('dashboard:goodMorning')
+    : hour < 20
+    ? t('dashboard:goodAfternoon')
+    : t('dashboard:goodEvening')
+
   const xpProgress = (user?.xp ?? 0) % 1000
   const xpPct = xpProgress / 10
+
+  const activityRings = [
+    { name: t('dashboard:movement'),     value: 78, fill: '#ef4444' },
+    { name: t('dashboard:exerciseRing'), value: 65, fill: '#0ea5e9' },
+    { name: t('dashboard:standing'),     value: 90, fill: '#22c55e' },
+  ]
+
+  const recentAchievements = [
+    { Icon: Flame,  bg: 'bg-orange-500/15', color: 'text-orange-400', title: t('dashboard:achievementStreakTitle'), desc: t('dashboard:achievementStreakDesc') },
+    { Icon: Trophy, bg: 'bg-yellow-500/15', color: 'text-yellow-400', title: t('dashboard:achievementPRTitle'),    desc: t('dashboard:achievementPRDesc') },
+    { Icon: Leaf,   bg: 'bg-green-500/15',  color: 'text-green-400',  title: t('dashboard:achievementGreenTitle'), desc: t('dashboard:achievementGreenDesc') },
+  ]
+
+  const upcomingWorkouts = [
+    { name: t('dashboard:workoutChestName'), time: t('dashboard:workoutChestTime'), duration: '60 min', difficulty: t('gym:intermediate') },
+    { name: t('dashboard:workoutLegsName'),  time: t('dashboard:workoutLegsTime'),  duration: '75 min', difficulty: t('gym:advanced') },
+  ]
+
+  const statsCards = [
+    { Icon: Flame,    label: t('dashboard:calories'),  value: '1,840', sub: t('dashboard:of2200kcal'),    color: 'text-orange-400', bg: 'bg-orange-500/10', bar: 84 },
+    { Icon: Dumbbell, label: t('dashboard:exercises'), value: '3',     sub: t('dashboard:of4completed'), color: 'text-brand-400',  bg: 'bg-brand-500/10',  bar: 75 },
+    { Icon: Droplets, label: t('dashboard:water'),     value: '1.8 L', sub: t('dashboard:of25L'),        color: 'text-cyan-400',   bg: 'bg-cyan-500/10',   bar: 72 },
+    { Icon: Moon,     label: t('dashboard:sleep'),     value: '7h 20', sub: t('dashboard:sleepQuality'), color: 'text-purple-400', bg: 'bg-purple-500/10', bar: 92 },
+  ]
 
   return (
     <div className="space-y-6">
@@ -76,10 +83,10 @@ export default function DashboardPage() {
           <div>
             <p className="text-white/70 text-sm font-medium">{greeting},</p>
             <h1 className="text-4xl font-display font-bold text-white mt-1 tracking-tight">{user?.firstName}</h1>
-            <p className="text-white/60 text-sm mt-1">Aquí está tu resumen de hoy</p>
+            <p className="text-white/60 text-sm mt-1">{t('dashboard:todaySummary')}</p>
             <div className="mt-4 w-56">
               <div className="flex justify-between text-xs text-white/60 mb-1.5">
-                <span className="font-semibold">Nivel {user?.level ?? 1}</span>
+                <span className="font-semibold">{t('dashboard:levelN', { n: user?.level ?? 1 })}</span>
                 <span>{xpProgress} / 1000 XP</span>
               </div>
               <div className="h-2 bg-white/20 rounded-full overflow-hidden">
@@ -96,12 +103,12 @@ export default function DashboardPage() {
             <div className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white/15 border border-white/20">
               <Trophy size={18} className="text-yellow-300" />
               <div className="text-right">
-                <p className="text-[10px] text-white/60 uppercase tracking-wide">Racha</p>
-                <p className="text-xl font-bold text-white leading-none">{user?.streakDays ?? 0} días</p>
+                <p className="text-[10px] text-white/60 uppercase tracking-wide">{t('dashboard:streak')}</p>
+                <p className="text-xl font-bold text-white leading-none">{user?.streakDays ?? 0} {t('dashboard:days')}</p>
               </div>
             </div>
             <Link to="/gym/workout/quick" className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white text-brand-600 font-semibold text-sm hover:bg-white/90 transition-colors">
-              <Play size={15} /> Iniciar entreno
+              <Play size={15} /> {t('dashboard:startWorkout')}
             </Link>
           </div>
         </div>
@@ -137,10 +144,10 @@ export default function DashboardPage() {
         <div className="lg:col-span-2 card">
           <div className="flex items-center justify-between mb-5">
             <div>
-              <h2 className="font-semibold">Calorías esta semana</h2>
-              <p className="text-xs text-white/40 mt-0.5">Promedio: 2,107 kcal / día</p>
+              <h2 className="font-semibold">{t('dashboard:caloriesThisWeek')}</h2>
+              <p className="text-xs text-white/40 mt-0.5">{t('dashboard:avgKcalPerDay')}</p>
             </div>
-            <span className="badge badge-brand text-xs">Esta semana</span>
+            <span className="badge badge-brand text-xs">{t('dashboard:thisWeek')}</span>
           </div>
           <ResponsiveContainer width="100%" height={180}>
             <AreaChart data={weekData} margin={{ top: 4, right: 4, left: -20, bottom: 0 }}>
@@ -154,15 +161,15 @@ export default function DashboardPage() {
               <XAxis dataKey="day" tick={{ fill: '#ffffff40', fontSize: 11 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: '#ffffff40', fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: '#141414', border: '1px solid #2a2a2a', borderRadius: 10, fontSize: 12 }} labelStyle={{ color: '#fff', fontWeight: 600 }} />
-              <Area type="monotone" dataKey="calories" stroke="#0ea5e9" strokeWidth={2.5} fill="url(#calGrad)" name="Calorías" dot={false} activeDot={{ r: 5, fill: '#0ea5e9' }} />
-              <Area type="monotone" dataKey="target" stroke="#ffffff15" strokeWidth={1} strokeDasharray="5 5" fill="none" name="Objetivo" dot={false} />
+              <Area type="monotone" dataKey="calories" stroke="#0ea5e9" strokeWidth={2.5} fill="url(#calGrad)" name={t('dashboard:calories')} dot={false} activeDot={{ r: 5, fill: '#0ea5e9' }} />
+              <Area type="monotone" dataKey="target" stroke="#ffffff15" strokeWidth={1} strokeDasharray="5 5" fill="none" name={t('common:progress')} dot={false} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
 
         <div className="card flex flex-col">
-          <h2 className="font-semibold mb-1">Actividad hoy</h2>
-          <p className="text-xs text-white/40 mb-3">Anillos de progreso</p>
+          <h2 className="font-semibold mb-1">{t('dashboard:activityToday')}</h2>
+          <p className="text-xs text-white/40 mb-3">{t('dashboard:progressRings')}</p>
           <div className="relative flex-1 min-h-[140px]">
             <ResponsiveContainer width="100%" height="100%">
               <RadialBarChart innerRadius="25%" outerRadius="90%" data={activityRings} startAngle={90} endAngle={-270}>
@@ -199,9 +206,9 @@ export default function DashboardPage() {
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 card">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold">Próximos entrenamientos</h2>
+            <h2 className="font-semibold">{t('dashboard:upcomingWorkouts')}</h2>
             <Link to="/gym" className="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1 transition-colors">
-              Ver todos <ChevronRight size={12} />
+              {t('common:viewAll')} <ChevronRight size={12} />
             </Link>
           </div>
           <div className="space-y-3">
@@ -230,9 +237,9 @@ export default function DashboardPage() {
 
         <div className="card">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="font-semibold">Logros recientes</h2>
+            <h2 className="font-semibold">{t('dashboard:recentAchievements')}</h2>
             <Link to="/progress" className="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1 transition-colors">
-              Ver <ChevronRight size={12} />
+              {t('common:view')} <ChevronRight size={12} />
             </Link>
           </div>
           <div className="space-y-3">
@@ -261,16 +268,16 @@ export default function DashboardPage() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Target size={17} className="text-brand-400" />
-            <h2 className="font-semibold">Objetivos de hoy</h2>
+            <h2 className="font-semibold">{t('dashboard:todayGoals')}</h2>
           </div>
-          <span className="text-xs text-white/40">3 de 4 completados</span>
+          <span className="text-xs text-white/40">{t('dashboard:completedNofM', { n: 3, m: 4 })}</span>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { label: 'Entrenamiento', done: true,  Icon: Dumbbell, color: 'text-brand-400'  },
-            { label: 'Agua 2.5 L',   done: false, Icon: Droplets, color: 'text-cyan-400'   },
-            { label: 'Calorías',     done: true,  Icon: Flame,    color: 'text-orange-400' },
-            { label: 'Hábitos 3/4',  done: true,  Icon: Award,    color: 'text-purple-400' },
+            { label: t('dashboard:goalWorkout'), done: true,  Icon: Dumbbell, color: 'text-brand-400'  },
+            { label: t('dashboard:goalWater'),   done: false, Icon: Droplets, color: 'text-cyan-400'   },
+            { label: t('dashboard:calories'),    done: true,  Icon: Flame,    color: 'text-orange-400' },
+            { label: t('dashboard:goalHabits'),  done: true,  Icon: Award,    color: 'text-purple-400' },
           ].map(({ label, done, Icon, color }) => (
             <div key={label} className={`flex items-center gap-2.5 p-3 rounded-xl border transition-all ${done ? 'bg-success/5 border-success/20' : 'bg-surface-100 border-white/5'}`}>
               <Icon size={16} className={done ? 'text-success' : color} />

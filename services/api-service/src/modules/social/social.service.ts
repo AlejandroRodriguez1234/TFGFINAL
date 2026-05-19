@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common'
 import { PrismaService } from '../../common/prisma/prisma.service'
 
 @Injectable()
@@ -73,5 +73,38 @@ export class SocialService {
         participants: [{ userId, current: 0 }],
       },
     })
+  }
+
+  async getComments(postId: string) {
+    return this.prisma.postComment.findMany({
+      where: { postId },
+      orderBy: { createdAt: 'asc' },
+    })
+  }
+
+  async createComment(userId: string, username: string, postId: string, content: string) {
+    const [comment] = await this.prisma.$transaction([
+      this.prisma.postComment.create({ data: { postId, userId, username, content } }),
+      this.prisma.post.update({ where: { id: postId }, data: { commentsCount: { increment: 1 } } }),
+    ])
+    return comment
+  }
+
+  async updateComment(userId: string, commentId: string, content: string) {
+    const comment = await this.prisma.postComment.findUnique({ where: { id: commentId } })
+    if (!comment) throw new NotFoundException('Comment not found')
+    if (comment.userId !== userId) throw new ForbiddenException('Not your comment')
+    return this.prisma.postComment.update({ where: { id: commentId }, data: { content } })
+  }
+
+  async deleteComment(userId: string, commentId: string) {
+    const comment = await this.prisma.postComment.findUnique({ where: { id: commentId } })
+    if (!comment) throw new NotFoundException('Comment not found')
+    if (comment.userId !== userId) throw new ForbiddenException('Not your comment')
+    await this.prisma.$transaction([
+      this.prisma.postComment.delete({ where: { id: commentId } }),
+      this.prisma.post.update({ where: { id: comment.postId }, data: { commentsCount: { decrement: 1 } } }),
+    ])
+    return { deleted: true }
   }
 }

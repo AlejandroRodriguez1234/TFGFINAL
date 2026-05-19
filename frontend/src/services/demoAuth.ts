@@ -43,6 +43,27 @@ const DEMO_USERS: Array<{ email: string; password: string; user: User; tokens: A
       expiresIn: 86400000,
     },
   },
+  {
+    email: 'trainer@fitforge.app',
+    password: 'trainer123',
+    user: {
+      id: '00000000-0000-0000-0000-000000000005',
+      email: 'trainer@fitforge.app',
+      username: 'trainer',
+      firstName: 'Carlos',
+      lastName: 'Entrenador',
+      role: 'TRAINER',
+      level: 8,
+      xp: 7200,
+      streakDays: 20,
+      createdAt: new Date().toISOString(),
+    },
+    tokens: {
+      accessToken: 'demo-token-trainer',
+      refreshToken: 'demo-refresh-trainer',
+      expiresIn: 86400000,
+    },
+  },
 ]
 
 const SOCIAL_DEMO_USERS: Record<string, { user: User; tokens: AuthTokens }> = {

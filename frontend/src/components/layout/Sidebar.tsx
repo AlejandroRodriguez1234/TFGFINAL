@@ -5,7 +5,7 @@ import { useAuthStore } from '@store/authStore'
 import { cn } from '@utils/cn'
 import {
   LayoutDashboard, Dumbbell, Apple, Target, Users,
-  TrendingUp, Settings, Shield, X, ChevronLeft, Zap,
+  TrendingUp, Settings, Shield, X, ChevronLeft, Zap, ClipboardList,
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -17,6 +17,7 @@ const navItems = [
   { to: '/progress',  icon: TrendingUp,      labelKey: 'common:progress', roles: ['ADMIN', 'TRAINER', 'CLIENT'] },
   { to: '/social',    icon: Users,           labelKey: 'social:title',    roles: ['ADMIN', 'TRAINER', 'CLIENT'] },
   { to: '/settings',  icon: Settings,        labelKey: 'common:settings', roles: ['ADMIN', 'TRAINER', 'CLIENT'] },
+  { to: '/trainer',   icon: ClipboardList,   labelKey: 'trainer:title',   roles: ['ADMIN', 'TRAINER'] },
   { to: '/admin',     icon: Shield,          labelKey: 'admin:title',     roles: ['ADMIN'] },
 ] as const
 

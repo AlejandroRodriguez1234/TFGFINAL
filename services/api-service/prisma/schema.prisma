@@ -168,6 +168,7 @@ model BodyMeasurement {
   userId     String   @map("user_id")
   date       DateTime @default(now())
   weight     Float
+  height     Float?
   bodyFat    Float?   @map("body_fat")
   muscleMass Float?   @map("muscle_mass")
   waist      Float?
@@ -231,17 +232,31 @@ model Friendship {
 }
 
 model Post {
-  id            String   @id @default(uuid())
-  userId        String   @map("user_id")
-  content       String   @db.Text
-  imageUrl      String?  @map("image_url")
-  workoutLogId  String?  @map("workout_log_id")
-  likes         Int      @default(0)
-  commentsCount Int      @default(0) @map("comments_count")
-  createdAt     DateTime @default(now()) @map("created_at")
-  updatedAt     DateTime @updatedAt @map("updated_at")
+  id            String        @id @default(uuid())
+  userId        String        @map("user_id")
+  content       String        @db.Text
+  imageUrl      String?       @map("image_url")
+  workoutLogId  String?       @map("workout_log_id")
+  likes         Int           @default(0)
+  commentsCount Int           @default(0) @map("comments_count")
+  createdAt     DateTime      @default(now()) @map("created_at")
+  updatedAt     DateTime      @updatedAt @map("updated_at")
+  comments      PostComment[]
 
   @@map("posts")
+}
+
+model PostComment {
+  id        String   @id @default(uuid())
+  postId    String   @map("post_id")
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  userId    String   @map("user_id")
+  username  String
+  content   String   @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("post_comments")
 }
 
 model Challenge {

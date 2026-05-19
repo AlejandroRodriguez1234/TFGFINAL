@@ -21,6 +21,7 @@ const Profile        = lazy(() => import('@pages/Profile/ProfilePage'))
 const Settings       = lazy(() => import('@pages/Profile/SettingsPage'))
 const Admin          = lazy(() => import('@pages/Admin/AdminPage'))
 const AdminUsers     = lazy(() => import('@pages/Admin/UsersPage'))
+const Trainer        = lazy(() => import('@pages/Trainer/TrainerPage'))
 const NotFound       = lazy(() => import('@pages/NotFound'))
 const OAuthMock      = lazy(() => import('@pages/Auth/OAuthMockPage'))
 
@@ -33,6 +34,13 @@ function AdminRoute({ children }: { children: React.ReactNode }) {
   const { isAuthenticated, user } = useAuthStore()
   if (!isAuthenticated) return <Navigate to="/login" replace />
   if (user?.role !== 'ADMIN') return <Navigate to="/dashboard" replace />
+  return <>{children}</>
+}
+
+function TrainerRoute({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated, user } = useAuthStore()
+  if (!isAuthenticated) return <Navigate to="/login" replace />
+  if (user?.role !== 'TRAINER' && user?.role !== 'ADMIN') return <Navigate to="/dashboard" replace />
   return <>{children}</>
 }
 
@@ -67,6 +75,11 @@ export default function App() {
           <Route path="/social"           element={<Social />} />
           <Route path="/profile"          element={<Profile />} />
           <Route path="/settings"         element={<Settings />} />
+        </Route>
+
+        {/* Trainer */}
+        <Route path="/trainer" element={<TrainerRoute><AppLayout /></TrainerRoute>}>
+          <Route index element={<Trainer />} />
         </Route>
 
         {/* Admin */}

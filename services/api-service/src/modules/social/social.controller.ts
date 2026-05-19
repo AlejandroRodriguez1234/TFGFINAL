@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Delete, Body, Param, UseGuards, Request } from '@nestjs/common'
+import { Controller, Get, Post, Delete, Patch, Body, Param, UseGuards, Request } from '@nestjs/common'
 import { ApiTags, ApiBearerAuth } from '@nestjs/swagger'
 import { SocialService } from './social.service'
 import { JwtAuthGuard } from '../../common/guards/jwt-auth.guard'
@@ -41,5 +41,25 @@ export class SocialController {
   @Post('challenges')
   createChallenge(@Request() req: any, @Body() body: any) {
     return this.socialService.createChallenge(req.user.sub, body)
+  }
+
+  @Get('posts/:postId/comments')
+  getComments(@Param('postId') postId: string) {
+    return this.socialService.getComments(postId)
+  }
+
+  @Post('posts/:postId/comments')
+  createComment(@Request() req: any, @Param('postId') postId: string, @Body() body: { content: string }) {
+    return this.socialService.createComment(req.user.sub, req.user.username, postId, body.content)
+  }
+
+  @Patch('posts/:postId/comments/:commentId')
+  updateComment(@Request() req: any, @Param('commentId') commentId: string, @Body() body: { content: string }) {
+    return this.socialService.updateComment(req.user.sub, commentId, body.content)
+  }
+
+  @Delete('posts/:postId/comments/:commentId')
+  deleteComment(@Request() req: any, @Param('commentId') commentId: string) {
+    return this.socialService.deleteComment(req.user.sub, commentId)
   }
 }
