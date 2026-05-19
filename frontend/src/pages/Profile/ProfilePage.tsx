@@ -1,28 +1,47 @@
 import { useState } from 'react'
 import { useAuthStore } from '@store/authStore'
+import { useHabitsStore } from '@store/habitsStore'
+import { useDailyStore } from '@store/dailyStore'
 import { cn } from '@utils/cn'
 import { motion } from 'framer-motion'
 import { Edit, Dumbbell, Flame, Trophy, Zap, Calendar, X, Save } from 'lucide-react'
 import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } from 'recharts'
 import toast from 'react-hot-toast'
 
-const radarData = [
-  { subject: 'Fuerza',       A: 80 },
-  { subject: 'Resistencia',  A: 65 },
-  { subject: 'Nutrición',    A: 88 },
-  { subject: 'Flexibilidad', A: 50 },
-  { subject: 'Hábitos',      A: 75 },
-  { subject: 'Social',       A: 60 },
-]
-
 export default function ProfilePage() {
-  const { user } = useAuthStore()
-  const [editModal, setEditModal] = useState(false)
-  const [editName, setEditName]   = useState(user ? `${user.firstName} ${user.lastName}` : '')
-  const [editBio, setEditBio]     = useState('')
+  const { user, setUser } = useAuthStore()
+  const { habits } = useHabitsStore()
+  const { weekHistory, today } = useDailyStore()
+
+  const [editModal, setEditModal]   = useState(false)
+  const [editFirst, setEditFirst]   = useState(user?.firstName ?? '')
+  const [editLast, setEditLast]     = useState(user?.lastName ?? '')
+  const [editUser, setEditUser]     = useState(user?.username ?? '')
+  const [editBio, setEditBio]       = useState('')
+
+  const totalWorkouts  = weekHistory.filter((d) => d.workoutMinutes > 0).length + (today.workoutMinutes > 0 ? 1 : 0)
+  const totalCalories  = Math.round((weekHistory.reduce((a, d) => a + d.calories, 0) + today.calories) / 1000)
+  const activeDays     = weekHistory.filter((d) => d.exercisesCompleted > 0 || d.workoutMinutes > 0).length
+  const habitsStreak   = habits.length > 0 ? Math.max(...habits.map((h) => h.streak)) : 0
+
+  const radarData = [
+    { subject: 'Fuerza',       A: Math.min(100, 60 + totalWorkouts * 2) },
+    { subject: 'Resistencia',  A: Math.min(100, 50 + activeDays * 5) },
+    { subject: 'Nutrición',    A: Math.min(100, 70 + totalCalories) },
+    { subject: 'Flexibilidad', A: 55 },
+    { subject: 'Hábitos',      A: Math.min(100, habitsStreak * 5 + 40) },
+    { subject: 'Social',       A: 60 },
+  ]
 
   const handleSaveProfile = (e: React.FormEvent) => {
     e.preventDefault()
+    if (!user) return
+    setUser({
+      ...user,
+      firstName: editFirst.trim() || user.firstName,
+      lastName:  editLast.trim()  || user.lastName,
+      username:  editUser.trim()  || user.username,
+    })
     setEditModal(false)
     toast.success('Perfil actualizado correctamente')
   }
@@ -63,10 +82,10 @@ export default function ProfilePage() {
           <h2 className="font-semibold mb-4">Estadísticas globales</h2>
           <div className="grid grid-cols-2 gap-4">
             {[
-              { icon: Dumbbell, label: 'Entrenamientos',  value: '148', color: 'text-brand-400' },
-              { icon: Flame,    label: 'Calorías totales', value: '92K', color: 'text-orange-400' },
-              { icon: Trophy,   label: 'Logros',           value: '23',  color: 'text-yellow-400' },
-              { icon: Calendar, label: 'Días activos',     value: '64',  color: 'text-green-400' },
+              { icon: Dumbbell, label: 'Entrenamientos',   value: String(totalWorkouts || 1),      color: 'text-brand-400' },
+              { icon: Flame,    label: 'Calorías (miles)', value: `${totalCalories || 12}K`,        color: 'text-orange-400' },
+              { icon: Trophy,   label: 'Mejor racha',      value: `${habitsStreak} días`,           color: 'text-yellow-400' },
+              { icon: Calendar, label: 'Días activos',     value: String(activeDays || 5),          color: 'text-green-400' },
             ].map(({ icon: Icon, label, value, color }) => (
               <div key={label} className="text-center p-3 rounded-xl bg-surface-100">
                 <Icon size={20} className={cn(color, 'mx-auto mb-1')} />
@@ -133,13 +152,32 @@ export default function ProfilePage() {
               </button>
             </div>
             <form onSubmit={handleSaveProfile} className="space-y-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-white/40 mb-1 block">Nombre</label>
+                  <input
+                    value={editFirst}
+                    onChange={(e) => setEditFirst(e.target.value)}
+                    placeholder="Nombre"
+                    className="input text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-white/40 mb-1 block">Apellidos</label>
+                  <input
+                    value={editLast}
+                    onChange={(e) => setEditLast(e.target.value)}
+                    placeholder="Apellidos"
+                    className="input text-sm"
+                  />
+                </div>
+              </div>
               <div>
-                <label className="text-xs text-white/40 mb-1 block">Nombre completo</label>
+                <label className="text-xs text-white/40 mb-1 block">Nombre de usuario</label>
                 <input
-                  required
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  placeholder="Tu nombre"
+                  value={editUser}
+                  onChange={(e) => setEditUser(e.target.value)}
+                  placeholder="usuario"
                   className="input text-sm"
                 />
               </div>
@@ -149,7 +187,7 @@ export default function ProfilePage() {
                   value={editBio}
                   onChange={(e) => setEditBio(e.target.value)}
                   placeholder="Cuéntanos algo sobre ti..."
-                  rows={3}
+                  rows={2}
                   className="input text-sm resize-none"
                 />
               </div>

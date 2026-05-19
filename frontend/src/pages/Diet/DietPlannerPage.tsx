@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { motion } from 'framer-motion'
-import { Brain, Loader2, Check, ChevronRight, Flame, Beef, Wheat, Droplet, Coffee, Utensils, Apple, Moon, TrendingDown, TrendingUp, Scale, Zap, Sparkles } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Brain, Loader2, Check, ChevronRight, Flame, Beef, Wheat, Droplet, Coffee, Utensils, Apple, Moon, TrendingDown, TrendingUp, Scale, Zap, Sparkles, ShoppingCart, Copy, CheckCheck } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { dietApi } from '@services/api'
@@ -32,9 +32,50 @@ export default function DietPlannerPage() {
   const [loading, setLoading]         = useState(false)
   const [activating, setActivating]   = useState(false)
   const [generatedPlan, setGenerated] = useState<GeneratedPlan | null>(null)
+  const [showShopping, setShowShopping] = useState(false)
+  const [copied, setCopied]             = useState(false)
   const [form, setForm] = useState({
     weight: '', height: '', age: '', gender: 'male', activity: 'moderate',
   })
+
+  const SHOPPING_LIST: Record<string, string[]> = {
+    lose_weight: [
+      'Pechuga de pollo (1 kg)', 'Atún en agua (6 latas)', 'Claras de huevo (1 docena)',
+      'Brócoli (500 g)', 'Espinacas (bolsa grande)', 'Tomates cherry', 'Pepino (2 uds)',
+      'Arroz integral (500 g)', 'Avena (500 g)', 'Aceite de oliva virgen extra',
+      'Queso cottage (500 g)', 'Yogur griego 0% (pack 4)', 'Almendras (100 g)',
+    ],
+    gain_muscle: [
+      'Pechuga de pollo (1,5 kg)', 'Huevos camperos (12 uds)', 'Salmón fresco (400 g)',
+      'Ternera magra (500 g)', 'Arroz blanco (1 kg)', 'Pasta integral (500 g)',
+      'Boniato (1 kg)', 'Plátanos (6 uds)', 'Leche entera (2 L)',
+      'Queso fresco batido (500 g)', 'Nueces (200 g)', 'Aceite de oliva',
+      'Mantequilla de cacahuete (250 g)', 'Avena (1 kg)',
+    ],
+    maintain: [
+      'Pollo (800 g)', 'Salmón (300 g)', 'Huevos (12 uds)', 'Legumbres (400 g)',
+      'Verduras variadas (1 kg)', 'Fruta de temporada (1 kg)', 'Arroz (500 g)',
+      'Pan integral (1 ud)', 'Aceite de oliva', 'Yogur natural (pack 4)',
+      'Frutos secos mixtos (150 g)', 'Leche (1 L)',
+    ],
+    performance: [
+      'Pechuga de pavo (1 kg)', 'Atún al natural (8 latas)', 'Huevos (18 uds)',
+      'Arroz blanco (1 kg)', 'Pasta (500 g)', 'Boniato (1,5 kg)',
+      'Plátanos (8 uds)', 'Dátiles (200 g)', 'Leche (2 L)',
+      'Queso batido (500 g)', 'Almendras y nueces (200 g)', 'Aceite de oliva',
+      'Bebida isotónica', 'Miel (1 tarro)',
+    ],
+  }
+
+  const handleCopyShopping = () => {
+    if (!selectedGoal) return
+    const list = SHOPPING_LIST[selectedGoal] ?? SHOPPING_LIST.maintain
+    const text = list.map((item, i) => `${i + 1}. ${item}`).join('\n')
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    })
+  }
 
   const GOALS = [
     { id: 'lose_weight',  Icon: TrendingDown, color: 'text-orange-400', label: t('diet:loseWeight'),   desc: t('diet:loseWeightDesc')   },
@@ -276,8 +317,47 @@ export default function DietPlannerPage() {
             </div>
           )}
 
+          {/* Shopping list */}
+          <div className="card border border-white/5">
+            <button
+              onClick={() => setShowShopping(v => !v)}
+              className="flex items-center justify-between w-full"
+            >
+              <div className="flex items-center gap-2">
+                <ShoppingCart size={16} className="text-brand-400" />
+                <span className="font-medium text-sm">Lista de la compra semanal</span>
+              </div>
+              <ChevronRight size={14} className={`text-white/30 transition-transform ${showShopping ? 'rotate-90' : ''}`} />
+            </button>
+            <AnimatePresence>
+              {showShopping && (
+                <motion.div
+                  initial={{ height: 0, opacity: 0 }}
+                  animate={{ height: 'auto', opacity: 1 }}
+                  exit={{ height: 0, opacity: 0 }}
+                  className="overflow-hidden"
+                >
+                  <div className="pt-4 space-y-1.5">
+                    {(SHOPPING_LIST[selectedGoal] ?? SHOPPING_LIST.maintain).map((item, i) => (
+                      <div key={i} className="flex items-center gap-2 text-sm text-white/70">
+                        <Check size={13} className="text-brand-400 shrink-0" />
+                        {item}
+                      </div>
+                    ))}
+                  </div>
+                  <button
+                    onClick={handleCopyShopping}
+                    className="btn-secondary w-full mt-4 text-sm"
+                  >
+                    {copied ? <><CheckCheck size={14} className="text-success" /> Copiado</> : <><Copy size={14} /> Copiar lista</>}
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
           <div className="flex gap-3">
-            <button onClick={() => { setStep(1); setGoal(''); setGenerated(null) }} className="btn-secondary px-4">
+            <button onClick={() => { setStep(1); setGoal(''); setGenerated(null); setShowShopping(false) }} className="btn-secondary px-4">
               {t('diet:newPlan')}
             </button>
             <button onClick={applyPlan} disabled={activating} className="btn-primary flex-1">

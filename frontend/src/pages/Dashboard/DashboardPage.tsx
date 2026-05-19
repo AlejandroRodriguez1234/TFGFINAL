@@ -1,4 +1,7 @@
+import { useEffect } from 'react'
 import { useAuthStore } from '@store/authStore'
+import { useHabitsStore } from '@store/habitsStore'
+import { useDailyStore } from '@store/dailyStore'
 import { useTranslation } from 'react-i18next'
 import {
   Activity, Dumbbell, Flame, Droplets, Moon,
@@ -12,19 +15,16 @@ import {
 } from 'recharts'
 import { Link } from 'react-router-dom'
 
-const weekData = [
-  { day: 'L', calories: 2100, target: 2200 },
-  { day: 'M', calories: 1950, target: 2200 },
-  { day: 'X', calories: 2300, target: 2200 },
-  { day: 'J', calories: 2050, target: 2200 },
-  { day: 'V', calories: 2400, target: 2200 },
-  { day: 'S', calories: 1800, target: 2200 },
-  { day: 'D', calories: 2150, target: 2200 },
-]
-
 export default function DashboardPage() {
   const { user } = useAuthStore()
   const { t } = useTranslation()
+  const { habits, resetIfNewDay: resetHabits } = useHabitsStore()
+  const { today, weekHistory, resetIfNewDay: resetDaily } = useDailyStore()
+
+  useEffect(() => {
+    resetHabits()
+    resetDaily()
+  }, [resetHabits, resetDaily])
 
   const hour = new Date().getHours()
   const greeting = hour < 12
@@ -36,10 +36,55 @@ export default function DashboardPage() {
   const xpProgress = (user?.xp ?? 0) % 1000
   const xpPct = xpProgress / 10
 
+  const habitsCompleted = habits.filter((h) => h.completedToday).length
+  const habitsTotal     = habits.length
+
+  const calPct   = Math.min(100, Math.round((today.calories / today.caloriesTarget) * 100))
+  const waterPct = Math.min(100, Math.round((today.waterMl / today.waterTargetMl) * 100))
+  const waterL   = (today.waterMl / 1000).toFixed(1)
+
+  const weekData = [...weekHistory.slice(-6), today].map((d, i) => ({
+    day: ['L', 'M', 'X', 'J', 'V', 'S', 'D'][i] ?? 'D',
+    calories: Math.round(d.calories),
+    target: d.caloriesTarget,
+  }))
+
   const activityRings = [
-    { name: t('dashboard:movement'),     value: 78, fill: '#ef4444' },
-    { name: t('dashboard:exerciseRing'), value: 65, fill: '#0ea5e9' },
-    { name: t('dashboard:standing'),     value: 90, fill: '#22c55e' },
+    { name: t('dashboard:movement'),     value: calPct, fill: '#ef4444' },
+    { name: t('dashboard:exerciseRing'), value: today.workoutMinutes > 0 ? Math.min(100, Math.round((today.workoutMinutes / 60) * 100)) : 65, fill: '#0ea5e9' },
+    { name: t('dashboard:standing'),     value: waterPct, fill: '#22c55e' },
+  ]
+
+  const statsCards = [
+    {
+      Icon: Flame,
+      label: t('dashboard:calories'),
+      value: today.calories.toLocaleString('es'),
+      sub: `de ${today.caloriesTarget.toLocaleString('es')} kcal`,
+      color: 'text-orange-400', bg: 'bg-orange-500/10', bar: calPct,
+    },
+    {
+      Icon: Dumbbell,
+      label: t('dashboard:exercises'),
+      value: String(today.exercisesCompleted || habitsCompleted),
+      sub: `de ${habitsTotal} completados`,
+      color: 'text-brand-400', bg: 'bg-brand-500/10',
+      bar: habitsTotal > 0 ? Math.round((habitsCompleted / habitsTotal) * 100) : 0,
+    },
+    {
+      Icon: Droplets,
+      label: t('dashboard:water'),
+      value: `${waterL} L`,
+      sub: `de ${(today.waterTargetMl / 1000).toFixed(1)} L`,
+      color: 'text-cyan-400', bg: 'bg-cyan-500/10', bar: waterPct,
+    },
+    {
+      Icon: Moon,
+      label: t('dashboard:sleep'),
+      value: '7h 20',
+      sub: t('dashboard:sleepQuality'),
+      color: 'text-purple-400', bg: 'bg-purple-500/10', bar: 92,
+    },
   ]
 
   const recentAchievements = [
@@ -53,16 +98,15 @@ export default function DashboardPage() {
     { name: t('dashboard:workoutLegsName'),  time: t('dashboard:workoutLegsTime'),  duration: '75 min', difficulty: t('gym:advanced') },
   ]
 
-  const statsCards = [
-    { Icon: Flame,    label: t('dashboard:calories'),  value: '1,840', sub: t('dashboard:of2200kcal'),    color: 'text-orange-400', bg: 'bg-orange-500/10', bar: 84 },
-    { Icon: Dumbbell, label: t('dashboard:exercises'), value: '3',     sub: t('dashboard:of4completed'), color: 'text-brand-400',  bg: 'bg-brand-500/10',  bar: 75 },
-    { Icon: Droplets, label: t('dashboard:water'),     value: '1.8 L', sub: t('dashboard:of25L'),        color: 'text-cyan-400',   bg: 'bg-cyan-500/10',   bar: 72 },
-    { Icon: Moon,     label: t('dashboard:sleep'),     value: '7h 20', sub: t('dashboard:sleepQuality'), color: 'text-purple-400', bg: 'bg-purple-500/10', bar: 92 },
-  ]
+  const goalsCompleted = [
+    today.calories >= today.caloriesTarget * 0.8,
+    today.waterMl >= today.waterTargetMl * 0.8,
+    today.calories > 0,
+    habitsCompleted >= Math.ceil(habitsTotal / 2),
+  ].filter(Boolean).length
 
   return (
     <div className="space-y-6">
-
       {/* HERO */}
       <motion.div
         initial={{ opacity: 0, y: -12 }}
@@ -73,12 +117,12 @@ export default function DashboardPage() {
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-12 -right-12 w-64 h-64 rounded-full bg-white/5 blur-3xl" />
           <div className="absolute bottom-0 left-1/3 w-48 h-48 rounded-full bg-cyan-400/10 blur-2xl" />
-          {[0,1,2,3,4].map((i) => (
+          {[0, 1, 2, 3, 4].map((i) => (
             <div key={i} className="absolute rounded-full border border-white/10"
-              style={{ width: `${(i+1)*80}px`, height: `${(i+1)*80}px`, top: '50%', left: '80%', transform: 'translate(-50%,-50%)', opacity: 0.3 - i * 0.05 }} />
+              style={{ width: `${(i + 1) * 80}px`, height: `${(i + 1) * 80}px`, top: '50%', left: '80%', transform: 'translate(-50%,-50%)', opacity: 0.3 - i * 0.05 }}
+            />
           ))}
         </div>
-
         <div className="relative flex items-center justify-between gap-4">
           <div>
             <p className="text-white/70 text-sm font-medium">{greeting},</p>
@@ -162,7 +206,7 @@ export default function DashboardPage() {
               <YAxis tick={{ fill: '#ffffff40', fontSize: 11 }} axisLine={false} tickLine={false} />
               <Tooltip contentStyle={{ background: '#141414', border: '1px solid #2a2a2a', borderRadius: 10, fontSize: 12 }} labelStyle={{ color: '#fff', fontWeight: 600 }} />
               <Area type="monotone" dataKey="calories" stroke="#0ea5e9" strokeWidth={2.5} fill="url(#calGrad)" name={t('dashboard:calories')} dot={false} activeDot={{ r: 5, fill: '#0ea5e9' }} />
-              <Area type="monotone" dataKey="target" stroke="#ffffff15" strokeWidth={1} strokeDasharray="5 5" fill="none" name={t('common:progress')} dot={false} />
+              <Area type="monotone" dataKey="target" stroke="#ffffff15" strokeWidth={1} strokeDasharray="5 5" fill="none" name="Objetivo" dot={false} />
             </AreaChart>
           </ResponsiveContainer>
         </div>
@@ -179,7 +223,9 @@ export default function DashboardPage() {
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="text-center">
                 <Activity size={18} className="text-brand-400 mx-auto" />
-                <p className="text-xs text-white/40 mt-1">77%</p>
+                <p className="text-xs text-white/40 mt-1">
+                  {Math.round(activityRings.reduce((a, r) => a + r.value, 0) / activityRings.length)}%
+                </p>
               </div>
             </div>
           </div>
@@ -270,14 +316,14 @@ export default function DashboardPage() {
             <Target size={17} className="text-brand-400" />
             <h2 className="font-semibold">{t('dashboard:todayGoals')}</h2>
           </div>
-          <span className="text-xs text-white/40">{t('dashboard:completedNofM', { n: 3, m: 4 })}</span>
+          <span className="text-xs text-white/40">{t('dashboard:completedNofM', { n: goalsCompleted, m: 4 })}</span>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { label: t('dashboard:goalWorkout'), done: true,  Icon: Dumbbell, color: 'text-brand-400'  },
-            { label: t('dashboard:goalWater'),   done: false, Icon: Droplets, color: 'text-cyan-400'   },
-            { label: t('dashboard:calories'),    done: true,  Icon: Flame,    color: 'text-orange-400' },
-            { label: t('dashboard:goalHabits'),  done: true,  Icon: Award,    color: 'text-purple-400' },
+            { label: t('dashboard:goalWorkout'), done: today.workoutMinutes > 0 || today.exercisesCompleted > 0, Icon: Dumbbell, color: 'text-brand-400'  },
+            { label: t('dashboard:goalWater'),   done: today.waterMl >= today.waterTargetMl * 0.8, Icon: Droplets, color: 'text-cyan-400'   },
+            { label: t('dashboard:calories'),    done: today.calories >= today.caloriesTarget * 0.8, Icon: Flame, color: 'text-orange-400' },
+            { label: `Hábitos ${habitsCompleted}/${habitsTotal}`, done: habitsCompleted >= Math.ceil(habitsTotal / 2), Icon: Award, color: 'text-purple-400' },
           ].map(({ label, done, Icon, color }) => (
             <div key={label} className={`flex items-center gap-2.5 p-3 rounded-xl border transition-all ${done ? 'bg-success/5 border-success/20' : 'bg-surface-100 border-white/5'}`}>
               <Icon size={16} className={done ? 'text-success' : color} />
@@ -286,7 +332,6 @@ export default function DashboardPage() {
           ))}
         </div>
       </motion.div>
-
     </div>
   )
 }

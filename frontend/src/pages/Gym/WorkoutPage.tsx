@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
@@ -6,6 +6,37 @@ import {
   Timer, ChevronDown, ChevronUp, Flame,
 } from 'lucide-react'
 import { cn } from '@utils/cn'
+import { useDailyStore } from '@store/dailyStore'
+
+function beepDone() {
+  try {
+    const ctx = new AudioContext()
+    const freqs = [660, 880, 1100]
+    freqs.forEach((freq, i) => {
+      const osc  = ctx.createOscillator()
+      const gain = ctx.createGain()
+      osc.connect(gain)
+      gain.connect(ctx.destination)
+      osc.frequency.value = freq
+      osc.type = 'sine'
+      gain.gain.setValueAtTime(0.25, ctx.currentTime + i * 0.15)
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + i * 0.15 + 0.25)
+      osc.start(ctx.currentTime + i * 0.15)
+      osc.stop(ctx.currentTime + i * 0.15 + 0.3)
+    })
+  } catch { /* sin soporte de audio */ }
+}
+
+function notifyRestDone() {
+  beepDone()
+  navigator.vibrate?.([200, 100, 200])
+  if ('Notification' in window && Notification.permission === 'granted') {
+    new Notification('FitForge — ¡A por ello!', {
+      body: 'Descanso terminado. Siguiente serie.',
+      icon: '/pwa-192x192.png',
+    })
+  }
+}
 
 interface Set      { reps: number; weight: number; completed: boolean }
 interface Exercise { id: string; name: string; sets: Set[]; restSeconds: number }
@@ -57,14 +88,29 @@ const mockWorkout = {
 
 function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void }) {
   const [left, setLeft] = useState(seconds)
+  const firedRef = useRef(false)
 
   useEffect(() => {
-    if (left <= 0) { onDone(); return }
+    if (left <= 0) {
+      if (!firedRef.current) {
+        firedRef.current = true
+        notifyRestDone()
+        onDone()
+      }
+      return
+    }
     const t = setTimeout(() => setLeft((p) => p - 1), 1000)
     return () => clearTimeout(t)
   }, [left, onDone])
 
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission()
+    }
+  }, [])
+
   const pct = (left / seconds) * 100
+  const urgent = left <= 5
 
   return (
     <motion.div
@@ -74,24 +120,30 @@ function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void })
       className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 backdrop-blur-sm"
     >
       <div className="text-center">
-        <p className="text-white/60 mb-4">Descanso</p>
-        <div className="relative w-36 h-36 mx-auto">
+        <p className="text-white/60 mb-4 text-sm font-medium tracking-wide uppercase">Descanso</p>
+        <div className="relative w-40 h-40 mx-auto">
           <svg className="w-full h-full -rotate-90" viewBox="0 0 100 100">
-            <circle cx="50" cy="50" r="45" fill="none" stroke="#2e2e2e" strokeWidth="8" />
+            <circle cx="50" cy="50" r="45" fill="none" stroke="#2e2e2e" strokeWidth="6" />
             <circle
               cx="50" cy="50" r="45"
-              fill="none" stroke="#0ea5e9" strokeWidth="8"
+              fill="none"
+              stroke={urgent ? '#ef4444' : '#0ea5e9'}
+              strokeWidth="6"
               strokeDasharray={`${2 * Math.PI * 45}`}
               strokeDashoffset={`${2 * Math.PI * 45 * (1 - pct / 100)}`}
               strokeLinecap="round"
               className="transition-all duration-1000"
             />
           </svg>
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-4xl font-bold">{left}</span>
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className={cn('text-5xl font-bold tabular-nums', urgent && 'text-red-400')}>{left}</span>
+            <span className="text-xs text-white/30 mt-1">seg</span>
           </div>
         </div>
-        <button onClick={onDone} className="btn-ghost mt-4 text-sm">Saltar</button>
+        <div className="flex gap-3 mt-5 justify-center">
+          <button onClick={onDone} className="btn-ghost text-sm px-5">Saltar</button>
+          <button onClick={() => setLeft(seconds)} className="btn-secondary text-sm px-5">Reiniciar</button>
+        </div>
       </div>
     </motion.div>
   )
@@ -100,6 +152,7 @@ function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void })
 export default function WorkoutPage() {
   const { id }       = useParams()
   const navigate     = useNavigate()
+  const { addWorkout } = useDailyStore()
   const [exercises, setExercises] = useState<Exercise[]>(mockWorkout.exercises)
   const [elapsed, setElapsed]     = useState(0)
   const [running, setRunning]     = useState(false)
@@ -148,10 +201,13 @@ export default function WorkoutPage() {
   const doneSets  = exercises.reduce((a, e) => a + e.sets.filter((s) => s.completed).length, 0)
   const progress  = totalSets > 0 ? (doneSets / totalSets) * 100 : 0
 
-  const finishWorkout = () => {
+  const finishWorkout = useCallback(() => {
     setRunning(false)
+    const mins = Math.max(1, Math.round(elapsed / 60))
+    const done = exercises.reduce((a, e) => a + e.sets.filter((s) => s.completed).length, 0)
+    addWorkout(mins, done)
     navigate('/gym')
-  }
+  }, [elapsed, exercises, addWorkout, navigate])
 
   return (
     <div className="space-y-6 pb-24">
