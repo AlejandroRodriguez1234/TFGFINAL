@@ -1,0 +1,110 @@
+import { Injectable, NotFoundException, ForbiddenException } from '@nestjs/common'
+import { PrismaService } from '../../common/prisma/prisma.service'
+
+@Injectable()
+export class SocialService {
+  constructor(private readonly prisma: PrismaService) {}
+
+  async getFeed(userId: string) {
+    // Get friend IDs
+    const friendships = await this.prisma.friendship.findMany({
+      where: { OR: [{ requesterId: userId }, { addresseeId: userId }], status: 'ACCEPTED' },
+    })
+    const friendIds = friendships.map(f => f.requesterId === userId ? f.addresseeId : f.requesterId)
+
+    return this.prisma.post.findMany({
+      where: { userId: { in: [...friendIds, userId] } },
+      orderBy: { createdAt: 'desc' },
+      take: 20,
+    })
+  }
+
+  async createPost(userId: string, data: any) {
+    return this.prisma.post.create({ data: { ...data, userId } })
+  }
+
+  async likePost(userId: string, postId: string) {
+    return this.prisma.post.update({
+      where: { id: postId },
+      data: { likes: { increment: 1 } },
+    })
+  }
+
+  async getFriends(userId: string) {
+    return this.prisma.friendship.findMany({
+      where: { OR: [{ requesterId: userId }, { addresseeId: userId }], status: 'ACCEPTED' },
+    })
+  }
+
+  async sendFriendRequest(requesterId: string, addresseeId: string) {
+    return this.prisma.friendship.create({
+      data: { requesterId, addresseeId, status: 'PENDING' },
+    })
+  }
+
+  async respondFriendRequest(userId: string, friendshipId: string, status: 'ACCEPTED' | 'REJECTED') {
+    return this.prisma.friendship.update({ where: { id: friendshipId }, data: { status } })
+  }
+
+  async getLeaderboard() {
+    // Returns top users by XP (fetched from auth service in real implementation)
+    return []
+  }
+
+  async getChallenges(userId: string) {
+    return this.prisma.challenge.findMany({
+      where: {
+        OR: [
+          { creatorId: userId },
+          { participants: { array_contains: [{ userId }] } },
+        ],
+        status: { in: ['PENDING', 'ACTIVE'] },
+      },
+      orderBy: { createdAt: 'desc' },
+    })
+  }
+
+  async createChallenge(userId: string, data: any) {
+    return this.prisma.challenge.create({
+      data: {
+        ...data,
+        creatorId: userId,
+        status: 'PENDING',
+        participants: [{ userId, current: 0 }],
+      },
+    })
+  }
+
+  async getComments(postId: string) {
+    return this.prisma.postComment.findMany({
+      where: { postId },
+      orderBy: { createdAt: 'asc' },
+    })
+  }
+
+  async createComment(userId: string, username: string, postId: string, content: string) {
+    const [comment] = await this.prisma.$transaction([
+      this.prisma.postComment.create({ data: { postId, userId, username, content } }),
+      this.prisma.post.update({ where: { id: postId }, data: { commentsCount: { increment: 1 } } }),
+    ])
+    return comment
+  }
+
+  async updateComment(userId: string, commentId: string, content: string) {
+    const comment = await this.prisma.postComment.findUnique({ where: { id: commentId } })
+    if (!comment) throw new NotFoundException('Comment not found')
+    if (comment.userId !== userId) throw new ForbiddenException('Not your comment')
+    return this.prisma.postComment.update({ where: { id: commentId }, data: { content } })
+  }
+
+  async deleteComment(userId: string, commentId: string) {
+    const comment = await this.prisma.postComment.findUnique({ where: { id: commentId } })
+    if (!comment) throw new NotFoundException('Comment not found')
+    if (comment.userId !== userId) throw new ForbiddenException('Not your comment')
+    await this.prisma.$transaction([
+      this.prisma.postComment.delete({ where: { id: commentId } }),
+      this.prisma.post.update({ where: { id: comment.postId }, data: { commentsCount: { decrement: 1 } } }),
+    ])
+    return { deleted: true }
+  }
+}

@@ -1,0 +1,15 @@
+#!/bin/sh
+# Maven Wrapper script
+set -e
+
+MAVEN_WRAPPER_JAR=".mvn/wrapper/maven-wrapper.jar"
+MAVEN_OPTS="${MAVEN_OPTS:-}"
+
+# Download wrapper jar if missing
+if [ ! -f "$MAVEN_WRAPPER_JAR" ]; then
+    WRAPPER_URL=$(grep wrapperUrl .mvn/wrapper/maven-wrapper.properties | cut -d= -f2-)
+    curl -sL "$WRAPPER_URL" -o "$MAVEN_WRAPPER_JAR" 2>/dev/null \
+        || wget -q "$WRAPPER_URL" -O "$MAVEN_WRAPPER_JAR" 2>/dev/null
+fi
+
+exec java $MAVEN_OPTS -jar "$MAVEN_WRAPPER_JAR" "$@"

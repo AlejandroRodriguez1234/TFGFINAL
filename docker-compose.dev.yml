@@ -1,0 +1,39 @@
+version: '3.9'
+
+# Development overrides — mounts source for hot-reload
+
+services:
+  frontend:
+    build:
+      target: builder
+    command: npm run dev -- --host 0.0.0.0
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+
+  api-service:
+    command: npm run start:dev
+    volumes:
+      - ./services/api-service:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+
+  auth-service:
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_JPA_SHOW_SQL=true
+
+  ai-service:
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./services/ai-service:/app
+
+  diet-service:
+    environment:
+      - APP_ENV=local
+      - APP_DEBUG=true
