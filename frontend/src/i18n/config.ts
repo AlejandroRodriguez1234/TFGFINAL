@@ -295,6 +295,8 @@ i18n
           habitIcon: 'Ícono',
           habitPreview: 'Vista previa',
           myHabit: 'Mi hábito',
+          noHabits: 'Aún no tienes hábitos. Añade el primero.',
+          calendarTip: 'Pulsa sobre un hábito para ver el calendario mensual',
         },
         social: {
           title: 'Social',
@@ -748,6 +750,8 @@ i18n
           habitIcon: 'Icon',
           habitPreview: 'Preview',
           myHabit: 'My habit',
+          noHabits: 'No habits yet. Add the first one.',
+          calendarTip: 'Tap on a habit to see the monthly calendar',
         },
         social: {
           title: 'Social',

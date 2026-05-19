@@ -68,6 +68,7 @@ export default function App() {
           <Route path="/dashboard"        element={<Dashboard />} />
           <Route path="/habits"           element={<Habits />} />
           <Route path="/gym"              element={<Gym />} />
+          <Route path="/gym/workout/quick" element={<GymWorkout />} />
           <Route path="/gym/workout/:id"  element={<GymWorkout />} />
           <Route path="/diet"             element={<Diet />} />
           <Route path="/diet/planner"     element={<DietPlanner />} />

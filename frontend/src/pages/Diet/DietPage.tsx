@@ -6,6 +6,7 @@ import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { dietApi } from '@services/api'
+import { useDailyStore } from '@store/dailyStore'
 
 type FoodItem = {
   id: string
@@ -65,9 +66,10 @@ function calcMacros(entries: MealEntry[]) {
 
 export default function DietPage() {
   const { t } = useTranslation()
+  const { today, setCalories, setWater } = useDailyStore()
   const [entries, setEntries]             = useState<MealEntry[]>([])
   const [loadingMeals, setLoadingMeals]   = useState(true)
-  const [waterMl, setWaterMl]             = useState(0)
+  const [waterMl, setWaterMl]             = useState(today.waterMl)
 
   const [addModal, setAddModal]           = useState<string | null>(null)
   const [barcodeModal, setBarcodeModal]   = useState(false)
@@ -92,13 +94,22 @@ export default function DietPage() {
   useEffect(() => {
     dietApi.get<{ success: boolean; data: MealEntry[] }>('/api/meals/today')
       .then(r => setEntries(r.data.data))
-      .catch(() => toast.error(t('diet:errorLoadingMeals')))
+      .catch(() => setLoadingMeals(false))
       .finally(() => setLoadingMeals(false))
 
     dietApi.get<{ success: boolean; data: { total_ml: number } }>('/api/hydration/today')
-      .then(r => setWaterMl(r.data.data.total_ml))
-      .catch(() => {/* no bloquea la UI */})
+      .then(r => { setWaterMl(r.data.data.total_ml); setWater(r.data.data.total_ml) })
+      .catch(() => {/* usa valor del store */})
   }, [])
+
+  useEffect(() => {
+    const macros = calcMacros(entries)
+    if (macros.calories > 0) setCalories(Math.round(macros.calories))
+  }, [entries, setCalories])
+
+  useEffect(() => {
+    setWater(waterMl)
+  }, [waterMl, setWater])
 
   useEffect(() => {
     if (!searchQuery.trim()) {
