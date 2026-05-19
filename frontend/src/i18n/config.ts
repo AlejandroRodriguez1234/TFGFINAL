@@ -7,10 +7,15 @@ i18n
   .use(initReactI18next)
   .init({
     fallbackLng: 'es',
+    lng: localStorage.getItem('i18nextLng') || 'es',
     supportedLngs: ['es', 'en'],
     ns: ['common', 'auth', 'dashboard', 'gym', 'diet', 'habits', 'social', 'admin', 'landing', 'progress', 'trainer'],
     defaultNS: 'common',
     interpolation: { escapeValue: false },
+    detection: {
+      order: ['localStorage'],
+      caches: ['localStorage'],
+    },
     resources: {
       es: {
         common: {
