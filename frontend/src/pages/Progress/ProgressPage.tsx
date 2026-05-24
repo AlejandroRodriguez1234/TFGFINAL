@@ -40,11 +40,11 @@ const liftData = [
 type TabKey = 'weight' | 'strength' | 'achievements' | 'calculator'
 
 const ACTIVITY_LEVELS = [
-  { key: 'sedentary',   label: 'Sedentario',         multiplier: 1.2   },
-  { key: 'light',       label: 'Ligero (1-3 días/s)', multiplier: 1.375 },
-  { key: 'moderate',    label: 'Moderado (3-5 días)', multiplier: 1.55  },
-  { key: 'active',      label: 'Activo (6-7 días)',   multiplier: 1.725 },
-  { key: 'very_active', label: 'Muy activo',          multiplier: 1.9   },
+  { key: 'sedentary',   labelKey: 'progress:calcActSedentary',  multiplier: 1.2   },
+  { key: 'light',       labelKey: 'progress:calcActLight',      multiplier: 1.375 },
+  { key: 'moderate',    labelKey: 'progress:calcActModerate',   multiplier: 1.55  },
+  { key: 'active',      labelKey: 'progress:calcActActive',     multiplier: 1.725 },
+  { key: 'very_active', labelKey: 'progress:calcActVeryActive', multiplier: 1.9   },
 ] as const
 
 const DEMO_CHART: ChartPoint[] = [
@@ -83,7 +83,7 @@ export default function ProgressPage() {
   const [calcAge, setCalcAge]           = useState('')
   const [calcGender, setCalcGender]     = useState<'male' | 'female'>('male')
   const [calcActivity, setCalcActivity] = useState<string>('moderate')
-  const [calcResult, setCalcResult]     = useState<null | { bmr: number; tdee: number; protein: number; fatGoal: string; bmi: number; bmiCategory: string; idealWeight: string }>(null)
+  const [calcResult, setCalcResult]     = useState<null | { bmr: number; tdee: number; protein: number; fatGoal: string; fatGoalDescKey: string; bmi: number; bmiCategory: string; idealWeight: string }>(null)
 
   const fetchWeightData = useCallback(async () => {
     try {
@@ -131,7 +131,7 @@ export default function ProgressPage() {
     { key: 'weight',       label: t('progress:tabWeight')       },
     { key: 'strength',     label: t('progress:tabStrength')     },
     { key: 'achievements', label: t('progress:tabAchievements') },
-    { key: 'calculator',   label: 'Calculadora'                 },
+    { key: 'calculator',   label: t('progress:tabCalculator')   },
   ]
 
   const handleCalcSubmit = (e: React.FormEvent) => {
@@ -148,16 +148,19 @@ export default function ProgressPage() {
     const level = ACTIVITY_LEVELS.find(l => l.key === calcActivity) ?? ACTIVITY_LEVELS[2]
     const tdee = Math.round(bmr * level.multiplier)
     const bmi  = parseFloat((w / ((h / 100) ** 2)).toFixed(1))
-    const bmiCategory =
-      bmi < 18.5 ? 'Bajo peso' :
-      bmi < 25   ? 'Normopeso' :
-      bmi < 30   ? 'Sobrepeso' : 'Obesidad'
+    const bmiCategoryKey =
+      bmi < 18.5 ? 'progress:bmiUnderweight' :
+      bmi < 25   ? 'progress:bmiNormal' :
+      bmi < 30   ? 'progress:bmiOverweight' : 'progress:bmiObese'
+    const bmiCategory = t(bmiCategoryKey)
     const minIdeal = parseFloat((18.5 * ((h / 100) ** 2)).toFixed(1))
     const maxIdeal = parseFloat((24.9 * ((h / 100) ** 2)).toFixed(1))
     const protein = Math.round(w * 2.0)
-    const fatGoal = bmi < 18.5 ? 'Volumen' : bmi >= 25 ? 'Definición' : 'Mantenimiento'
+    const fatGoalKey = bmi < 18.5 ? 'progress:goalVolume' : bmi >= 25 ? 'progress:goalDefinition' : 'progress:goalMaintenance'
+    const fatGoal = t(fatGoalKey)
+    const fatGoalDescKey = bmi < 18.5 ? 'progress:surplusDesc' : bmi >= 25 ? 'progress:deficitDesc' : 'progress:maintenanceDesc'
 
-    setCalcResult({ bmr: Math.round(bmr), tdee, protein, fatGoal, bmi, bmiCategory, idealWeight: `${minIdeal}–${maxIdeal} kg` })
+    setCalcResult({ bmr: Math.round(bmr), tdee, protein, fatGoal, fatGoalDescKey, bmi, bmiCategory, idealWeight: `${minIdeal}–${maxIdeal} kg` })
   }
 
   const achievements = [
@@ -361,53 +364,53 @@ export default function ProgressPage() {
 
       {tab === 'calculator' && (
         <div className="card">
-          <h2 className="font-semibold mb-1">Calculadora Nutricional</h2>
-          <p className="text-white/40 text-sm mb-5">TMB · TDEE · IMC · Peso ideal</p>
+          <h2 className="font-semibold mb-1">{t('progress:calculatorTitle')}</h2>
+          <p className="text-white/40 text-sm mb-5">{t('progress:calculatorSubtitle')}</p>
           <form onSubmit={handleCalcSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-xs text-white/40 mb-1 block">Peso (kg)</label>
+                <label className="text-xs text-white/40 mb-1 block">{t('progress:calcWeight')}</label>
                 <input required type="number" step="0.1" min="30" max="300" value={calcWeight} onChange={e => setCalcWeight(e.target.value)} placeholder="80" className="input text-sm" />
               </div>
               <div>
-                <label className="text-xs text-white/40 mb-1 block">Altura (cm)</label>
+                <label className="text-xs text-white/40 mb-1 block">{t('progress:calcHeight')}</label>
                 <input required type="number" step="1" min="100" max="250" value={calcHeight} onChange={e => setCalcHeight(e.target.value)} placeholder="175" className="input text-sm" />
               </div>
               <div>
-                <label className="text-xs text-white/40 mb-1 block">Edad</label>
+                <label className="text-xs text-white/40 mb-1 block">{t('progress:calcAge')}</label>
                 <input required type="number" min="10" max="120" value={calcAge} onChange={e => setCalcAge(e.target.value)} placeholder="25" className="input text-sm" />
               </div>
               <div>
-                <label className="text-xs text-white/40 mb-1 block">Sexo</label>
+                <label className="text-xs text-white/40 mb-1 block">{t('progress:calcGender')}</label>
                 <select value={calcGender} onChange={e => setCalcGender(e.target.value as 'male' | 'female')} className="input text-sm">
-                  <option value="male">Hombre</option>
-                  <option value="female">Mujer</option>
+                  <option value="male">{t('progress:calcMale')}</option>
+                  <option value="female">{t('progress:calcFemale')}</option>
                 </select>
               </div>
             </div>
             <div>
-              <label className="text-xs text-white/40 mb-1 block">Nivel de actividad</label>
+              <label className="text-xs text-white/40 mb-1 block">{t('progress:calcActivity')}</label>
               <select value={calcActivity} onChange={e => setCalcActivity(e.target.value)} className="input text-sm">
                 {ACTIVITY_LEVELS.map(l => (
-                  <option key={l.key} value={l.key}>{l.label}</option>
+                  <option key={l.key} value={l.key}>{t(l.labelKey)}</option>
                 ))}
               </select>
             </div>
             <button type="submit" className="btn-primary w-full text-sm">
-              Calcular
+              {t('progress:calcSubmit')}
             </button>
           </form>
 
           {calcResult && (
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-6 space-y-3">
               <div className="h-px bg-white/10" />
-              <h3 className="font-semibold text-sm text-white/70">Resultados</h3>
+              <h3 className="font-semibold text-sm text-white/70">{t('progress:calcResults')}</h3>
               <div className="grid grid-cols-2 gap-3">
                 {[
-                  { label: 'TMB (Mifflin)', value: `${calcResult.bmr} kcal`, color: 'text-brand-400' },
-                  { label: 'TDEE (mantenimiento)', value: `${calcResult.tdee} kcal`, color: 'text-cyan-400' },
-                  { label: 'Proteína diaria', value: `${calcResult.protein} g`, color: 'text-sky-400' },
-                  { label: 'IMC', value: `${calcResult.bmi}`, color: calcResult.bmi < 18.5 || calcResult.bmi >= 25 ? 'text-warning' : 'text-success' },
+                  { label: t('progress:calcBMR'),          value: `${calcResult.bmr} kcal`,      color: 'text-brand-400' },
+                  { label: t('progress:calcTDEE'),         value: `${calcResult.tdee} kcal`,     color: 'text-cyan-400'  },
+                  { label: t('progress:calcProteinDaily'), value: `${calcResult.protein} g`,     color: 'text-sky-400'   },
+                  { label: t('progress:calcBMI'),          value: `${calcResult.bmi}`,           color: calcResult.bmi < 18.5 || calcResult.bmi >= 25 ? 'text-warning' : 'text-success' },
                 ].map(({ label, value, color }) => (
                   <div key={label} className="p-3 rounded-xl bg-surface-100">
                     <p className="text-xs text-white/40 mb-0.5">{label}</p>
@@ -417,23 +420,25 @@ export default function ProgressPage() {
               </div>
               <div className="p-3 rounded-xl bg-surface-100 flex items-center justify-between">
                 <div>
-                  <p className="text-xs text-white/40">Categoría IMC</p>
+                  <p className="text-xs text-white/40">{t('progress:calcBMICategory')}</p>
                   <p className="font-semibold text-sm">{calcResult.bmiCategory}</p>
                 </div>
                 <div className="text-right">
-                  <p className="text-xs text-white/40">Peso ideal</p>
+                  <p className="text-xs text-white/40">{t('progress:calcIdealWeight')}</p>
                   <p className="font-semibold text-sm">{calcResult.idealWeight}</p>
                 </div>
               </div>
               <div className="p-3 rounded-xl bg-brand-500/10 border border-brand-500/20">
-                <p className="text-xs text-white/50 mb-1">Objetivo recomendado</p>
+                <p className="text-xs text-white/50 mb-1">{t('progress:calcGoal')}</p>
                 <p className="text-sm font-semibold text-brand-400">{calcResult.fatGoal}</p>
                 <p className="text-xs text-white/30 mt-0.5">
-                  {calcResult.fatGoal === 'Definición'
-                    ? `Déficit ~300-500 kcal → ${calcResult.tdee - 400} kcal/día`
-                    : calcResult.fatGoal === 'Volumen'
-                    ? `Superávit ~300 kcal → ${calcResult.tdee + 300} kcal/día`
-                    : `Mantenimiento → ${calcResult.tdee} kcal/día`}
+                  {t(calcResult.fatGoalDescKey, {
+                    cal: calcResult.fatGoalDescKey === 'progress:deficitDesc'
+                      ? calcResult.tdee - 400
+                      : calcResult.fatGoalDescKey === 'progress:surplusDesc'
+                      ? calcResult.tdee + 300
+                      : calcResult.tdee,
+                  })}
                 </p>
               </div>
             </motion.div>

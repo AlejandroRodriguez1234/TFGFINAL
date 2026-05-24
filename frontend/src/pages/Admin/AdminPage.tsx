@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { Users, Activity, TrendingUp, Shield, Database, AlertTriangle, ChevronRight, MoreVertical } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
@@ -25,26 +26,27 @@ const roleColors: Record<string, string> = {
 }
 
 export default function AdminPage() {
+  const { t } = useTranslation('admin')
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-display font-bold">Panel de administración</h1>
-          <p className="text-white/40 text-sm mt-1">Gestión y estadísticas globales de FitForge</p>
+          <h1 className="text-3xl font-display font-bold">{t('panel')}</h1>
+          <p className="text-white/40 text-sm mt-1">{t('subtitle')}</p>
         </div>
         <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-danger/10 border border-danger/20 text-danger text-sm">
           <Shield size={14} />
-          <span>Acceso Admin</span>
+          <span>{t('adminAccess')}</span>
         </div>
       </div>
 
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {[
-          { icon: Users,      label: 'Total usuarios',  value: '49,032', change: '+12%', color: 'text-brand-400',  bg: 'bg-brand-500/10' },
-          { icon: Activity,   label: 'Activos hoy',     value: '8,241',  change: '+5%',  color: 'text-success',    bg: 'bg-success/10' },
-          { icon: TrendingUp, label: 'Nuevos esta sem', value: '342',    change: '+18%', color: 'text-orange-400', bg: 'bg-orange-500/10' },
-          { icon: Database,   label: 'Entrenamientos',  value: '2.1M',   change: '+8%',  color: 'text-purple-400', bg: 'bg-purple-500/10' },
+          { icon: Users,      label: t('totalUsers'),    value: '49,032', change: '+12%', color: 'text-brand-400',  bg: 'bg-brand-500/10' },
+          { icon: Activity,   label: t('activeToday'),  value: '8,241',  change: '+5%',  color: 'text-success',    bg: 'bg-success/10' },
+          { icon: TrendingUp, label: t('newThisWeek'),  value: '342',    change: '+18%', color: 'text-orange-400', bg: 'bg-orange-500/10' },
+          { icon: Database,   label: t('totalWorkouts'),value: '2.1M',   change: '+8%',  color: 'text-purple-400', bg: 'bg-purple-500/10' },
         ].map(({ icon: Icon, label, value, change, color, bg }, i) => (
           <motion.div key={label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} className="card">
             <div className={`w-9 h-9 rounded-lg ${bg} flex items-center justify-center mb-3`}>
@@ -52,7 +54,7 @@ export default function AdminPage() {
             </div>
             <p className="text-2xl font-bold">{value}</p>
             <p className="text-xs text-white/40 mt-0.5">{label}</p>
-            <p className="text-xs text-success mt-1">{change} este mes</p>
+            <p className="text-xs text-success mt-1">{change} {t('thisMonth')}</p>
           </motion.div>
         ))}
       </div>
@@ -60,7 +62,7 @@ export default function AdminPage() {
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Registration chart */}
         <div className="lg:col-span-2 card">
-          <h2 className="font-semibold mb-4">Nuevos registros por mes</h2>
+          <h2 className="font-semibold mb-4">{t('newRegistrations')}</h2>
           <ResponsiveContainer width="100%" height={200}>
             <AreaChart data={registrationData}>
               <defs>
@@ -80,7 +82,7 @@ export default function AdminPage() {
 
         {/* Roles distribution */}
         <div className="card">
-          <h2 className="font-semibold mb-4">Distribución por rol</h2>
+          <h2 className="font-semibold mb-4">{t('roleDistribution')}</h2>
           <ResponsiveContainer width="100%" height={200}>
             <BarChart data={activeByRole} layout="vertical">
               <XAxis type="number" tick={{ fill: '#ffffff50', fontSize: 11 }} />
@@ -95,9 +97,9 @@ export default function AdminPage() {
       {/* Recent users */}
       <div className="card">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold">Usuarios recientes</h2>
+          <h2 className="font-semibold">{t('recentUsers')}</h2>
           <a href="/admin/users" className="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1">
-            Ver todos <ChevronRight size={12} />
+            {t('viewAll')} <ChevronRight size={12} />
           </a>
         </div>
         <div className="space-y-3">
@@ -123,7 +125,7 @@ export default function AdminPage() {
       {/* System status */}
       <div className="card">
         <div className="flex items-center gap-2 mb-4">
-          <h2 className="font-semibold">Estado de servicios</h2>
+          <h2 className="font-semibold">{t('serviceStatus')}</h2>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-3">
           {[

@@ -13,39 +13,41 @@ import { cn } from '@utils/cn'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const features = [
-  { icon: Brain,      title: 'IA Integrada',          desc: 'Análisis de postura, recomendaciones personalizadas y chatbot nutricional con inteligencia artificial.', color: 'from-purple-500 to-pink-500',   span: 'col-span-2' },
-  { icon: Shield,     title: 'Seguridad Total',        desc: '2FA, cifrado end-to-end y GDPR. Tus datos protegidos.',                                                   color: 'from-indigo-500 to-violet-400', span: 'col-span-1' },
-  { icon: Dumbbell,   title: 'Rutinas Inteligentes',   desc: 'Más de 200 ejercicios con vídeo, progresión automática y records personales.',                            color: 'from-brand-500 to-cyan-400',    span: 'col-span-1' },
-  { icon: Apple,      title: 'Nutrición Avanzada',     desc: 'Escaneo de código de barras, 500K alimentos y planes de dieta personalizados.',                           color: 'from-green-500 to-emerald-400', span: 'col-span-1' },
-  { icon: TrendingUp, title: 'Analíticas Detalladas',  desc: 'Dashboards interactivos, predicciones de progreso y análisis de composición corporal.',                   color: 'from-orange-500 to-yellow-400', span: 'col-span-1' },
-  { icon: Users,      title: 'Comunidad Social',       desc: 'Retos entre amigos, clasificación, feed de actividad y logros gamificados.',                              color: 'from-pink-500 to-rose-400',    span: 'col-span-2' },
-]
-
-const plans = [
-  {
-    name: 'Starter', price: 'Gratis', period: '',
-    features: ['Dashboard básico', '50 ejercicios', 'Registro de comidas', 'Comunidad'],
-    cta: 'Empezar gratis', featured: false,
-  },
-  {
-    name: 'Pro', price: '€9.99', period: '/mes',
-    features: ['Todo en Starter', '200+ ejercicios con vídeo', 'IA postura y nutrición', 'Sin límites', 'Analíticas avanzadas', 'Soporte prioritario'],
-    cta: 'Empezar Pro', featured: true,
-  },
-  {
-    name: 'Trainer', price: '€24.99', period: '/mes',
-    features: ['Todo en Pro', 'Panel de entrenador', 'Gestión de clientes', 'Planes personalizados', 'API access', 'White-label'],
-    cta: 'Contactar', featured: false,
-  },
-]
-
 const LANGS = [
   { code: 'es', label: 'Español', short: 'ES' },
   { code: 'en', label: 'English', short: 'EN' },
 ]
 
-function DashboardPreview() {
+function Sphere3D() {
+  return (
+    <div className="relative hidden md:flex items-center justify-center">
+      <style>{`
+        @keyframes sphereFloat{0%,100%{transform:translateY(0) rotate(0deg)}50%{transform:translateY(-18px) rotate(3deg)}}
+        @keyframes sphereGlow{0%,100%{opacity:0.4}50%{opacity:0.7}}
+        .sphere-3d{
+          width:380px;height:380px;border-radius:50%;
+          background:radial-gradient(circle at 35% 30%, #1e3a5f 0%, #0d1f35 35%, #060e1a 70%, #020810 100%);
+          box-shadow: inset -30px -30px 60px rgba(0,0,0,0.8), inset 10px 10px 40px rgba(14,165,233,0.08), 0 0 80px rgba(14,165,233,0.1), 0 30px 80px rgba(0,0,0,0.5);
+          animation: sphereFloat 6s ease-in-out infinite;
+          position:relative;overflow:hidden;
+        }
+        .sphere-3d::before{
+          content:'';position:absolute;top:8%;left:20%;width:28%;height:18%;
+          background:radial-gradient(ellipse, rgba(255,255,255,0.18) 0%, transparent 70%);
+          border-radius:50%;transform:rotate(-20deg);
+        }
+        .sphere-3d::after{
+          content:'';position:absolute;top:0;left:0;right:0;bottom:0;border-radius:50%;
+          background:radial-gradient(circle at 60% 65%, rgba(14,165,233,0.06) 0%, transparent 50%);
+        }
+      `}</style>
+      <div className="sphere-3d" />
+      <div className="absolute inset-0 rounded-full" style={{background:'radial-gradient(circle at 50% 50%, transparent 45%, rgba(14,165,233,0.05) 70%, transparent 100%)', animation:'sphereGlow 6s ease-in-out infinite'}} />
+    </div>
+  )
+}
+
+function DashboardPreview({ xpLabel, weeklyLabel, streakLabel, weekDays }: { xpLabel: string; weeklyLabel: string; streakLabel: string; weekDays: string[] }) {
   return (
     <div className="relative hidden md:block" style={{ animation: 'float 4s ease-in-out infinite' }}>
       <style>{`@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}`}</style>
@@ -66,7 +68,7 @@ function DashboardPreview() {
 
         <div className="mb-4">
           <div className="flex justify-between text-[10px] text-white/30 mb-1">
-            <span>Progreso XP</span><span>9,500 / 10,000</span>
+            <span>{xpLabel}</span><span>9,500 / 10,000</span>
           </div>
           <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
             <div className="h-full w-[95%] bg-gradient-to-r from-brand-500 to-cyan-400 rounded-full" />
@@ -88,14 +90,14 @@ function DashboardPreview() {
         </div>
 
         <div>
-          <p className="text-[10px] text-white/30 mb-2 uppercase tracking-wide">Actividad semanal</p>
+          <p className="text-[10px] text-white/30 mb-2 uppercase tracking-wide">{weeklyLabel}</p>
           <div className="flex items-end gap-1.5 h-10">
             {[65,80,45,90,70,85,60].map((h, i) => (
               <div key={i} className="flex-1 rounded-sm" style={{ height: `${h}%`, background: i === 3 ? 'linear-gradient(to top,#0ea5e9,#22d3ee)' : 'rgba(255,255,255,0.08)' }} />
             ))}
           </div>
           <div className="flex justify-between mt-1.5">
-            {['L','M','X','J','V','S','D'].map((d) => <span key={d} className="flex-1 text-center text-[9px] text-white/20">{d}</span>)}
+            {weekDays.map((d) => <span key={d} className="flex-1 text-center text-[9px] text-white/20">{d}</span>)}
           </div>
         </div>
       </div>
@@ -105,17 +107,44 @@ function DashboardPreview() {
       </div>
       <div className="absolute -bottom-3 -left-4 bg-[#141414] border border-white/10 rounded-xl px-3 py-2 shadow-xl flex items-center gap-2">
         <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-        <span className="text-xs text-white/70 font-medium">Racha: 30 días</span>
+        <span className="text-xs text-white/70 font-medium">{streakLabel}</span>
       </div>
     </div>
   )
 }
 
 export default function LandingPage() {
-  const { i18n } = useTranslation()
+  const { t, i18n } = useTranslation('landing')
   const heroRef = useRef<HTMLDivElement>(null)
   const [langOpen, setLangOpen] = useState(false)
   const currentLang = LANGS.find((l) => l.code === i18n.language) ?? LANGS[0]
+
+  const features = [
+    { icon: Brain,      title: t('featureAITitle'),    desc: t('featureAIDesc'),    color: 'from-purple-500 to-pink-500',   span: 'col-span-2' },
+    { icon: Shield,     title: t('featureSecTitle'),   desc: t('featureSecDesc'),   color: 'from-indigo-500 to-violet-400', span: 'col-span-1' },
+    { icon: Dumbbell,   title: t('featureGymTitle'),   desc: t('featureGymDesc'),   color: 'from-brand-500 to-cyan-400',    span: 'col-span-1' },
+    { icon: Apple,      title: t('featureNutTitle'),   desc: t('featureNutDesc'),   color: 'from-green-500 to-emerald-400', span: 'col-span-1' },
+    { icon: TrendingUp, title: t('featureAnalTitle'),  desc: t('featureAnalDesc'),  color: 'from-orange-500 to-yellow-400', span: 'col-span-1' },
+    { icon: Users,      title: t('featureSocialTitle'),desc: t('featureSocialDesc'),color: 'from-pink-500 to-rose-400',     span: 'col-span-2' },
+  ]
+
+  const plans = [
+    {
+      name: 'Starter', price: t('planStarterPrice'), period: '',
+      features: [t('planStarterF1'), t('planStarterF2'), t('planStarterF3'), t('planStarterF4')],
+      cta: t('planStarterCta'), featured: false,
+    },
+    {
+      name: 'Pro', price: '€9.99', period: t('planPeriodMonth'),
+      features: [t('planProF1'), t('planProF2'), t('planProF3'), t('planProF4'), t('planProF5'), t('planProF6')],
+      cta: t('planProCta'), featured: true,
+    },
+    {
+      name: 'Trainer', price: '€24.99', period: t('planPeriodMonth'),
+      features: [t('planTrainerF1'), t('planTrainerF2'), t('planTrainerF3'), t('planTrainerF4'), t('planTrainerF5'), t('planTrainerF6')],
+      cta: t('planTrainerCta'), featured: false,
+    },
+  ]
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -155,9 +184,9 @@ export default function LandingPage() {
         </div>
 
         <div className="hidden md:flex items-center gap-8 text-sm text-white/60">
-          <a href="#features" className="hover:text-white transition-colors">Funciones</a>
-          <a href="#pricing"  className="hover:text-white transition-colors">Precios</a>
-          <a href="#about"    className="hover:text-white transition-colors">Nosotros</a>
+          <a href="#features" className="hover:text-white transition-colors">{t('navFeatures')}</a>
+          <a href="#pricing"  className="hover:text-white transition-colors">{t('navPricing')}</a>
+          <a href="#about"    className="hover:text-white transition-colors">{t('navAbout')}</a>
         </div>
 
         <div className="flex items-center gap-2">
@@ -193,8 +222,8 @@ export default function LandingPage() {
               </>
             )}
           </div>
-          <Link to="/login"    className="px-4 py-2 text-sm text-white/70 hover:text-white transition-colors">Entrar</Link>
-          <Link to="/register" className="px-4 py-2 text-sm bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-medium transition-colors">Empezar gratis</Link>
+          <Link to="/login"    className="px-4 py-2 text-sm text-white/70 hover:text-white transition-colors">{t('signIn')}</Link>
+          <Link to="/register" className="px-4 py-2 text-sm bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-medium transition-colors">{t('startFree')}</Link>
         </div>
       </nav>
 
@@ -209,34 +238,34 @@ export default function LandingPage() {
           <div className="space-y-8">
             <div className="hero-badge inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand-500/30 bg-brand-500/10 text-sm text-brand-300">
               <Activity size={13} />
-              <span>IA-Powered Fitness Platform</span>
+              <span>{t('heroBadge')}</span>
             </div>
 
             <h1 className="hero-title text-5xl md:text-6xl lg:text-[4.5rem] font-display font-black leading-[1.05] tracking-tight">
-              Forja tu<br />
-              <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">mejor versión</span><br />
-              <span className="text-white/80">con IA</span>
+              {t('heroTitle1')}<br />
+              <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">{t('heroTitle2')}</span><br />
+              <span className="text-white/80">{t('heroTitle3')}</span>
             </h1>
 
             <p className="hero-sub text-lg text-white/55 max-w-lg leading-relaxed">
-              La plataforma fitness más avanzada: entrena con IA, come inteligente, conecta con tu comunidad y mide tu evolución con analíticas de nivel profesional.
+              {t('heroSubtitle')}
             </p>
 
             <div className="hero-cta flex flex-col sm:flex-row gap-3">
               <Link to="/register" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-all text-base group">
-                Empieza gratis <ArrowRight size={17} className="group-hover:translate-x-1 transition-transform" />
+                {t('startFreeBtn')} <ArrowRight size={17} className="group-hover:translate-x-1 transition-transform" />
               </Link>
               <button className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-white/15 hover:border-white/30 text-white/80 hover:text-white rounded-xl transition-all text-base">
-                <Play size={15} className="text-brand-400" /> Ver demo
+                <Play size={15} className="text-brand-400" /> {t('watchDemo')}
               </button>
             </div>
 
             <div className="flex flex-wrap gap-8">
               {[
-                { value: '50K+', label: 'Usuarios activos', star: false },
-                { value: '200+', label: 'Ejercicios',        star: false },
-                { value: '500K', label: 'Alimentos en BD',   star: false },
-                { value: '4.9',  label: 'Valoración media',  star: true  },
+                { value: '50K+', label: t('statActiveUsers'), star: false },
+                { value: '200+', label: t('statExercises'),   star: false },
+                { value: '500K', label: t('statFoods'),       star: false },
+                { value: '4.9',  label: t('statRating'),      star: true  },
               ].map(({ value, label, star }) => (
                 <div key={label} className="hero-stats">
                   <div className="flex items-center gap-1 text-2xl font-bold bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">
@@ -249,12 +278,12 @@ export default function LandingPage() {
           </div>
 
           <div className="hero-visual flex justify-center">
-            <DashboardPreview />
+            <Sphere3D />
           </div>
         </div>
 
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/25 text-xs">
-          <span>Scroll</span>
+          <span>{t('scrollHint')}</span>
           <div className="w-px h-8 bg-gradient-to-b from-white/25 to-transparent" />
         </div>
       </section>
@@ -264,11 +293,11 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">
-              Todo lo que necesitas<br />
-              <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">en un solo lugar</span>
+              {t('featuresTitle1')}<br />
+              <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">{t('featuresTitle2')}</span>
             </h2>
             <p className="text-white/45 text-lg max-w-2xl mx-auto">
-              Desde análisis con IA hasta gamificación social, FitForge tiene cada aspecto de tu fitness cubierto.
+              {t('featuresSubtitle')}
             </p>
           </div>
 
@@ -297,10 +326,10 @@ export default function LandingPage() {
       <section className="stats-section py-20 px-6 md:px-12 border-y border-white/5">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
-            { icon: Users,    value: '50,000+', label: 'Usuarios activos' },
-            { icon: Dumbbell, value: '2M+',     label: 'Entrenamientos completados' },
-            { icon: Target,   value: '87%',     label: 'Usuarios que logran sus metas' },
-            { icon: Award,    value: '4.9/5',   label: 'Valoración media' },
+            { icon: Users,    value: '50,000+', label: t('statsActiveUsers') },
+            { icon: Dumbbell, value: '2M+',     label: t('statsWorkouts') },
+            { icon: Target,   value: '87%',     label: t('statsGoal') },
+            { icon: Award,    value: '4.9/5',   label: t('statsRating') },
           ].map(({ icon: Icon, value, label }) => (
             <div key={label} className="stat-item text-center">
               <Icon size={26} className="text-brand-400 mx-auto mb-3 opacity-80" />
@@ -316,9 +345,9 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">
-              Precios <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">transparentes</span>
+              {t('pricingTitle1')} <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">{t('pricingTitle2')}</span>
             </h2>
-            <p className="text-white/45 text-lg">Empieza gratis, escala cuando lo necesites.</p>
+            <p className="text-white/45 text-lg">{t('pricingSubtitle')}</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-5 items-center">
@@ -334,7 +363,7 @@ export default function LandingPage() {
               >
                 {featured && (
                   <span className="inline-block text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30 mb-3">
-                    Más popular
+                    {t('mostPopular')}
                   </span>
                 )}
                 <h3 className="text-xl font-bold mb-2 text-white">{name}</h3>
@@ -369,28 +398,28 @@ export default function LandingPage() {
         <div className="max-w-3xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 mb-6 text-white/40 text-sm">
             <Smartphone size={16} className="text-brand-400" />
-            <span>Disponible como PWA en móvil y escritorio</span>
+            <span>{t('pwaBadge')}</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-display font-bold mb-6">
-            Listo para forjar<br />
-            <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">tu mejor versión</span>
+            {t('ctaTitle1')}<br />
+            <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">{t('ctaTitle2')}</span>
           </h2>
           <p className="text-white/50 text-lg mb-10">
-            Únete a más de 50,000 personas que ya están transformando su vida con FitForge.
+            {t('ctaSubtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link to="/register" className="inline-flex items-center gap-2 px-10 py-4 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-all text-base">
-              Crear cuenta gratis <ArrowRight size={17} />
+              {t('createFreeAccount')} <ArrowRight size={17} />
             </Link>
             <div className="flex items-center gap-2 text-white/40 text-sm">
-              <Check size={13} className="text-green-400" /> Sin tarjeta de crédito
+              <Check size={13} className="text-green-400" /> {t('noCreditCard')}
             </div>
           </div>
           <div className="flex items-center justify-center gap-1 mt-8">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star key={i} size={15} className="fill-yellow-400 text-yellow-400" />
             ))}
-            <span className="text-white/40 text-sm ml-2">4.9/5 · más de 2,000 reseñas</span>
+            <span className="text-white/40 text-sm ml-2">{t('reviews')}</span>
           </div>
         </div>
       </section>
@@ -405,12 +434,12 @@ export default function LandingPage() {
             <span className="font-bold bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">FitForge</span>
           </div>
           <p className="text-white/25 text-sm text-center flex items-center gap-1.5">
-            © 2025 FitForge. Hecho con <Heart size={12} className="text-red-400 fill-red-400" /> para el TFG.
+            © 2025 FitForge. {t('madeWith')} <Heart size={12} className="text-red-400 fill-red-400" /> {t('forTFG')}
           </p>
           <div className="flex gap-6 text-sm text-white/35">
-            <a href="#" className="hover:text-white transition-colors">Privacidad</a>
-            <a href="#" className="hover:text-white transition-colors">Términos</a>
-            <a href="#" className="hover:text-white transition-colors">Contacto</a>
+            <a href="#" className="hover:text-white transition-colors">{t('privacy')}</a>
+            <a href="#" className="hover:text-white transition-colors">{t('terms')}</a>
+            <a href="#" className="hover:text-white transition-colors">{t('contact')}</a>
           </div>
         </div>
       </footer>

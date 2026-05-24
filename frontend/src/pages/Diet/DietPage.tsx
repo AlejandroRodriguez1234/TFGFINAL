@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { Plus, Search, Camera, Droplets, Flame, Coffee, Utensils, Apple, Moon, X, Loader2, Trash2 } from 'lucide-react'
+import { Plus, Search, Camera, Droplets, Flame, Coffee, Utensils, Apple, Moon, X, Loader2, Trash2, ImagePlus } from 'lucide-react'
 import { cn } from '@utils/cn'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
 import { dietApi } from '@services/api'
 import { useDailyStore } from '@store/dailyStore'
+import { n8nApi, type FoodAnalysisResult } from '@services/n8nApi'
 
 type FoodItem = {
   id: string
@@ -65,7 +66,7 @@ function calcMacros(entries: MealEntry[]) {
 }
 
 export default function DietPage() {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { today, setCalories, setWater } = useDailyStore()
   const [entries, setEntries]             = useState<MealEntry[]>([])
   const [loadingMeals, setLoadingMeals]   = useState(true)
@@ -90,6 +91,13 @@ export default function DietPage() {
   const [foodProt, setFoodProt]   = useState('')
   const [foodCarbs, setFoodCarbs] = useState('')
   const [foodFat, setFoodFat]     = useState('')
+
+  const [photoModal, setPhotoModal]       = useState(false)
+  const [photoLoading, setPhotoLoading]   = useState(false)
+  const [photoResult, setPhotoResult]     = useState<FoodAnalysisResult | null>(null)
+  const [photoMeal, setPhotoMeal]         = useState('breakfast')
+  const [photoPreview, setPhotoPreview]   = useState<string | null>(null)
+  const photoInputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     dietApi.get<{ success: boolean; data: MealEntry[] }>('/api/meals/today')
@@ -299,6 +307,67 @@ export default function DietPage() {
     }
   }
 
+  const handlePhotoSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    const reader = new FileReader()
+    reader.onload = async (ev) => {
+      const dataUrl = ev.target?.result as string
+      setPhotoPreview(dataUrl)
+      setPhotoModal(true)
+      setPhotoResult(null)
+      setPhotoLoading(true)
+      const base64 = dataUrl.split(',')[1]
+      const lang = i18n.language.startsWith('es') ? 'es' : 'en'
+      try {
+        const res = await n8nApi.analyzeFood(base64, lang)
+        if (res.analysis) setPhotoResult(res.analysis)
+        else toast.error(t('diet:photoError'))
+      } catch {
+        toast.error(t('diet:photoError'))
+      } finally {
+        setPhotoLoading(false)
+      }
+    }
+    reader.readAsDataURL(file)
+    e.target.value = ''
+  }
+
+  const handlePhotoAdd = async () => {
+    if (!photoResult) return
+    const demoEntry: MealEntry = {
+      id:         crypto.randomUUID(),
+      meal_type:  photoMeal as MealEntry['meal_type'],
+      quantity:   photoResult.serving_size,
+      logged_at:  new Date().toISOString(),
+      food_item: {
+        id:           crypto.randomUUID(),
+        name:         photoResult.food_name,
+        brand:        null,
+        calories:     photoResult.calories,
+        protein:      photoResult.protein,
+        carbs:        photoResult.carbs,
+        fat:          photoResult.fat,
+        serving_size: photoResult.serving_size,
+        serving_unit: 'g',
+      },
+    }
+    try {
+      const rf = await dietApi.post<{ success: boolean; data: FoodItem }>('/api/foods', {
+        name: photoResult.food_name, calories: photoResult.calories,
+        protein: photoResult.protein, carbs: photoResult.carbs,
+        fat: photoResult.fat, serving_size: photoResult.serving_size, serving_unit: 'g',
+      })
+      await addEntry(rf.data.data.id, photoMeal, photoResult.serving_size)
+    } catch {
+      setEntries(prev => [...prev, demoEntry])
+      toast.success(t('diet:foodAdded'))
+    }
+    setPhotoModal(false)
+    setPhotoResult(null)
+    setPhotoPreview(null)
+  }
+
   const todayMacros = calcMacros(entries)
   const pct = (val: number, target: number) => Math.min(100, (val / target) * 100)
   const piData = [
@@ -314,9 +383,15 @@ export default function DietPage() {
           <h1 className="text-3xl font-display font-bold">{t('diet:title')}</h1>
           <p className="text-white/40 text-sm mt-1">{t('diet:subtitle')}</p>
         </div>
-        <button onClick={() => setBarcodeModal(true)} className="btn-secondary text-sm px-3 py-2">
-          <Camera size={16} /> {t('diet:scanBtn')}
-        </button>
+        <div className="flex gap-2">
+          <button onClick={() => setBarcodeModal(true)} className="btn-secondary text-sm px-3 py-2">
+            <Camera size={16} /> {t('diet:scanBtn')}
+          </button>
+          <button onClick={() => photoInputRef.current?.click()} className="btn-secondary text-sm px-3 py-2">
+            <ImagePlus size={16} /> {t('diet:photoBtn')}
+          </button>
+          <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoSelect} />
+        </div>
       </div>
 
       {/* Macro summary */}
@@ -519,6 +594,74 @@ export default function DietPage() {
                   </select>
                   <button onClick={handleBarcodeAdd} className="btn-primary w-full text-sm">
                     <Plus size={15} /> {t('common:add')} (100g)
+                  </button>
+                </div>
+              </div>
+            )}
+          </motion.div>
+        </div>
+      )}
+
+      {/* Photo analysis modal */}
+      {photoModal && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={() => { setPhotoModal(false); setPhotoResult(null); setPhotoPreview(null) }}>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+            onClick={e => e.stopPropagation()}
+            className="glass border border-white/10 rounded-2xl p-6 w-full max-w-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <ImagePlus size={18} className="text-brand-400" />
+                <h3 className="font-semibold">{t('diet:photoTitle')}</h3>
+              </div>
+              <button onClick={() => { setPhotoModal(false); setPhotoResult(null); setPhotoPreview(null) }} className="btn-ghost p-1.5"><X size={16} /></button>
+            </div>
+
+            {photoPreview && (
+              <div className="mb-4 rounded-xl overflow-hidden max-h-48 flex items-center justify-center bg-surface-100">
+                <img src={photoPreview} alt="food" className="object-cover w-full max-h-48" />
+              </div>
+            )}
+
+            {photoLoading && (
+              <div className="flex flex-col items-center gap-3 py-4">
+                <Loader2 size={28} className="animate-spin text-brand-400" />
+                <p className="text-sm text-white/50">{t('diet:photoAnalyzing')}</p>
+              </div>
+            )}
+
+            {!photoLoading && photoResult && (
+              <div className="space-y-4">
+                <div className="p-3 rounded-xl bg-surface-100 border border-brand-500/20">
+                  <p className="text-sm font-semibold">{photoResult.food_name}</p>
+                  <p className="text-xs text-white/40 mt-0.5">{t('diet:photoConfidence')}: <span className={cn(
+                    photoResult.confidence === 'high' ? 'text-success' : photoResult.confidence === 'medium' ? 'text-yellow-400' : 'text-danger'
+                  )}>{photoResult.confidence}</span></p>
+                  {photoResult.description && (
+                    <p className="text-xs text-white/30 mt-1 italic">{photoResult.description}</p>
+                  )}
+                  <div className="grid grid-cols-4 gap-2 mt-3 text-xs text-center">
+                    {[
+                      { label: 'kcal', value: Math.round(photoResult.calories), color: 'text-white' },
+                      { label: 'prot', value: `${Math.round(photoResult.protein)}g`, color: 'text-sky-400' },
+                      { label: 'carb', value: `${Math.round(photoResult.carbs)}g`, color: 'text-orange-400' },
+                      { label: 'fat', value: `${Math.round(photoResult.fat)}g`, color: 'text-purple-400' },
+                    ].map(({ label, value, color }) => (
+                      <div key={label} className="p-1.5 rounded-lg bg-surface-200">
+                        <p className={cn('font-bold', color)}>{value}</p>
+                        <p className="text-white/40">{label}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs text-white/40 mb-1 block">{t('diet:addFood')}</label>
+                  <select value={photoMeal} onChange={e => setPhotoMeal(e.target.value)} className="input w-full text-sm mb-3">
+                    {MEAL_TYPES.map(m => (
+                      <option key={m.type} value={m.type}>{t(`diet:${m.type}`)}</option>
+                    ))}
+                  </select>
+                  <button onClick={handlePhotoAdd} className="btn-primary w-full text-sm">
+                    <Plus size={15} /> {t('common:add')} ({photoResult.serving_size}g)
                   </button>
                 </div>
               </div>

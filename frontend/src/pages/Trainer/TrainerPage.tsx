@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import {
   Users, Dumbbell, TrendingUp, MessageSquare, Plus,
@@ -46,6 +47,7 @@ const SESSIONS = [
 type Tab = 'overview' | 'clients' | 'plans' | 'schedule'
 
 export default function TrainerPage() {
+  const { t } = useTranslation('trainer')
   const [tab, setTab]             = useState<Tab>('overview')
   const [search, setSearch]       = useState('')
   const [msgClient, setMsgClient] = useState<Client | null>(null)
@@ -57,27 +59,27 @@ export default function TrainerPage() {
 
   const sendMsg = () => {
     if (!msgText.trim()) return
-    toast.success(`Mensaje enviado a ${msgClient?.name}`)
+    toast.success(`${t('sendMessage')}: ${msgClient?.name}`)
     setMsgText('')
     setMsgClient(null)
   }
 
   const tabs: { key: Tab; label: string; icon: typeof Users }[] = [
-    { key: 'overview',  label: 'Resumen',     icon: BarChart2      },
-    { key: 'clients',   label: 'Clientes',    icon: Users          },
-    { key: 'plans',     label: 'Planes',      icon: Dumbbell       },
-    { key: 'schedule',  label: 'Sesiones',    icon: Clock          },
+    { key: 'overview',  label: t('overview'),  icon: BarChart2 },
+    { key: 'clients',   label: t('clients'),   icon: Users     },
+    { key: 'plans',     label: t('plans'),     icon: Dumbbell  },
+    { key: 'schedule',  label: t('schedule'),  icon: Clock     },
   ]
 
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-display font-bold">Panel de Entrenador</h1>
-          <p className="text-white/40 text-sm mt-1">Gestiona tus clientes, planes y sesiones</p>
+          <h1 className="text-3xl font-display font-bold">{t('panel')}</h1>
+          <p className="text-white/40 text-sm mt-1">{t('subtitle')}</p>
         </div>
-        <button onClick={() => toast.success('Invitación enviada')} className="btn-primary flex items-center gap-2">
-          <Plus size={16} /> Añadir cliente
+        <button onClick={() => toast.success(t('inviteSent'))} className="btn-primary flex items-center gap-2">
+          <Plus size={16} /> {t('addClient')}
         </button>
       </div>
 
@@ -102,10 +104,10 @@ export default function TrainerPage() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
             {[
-              { label: 'Clientes activos', value: '5',    icon: Users,      color: 'text-brand-400',  bg: 'bg-brand-500/10'  },
-              { label: 'Sesiones hoy',     value: '3',    icon: Dumbbell,   color: 'text-green-400',  bg: 'bg-green-500/10'  },
-              { label: 'Progreso medio',   value: '62%',  icon: TrendingUp, color: 'text-orange-400', bg: 'bg-orange-500/10' },
-              { label: 'Logros desbloq.',  value: '14',   icon: Award,      color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
+              { label: t('activeClients'),        value: '5',   icon: Users,      color: 'text-brand-400',  bg: 'bg-brand-500/10'  },
+              { label: t('sessionsToday'),        value: '3',   icon: Dumbbell,   color: 'text-green-400',  bg: 'bg-green-500/10'  },
+              { label: t('avgProgress'),          value: '62%', icon: TrendingUp, color: 'text-orange-400', bg: 'bg-orange-500/10' },
+              { label: t('unlockedAchievements'), value: '14',  icon: Award,      color: 'text-yellow-400', bg: 'bg-yellow-500/10' },
             ].map(({ label, value, icon: Icon, color, bg }, i) => (
               <motion.div key={label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.07 }} className="card">
                 <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center mb-3', bg)}>
@@ -120,7 +122,7 @@ export default function TrainerPage() {
           <div className="grid lg:grid-cols-2 gap-6">
             {/* Recent clients */}
             <div className="card space-y-4">
-              <h2 className="font-semibold">Clientes recientes</h2>
+              <h2 className="font-semibold">{t('recentClients')}</h2>
               {CLIENTS.slice(0, 4).map((c) => (
                 <div key={c.id} className="flex items-center gap-3">
                   <div className="w-9 h-9 rounded-full bg-gradient-to-br from-brand-500 to-cyan-400 flex items-center justify-center text-xs font-bold shrink-0">
@@ -143,7 +145,7 @@ export default function TrainerPage() {
 
             {/* Today's sessions */}
             <div className="card space-y-4">
-              <h2 className="font-semibold">Sesiones de hoy</h2>
+              <h2 className="font-semibold">{t('todaySessions')}</h2>
               {SESSIONS.filter((s) => s.time.startsWith('Hoy')).map((s) => (
                 <div key={s.id} className="flex items-center gap-3 p-3 rounded-xl bg-surface-100">
                   <div className={cn('w-8 h-8 rounded-lg flex items-center justify-center shrink-0', s.done ? 'bg-green-500/20' : 'bg-brand-500/20')}>
@@ -166,7 +168,7 @@ export default function TrainerPage() {
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
           <div className="relative">
             <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Buscar cliente..." className="input pl-9" />
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder={t('searchClient')} className="input pl-9" />
           </div>
           <div className="space-y-3">
             {filtered.map((c, i) => (
@@ -240,7 +242,7 @@ export default function TrainerPage() {
                 </div>
               </div>
               <button className="mt-4 w-full btn-secondary text-sm py-2 group-hover:border-brand-500/30 transition-colors">
-                Ver plan <ChevronRight size={14} className="inline" />
+                {t('viewPlan')} <ChevronRight size={14} className="inline" />
               </button>
             </motion.div>
           ))}
@@ -252,7 +254,7 @@ export default function TrainerPage() {
               <div className="w-12 h-12 rounded-full bg-brand-500/10 flex items-center justify-center mx-auto mb-3 group-hover:bg-brand-500/20 transition-colors">
                 <Plus size={20} className="text-brand-400" />
               </div>
-              <p className="text-sm font-medium text-white/60">Crear nuevo plan</p>
+              <p className="text-sm font-medium text-white/60">{t('createPlan')}</p>
             </div>
           </motion.div>
         </motion.div>
@@ -300,7 +302,7 @@ export default function TrainerPage() {
                 </div>
                 <div>
                   <p className="font-semibold text-sm">{msgClient.name}</p>
-                  <p className="text-xs text-white/40">Mensaje directo</p>
+                  <p className="text-xs text-white/40">{t('directMessage')}</p>
                 </div>
               </div>
               <button onClick={() => setMsgClient(null)} className="btn-ghost p-1.5"><X size={16} /></button>
@@ -308,13 +310,13 @@ export default function TrainerPage() {
             <textarea
               value={msgText}
               onChange={(e) => setMsgText(e.target.value)}
-              placeholder="Escribe tu mensaje..."
+              placeholder={t('writeMessage')}
               className="input w-full h-28 resize-none text-sm"
             />
             <div className="flex gap-2 mt-3">
-              <button onClick={() => setMsgClient(null)} className="btn-secondary flex-1 text-sm">Cancelar</button>
+              <button onClick={() => setMsgClient(null)} className="btn-secondary flex-1 text-sm">{t('common:cancel')}</button>
               <button onClick={sendMsg} className="btn-primary flex-1 text-sm flex items-center justify-center gap-2">
-                <Send size={14} /> Enviar
+                <Send size={14} /> {t('common:send')}
               </button>
             </div>
           </motion.div>

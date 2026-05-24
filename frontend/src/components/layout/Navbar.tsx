@@ -122,7 +122,7 @@ export default function Navbar() {
         <div className="relative">
           <button
             onClick={() => { setLangOpen(!langOpen); setNotifOpen(false); setProfileOpen(false) }}
-            className="btn-ghost px-2.5 py-2 flex items-center gap-1.5 text-xs font-semibold text-white/60 hover:text-white"
+            className="btn-ghost px-2.5 py-2 flex items-center gap-1.5 text-xs font-semibold text-white/90 hover:text-white border border-white/20 rounded-lg"
           >
             <Globe size={16} />
             <span className="hidden md:block">{currentLang.short}</span>
@@ -134,7 +134,7 @@ export default function Navbar() {
                 {LANGS.map(({ code, label, short }) => (
                   <button
                     key={code}
-                    onClick={() => { i18n.changeLanguage(code); setLangOpen(false); toast.success(`Idioma: ${label}`) }}
+                    onClick={() => { i18n.changeLanguage(code); setLangOpen(false); toast.success(t('common:languageChanged', { lang: label })) }}
                     className={cn(
                       'w-full flex items-center justify-between px-3 py-2 text-sm transition-colors text-left',
                       i18n.language === code ? 'text-brand-300 bg-brand-500/10' : 'text-white/70 hover:bg-white/10',
@@ -167,11 +167,11 @@ export default function Navbar() {
               <div className="fixed inset-0 z-10" onClick={() => setNotifOpen(false)} />
               <div className="absolute right-0 top-full mt-1 w-80 rounded-xl glass border border-white/10 shadow-xl z-20 overflow-hidden">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
-                  <span className="font-semibold text-sm">Notificaciones</span>
+                  <span className="font-semibold text-sm">{t('common:notifications')}</span>
                   <div className="flex items-center gap-2">
                     {unread > 0 && (
                       <button onClick={markAllReadLocal} className="text-xs text-brand-400 hover:text-brand-300">
-                        Marcar todo leído
+                        {t('common:markAllRead')}
                       </button>
                     )}
                     <button onClick={() => setNotifOpen(false)} className="btn-ghost p-1"><X size={14} /></button>
@@ -179,7 +179,7 @@ export default function Navbar() {
                 </div>
                 <div className="max-h-72 overflow-y-auto">
                   {notifications.length === 0 ? (
-                    <p className="text-center text-white/30 text-sm py-8">Sin notificaciones</p>
+                    <p className="text-center text-white/30 text-sm py-8">{t('common:noNotifications')}</p>
                   ) : (
                     notifications.map((n) => (
                       <button
@@ -243,10 +243,10 @@ export default function Navbar() {
                   {user?.role === 'ADMIN' && <span className="badge badge-brand mt-1">Admin</span>}
                 </div>
                 <button onClick={() => { navigate('/profile'); setProfileOpen(false) }} className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-white/10 transition-colors text-left">
-                  <User size={15} /> Perfil
+                  <User size={15} /> {t('common:profile')}
                 </button>
                 <button onClick={() => { navigate('/settings'); setProfileOpen(false) }} className="w-full flex items-center gap-2 px-3 py-2 text-sm hover:bg-white/10 transition-colors text-left">
-                  <Settings size={15} /> Ajustes
+                  <Settings size={15} /> {t('common:settings')}
                 </button>
                 <div className="border-t border-white/5 mt-1" />
                 <button onClick={handleLogout} className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 transition-colors text-left">

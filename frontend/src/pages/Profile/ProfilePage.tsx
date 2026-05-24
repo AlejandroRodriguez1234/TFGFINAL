@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { useAuthStore } from '@store/authStore'
 import { useHabitsStore } from '@store/habitsStore'
 import { useDailyStore } from '@store/dailyStore'
@@ -9,20 +10,21 @@ import { RadarChart, PolarGrid, PolarAngleAxis, Radar, ResponsiveContainer } fro
 import toast from 'react-hot-toast'
 
 export default function ProfilePage() {
+  const { t } = useTranslation()
   const { user, setUser } = useAuthStore()
   const { habits } = useHabitsStore()
   const { weekHistory, today } = useDailyStore()
 
-  const [editModal, setEditModal]   = useState(false)
-  const [editFirst, setEditFirst]   = useState(user?.firstName ?? '')
-  const [editLast, setEditLast]     = useState(user?.lastName ?? '')
-  const [editUser, setEditUser]     = useState(user?.username ?? '')
-  const [editBio, setEditBio]       = useState('')
+  const [editModal, setEditModal] = useState(false)
+  const [editFirst, setEditFirst] = useState(user?.firstName ?? '')
+  const [editLast,  setEditLast]  = useState(user?.lastName  ?? '')
+  const [editUser,  setEditUser]  = useState(user?.username  ?? '')
+  const [editBio,   setEditBio]   = useState('')
 
-  const totalWorkouts  = weekHistory.filter((d) => d.workoutMinutes > 0).length + (today.workoutMinutes > 0 ? 1 : 0)
-  const totalCalories  = Math.round((weekHistory.reduce((a, d) => a + d.calories, 0) + today.calories) / 1000)
-  const activeDays     = weekHistory.filter((d) => d.exercisesCompleted > 0 || d.workoutMinutes > 0).length
-  const habitsStreak   = habits.length > 0 ? Math.max(...habits.map((h) => h.streak)) : 0
+  const totalWorkouts = weekHistory.filter((d) => d.workoutMinutes > 0).length + (today.workoutMinutes > 0 ? 1 : 0)
+  const totalCalories = Math.round((weekHistory.reduce((a, d) => a + d.calories, 0) + today.calories) / 1000)
+  const activeDays    = weekHistory.filter((d) => d.exercisesCompleted > 0 || d.workoutMinutes > 0).length
+  const habitsStreak  = habits.length > 0 ? Math.max(...habits.map((h) => h.streak)) : 0
 
   const radarData = [
     { subject: 'Fuerza',       A: Math.min(100, 60 + totalWorkouts * 2) },
@@ -43,7 +45,7 @@ export default function ProfilePage() {
       username:  editUser.trim()  || user.username,
     })
     setEditModal(false)
-    toast.success('Perfil actualizado correctamente')
+    toast.success(t('profile:profileUpdated'))
   }
 
   return (
@@ -60,7 +62,7 @@ export default function ProfilePage() {
               <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-success border-2 border-surface-50" />
             </div>
             <button onClick={() => setEditModal(true)} className="btn-secondary text-sm px-3 py-2 mt-12">
-              <Edit size={14} /> Editar perfil
+              <Edit size={14} /> {t('profile:editProfile')}
             </button>
           </div>
           <div className="mt-4">
@@ -68,9 +70,9 @@ export default function ProfilePage() {
             <p className="text-white/50 text-sm">@{user?.username}</p>
             {editBio && <p className="text-white/60 text-sm mt-2">{editBio}</p>}
             <div className="flex items-center gap-3 mt-3">
-              <span className="badge badge-brand">Nivel {user?.level ?? 1}</span>
-              {user?.role === 'ADMIN' && <span className="badge badge-danger">Admin</span>}
-              <span className="text-xs text-white/40">Miembro desde {new Date(user?.createdAt ?? '').getFullYear()}</span>
+              <span className="badge badge-brand">{t('profile:levelN', { n: user?.level ?? 1 })}</span>
+              {user?.role === 'ADMIN' && <span className="badge badge-danger">{t('profile:adminBadge')}</span>}
+              <span className="text-xs text-white/40">{t('profile:memberSince')} {new Date(user?.createdAt ?? '').getFullYear()}</span>
             </div>
           </div>
         </div>
@@ -79,13 +81,13 @@ export default function ProfilePage() {
       <div className="grid md:grid-cols-2 gap-6">
         {/* Stats */}
         <div className="card">
-          <h2 className="font-semibold mb-4">Estadísticas globales</h2>
+          <h2 className="font-semibold mb-4">{t('profile:globalStats')}</h2>
           <div className="grid grid-cols-2 gap-4">
             {[
-              { icon: Dumbbell, label: 'Entrenamientos',   value: String(totalWorkouts || 1),      color: 'text-brand-400' },
-              { icon: Flame,    label: 'Calorías (miles)', value: `${totalCalories || 12}K`,        color: 'text-orange-400' },
-              { icon: Trophy,   label: 'Mejor racha',      value: `${habitsStreak} días`,           color: 'text-yellow-400' },
-              { icon: Calendar, label: 'Días activos',     value: String(activeDays || 5),          color: 'text-green-400' },
+              { icon: Dumbbell, label: t('profile:workouts'),  value: String(totalWorkouts || 1),       color: 'text-brand-400'  },
+              { icon: Flame,    label: t('profile:caloriesK'), value: `${totalCalories || 12}K`,         color: 'text-orange-400' },
+              { icon: Trophy,   label: t('profile:bestStreak'),value: t('profile:streakDays', { n: habitsStreak }), color: 'text-yellow-400' },
+              { icon: Calendar, label: t('profile:activeDays'),value: String(activeDays || 5),          color: 'text-green-400'  },
             ].map(({ icon: Icon, label, value, color }) => (
               <div key={label} className="text-center p-3 rounded-xl bg-surface-100">
                 <Icon size={20} className={cn(color, 'mx-auto mb-1')} />
@@ -98,7 +100,7 @@ export default function ProfilePage() {
 
         {/* Fitness radar */}
         <div className="card">
-          <h2 className="font-semibold mb-2">Perfil de fitness</h2>
+          <h2 className="font-semibold mb-2">{t('profile:fitnessProfile')}</h2>
           <ResponsiveContainer width="100%" height={200}>
             <RadarChart data={radarData}>
               <PolarGrid stroke="#2e2e2e" />
@@ -112,8 +114,8 @@ export default function ProfilePage() {
       {/* XP timeline */}
       <div className="card">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold">Progresión de nivel</h2>
-          <span className="badge badge-brand">{user?.xp ?? 0} XP total</span>
+          <h2 className="font-semibold">{t('profile:levelProgress')}</h2>
+          <span className="badge badge-brand">{t('profile:totalXP', { n: user?.xp ?? 0 })}</span>
         </div>
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-brand-500 to-cyan-400 flex items-center justify-center shrink-0">
@@ -121,8 +123,8 @@ export default function ProfilePage() {
           </div>
           <div className="flex-1">
             <div className="flex justify-between text-sm mb-2">
-              <span className="font-semibold">Nivel {user?.level ?? 1}</span>
-              <span className="text-white/40">{(user?.xp ?? 0) % 1000} / 1000 XP para Nivel {(user?.level ?? 1) + 1}</span>
+              <span className="font-semibold">{t('profile:levelN', { n: user?.level ?? 1 })}</span>
+              <span className="text-white/40">{t('profile:xpToNext', { xp: (user?.xp ?? 0) % 1000, lvl: (user?.level ?? 1) + 1 })}</span>
             </div>
             <div className="h-3 bg-surface-200 rounded-full overflow-hidden">
               <motion.div
@@ -146,7 +148,7 @@ export default function ProfilePage() {
             className="glass border border-white/10 rounded-2xl p-6 w-full max-w-md"
           >
             <div className="flex items-center justify-between mb-5">
-              <h3 className="font-semibold text-lg">Editar perfil</h3>
+              <h3 className="font-semibold text-lg">{t('profile:editProfile')}</h3>
               <button onClick={() => setEditModal(false)} className="btn-ghost p-1.5">
                 <X size={16} />
               </button>
@@ -154,49 +156,49 @@ export default function ProfilePage() {
             <form onSubmit={handleSaveProfile} className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-white/40 mb-1 block">Nombre</label>
+                  <label className="text-xs text-white/40 mb-1 block">{t('auth:firstName')}</label>
                   <input
                     value={editFirst}
                     onChange={(e) => setEditFirst(e.target.value)}
-                    placeholder="Nombre"
+                    placeholder={t('auth:firstName')}
                     className="input text-sm"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-white/40 mb-1 block">Apellidos</label>
+                  <label className="text-xs text-white/40 mb-1 block">{t('auth:lastName')}</label>
                   <input
                     value={editLast}
                     onChange={(e) => setEditLast(e.target.value)}
-                    placeholder="Apellidos"
+                    placeholder={t('auth:lastName')}
                     className="input text-sm"
                   />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-white/40 mb-1 block">Nombre de usuario</label>
+                <label className="text-xs text-white/40 mb-1 block">{t('auth:username')}</label>
                 <input
                   value={editUser}
                   onChange={(e) => setEditUser(e.target.value)}
-                  placeholder="usuario"
+                  placeholder={t('auth:username')}
                   className="input text-sm"
                 />
               </div>
               <div>
-                <label className="text-xs text-white/40 mb-1 block">Bio</label>
+                <label className="text-xs text-white/40 mb-1 block">{t('profile:bio')}</label>
                 <textarea
                   value={editBio}
                   onChange={(e) => setEditBio(e.target.value)}
-                  placeholder="Cuéntanos algo sobre ti..."
+                  placeholder={t('profile:bioPlaceholder')}
                   rows={2}
                   className="input text-sm resize-none"
                 />
               </div>
               <div className="flex gap-2 pt-1">
                 <button type="button" onClick={() => setEditModal(false)} className="btn-secondary flex-1 text-sm">
-                  Cancelar
+                  {t('common:cancel')}
                 </button>
                 <button type="submit" className="btn-primary flex-1 text-sm">
-                  <Save size={15} /> Guardar cambios
+                  <Save size={15} /> {t('common:saveChanges')}
                 </button>
               </div>
             </form>
