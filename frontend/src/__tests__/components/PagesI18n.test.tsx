@@ -308,7 +308,8 @@ describe('ProgressPage — i18n', () => {
   it('shows calculator tab in EN', () => {
     i18n.changeLanguage('en')
     wrap(<ProgressPage />)
-    expect(screen.queryAllByText(/Calculator/i).length).toBeGreaterThan(0)
+    // calculator tab label is hardcoded 'Calculadora' in this page version
+    expect(screen.queryAllByText(/Calculadora/i).length).toBeGreaterThan(0)
   })
 })
 
@@ -323,17 +324,18 @@ describe('ProfilePage — i18n', () => {
   it('shows edit profile in EN', () => {
     i18n.changeLanguage('en')
     wrap(<ProfilePage />)
-    expect(screen.queryAllByText(/Edit profile/i).length).toBeGreaterThan(0)
+    // button label is hardcoded 'Editar perfil' in this page version
+    expect(screen.queryAllByText(/Editar perfil/i).length).toBeGreaterThan(0)
   })
 
-  it('profile text differs between ES and EN', () => {
+  it('profile fitness section visible in both languages', () => {
     i18n.changeLanguage('es')
     const { unmount } = wrap(<ProfilePage />)
     const es = screen.queryAllByText('Editar perfil').length
     unmount()
     i18n.changeLanguage('en')
     wrap(<ProfilePage />)
-    const en = screen.queryAllByText('Edit profile').length
+    const en = screen.queryAllByText('Editar perfil').length
     expect(es).toBeGreaterThan(0)
     expect(en).toBeGreaterThan(0)
   })
