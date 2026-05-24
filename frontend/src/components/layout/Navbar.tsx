@@ -130,7 +130,7 @@ export default function Navbar() {
           {langOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setLangOpen(false)} />
-              <div className="absolute right-0 top-full mt-1 w-36 rounded-xl glass border border-white/10 shadow-xl z-20 py-1 overflow-hidden">
+              <div className="absolute right-0 top-full mt-1 w-36 rounded-xl bg-[#1c1c1c] border border-white/15 shadow-2xl z-20 py-1 overflow-hidden">
                 {LANGS.map(({ code, label, short }) => (
                   <button
                     key={code}
@@ -165,7 +165,7 @@ export default function Navbar() {
           {notifOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setNotifOpen(false)} />
-              <div className="absolute right-0 top-full mt-1 w-80 rounded-xl glass border border-white/10 shadow-xl z-20 overflow-hidden">
+              <div className="absolute right-0 top-full mt-1 w-80 rounded-xl bg-[#1c1c1c] border border-white/15 shadow-2xl z-20 overflow-hidden">
                 <div className="flex items-center justify-between px-4 py-3 border-b border-white/5">
                   <span className="font-semibold text-sm">{t('common:notifications')}</span>
                   <div className="flex items-center gap-2">
@@ -211,7 +211,7 @@ export default function Navbar() {
         {/* XP Level pill */}
         {user && (
           <div className="hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/20">
-            <span className="text-brand-400 text-xs font-bold">Nv.{user.level}</span>
+            <span className="text-brand-400 text-xs font-bold">{t('common:levelPrefix')}{user.level}</span>
             <div className="w-20 h-1.5 rounded-full bg-surface-200 overflow-hidden">
               <div
                 className="h-full bg-gradient-to-r from-brand-500 to-cyan-400 rounded-full"
@@ -236,7 +236,7 @@ export default function Navbar() {
           {profileOpen && (
             <>
               <div className="fixed inset-0 z-10" onClick={() => setProfileOpen(false)} />
-              <div className="absolute right-0 top-full mt-1 w-52 rounded-xl glass border border-white/10 shadow-xl z-20 py-1">
+              <div className="absolute right-0 top-full mt-1 w-52 rounded-xl bg-[#1c1c1c] border border-white/15 shadow-2xl z-20 py-1">
                 <div className="px-3 py-2 border-b border-white/5">
                   <p className="text-sm font-semibold">{user?.firstName} {user?.lastName}</p>
                   <p className="text-xs text-white/40">{user?.email}</p>
