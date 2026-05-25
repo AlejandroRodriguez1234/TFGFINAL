@@ -8,10 +8,10 @@
 ## 🏗️ Arquitectura
 
 ```
-┌─────────────────────────────────────────────────────────────┐
+┌───────────────────────────────────────────────────────────────┐
 │                        NGINX (Reverse Proxy)                 │
 │              Rate limiting · SSL · Load balancing            │
-└────┬──────────┬───────────┬───────────┬──────────────────────┘
+└────┬──────┬───────┬───────┬──────────────────────┘
      │          │           │           │
      ▼          ▼           ▼           ▼
  Frontend   Auth Svc    API Svc    Diet Svc    AI Svc
@@ -29,7 +29,7 @@
 ## 🚀 Stack Tecnológico
 
 | Capa | Tecnología | Propósito |
-|------|-----------|-----------|
+|------|-----------|----------|
 | **Frontend** | React 18 + TypeScript + Vite | SPA con lazy loading |
 | | Tailwind CSS + GSAP + Framer Motion | Animaciones avanzadas |
 | | Three.js + React Three Fiber | 3D en landing page |
@@ -166,7 +166,7 @@ fitforge/
 ## 👨‍💻 Roles de Usuario
 
 | Rol | Acceso |
-|-----|--------|
+|-----|-------|
 | **CLIENT** | Todas las funcionalidades de fitness |
 | **TRAINER** | Gestión de planes y clientes |
 | **ADMIN** | Panel de administración completo |
@@ -176,7 +176,7 @@ fitforge/
 ## 🔑 Credenciales de Acceso (Demo)
 
 | Rol | Email | Contraseña |
-|-----|-------|------------|
+|-----|-------|----------|
 | **Admin** | admin@fitforge.app | admin123 |
 | **Trainer** | trainer@fitforge.app | trainer123 |
 | **Cliente** | demo@fitforge.app | demo123 |
