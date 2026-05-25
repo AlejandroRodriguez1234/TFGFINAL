@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Play, Pause, Square, Plus, Minus, Check,
@@ -7,6 +7,7 @@ import {
 } from 'lucide-react'
 import { cn } from '@utils/cn'
 import { useDailyStore } from '@store/dailyStore'
+import { EXERCISE_CATALOG } from './GymPage'
 
 function beepDone() {
   try {
@@ -152,11 +153,38 @@ function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void })
 const emptyWorkout = { name: 'Nuevo entrenamiento', exercises: [] as Exercise[] }
 
 export default function WorkoutPage() {
-  const { id }       = useParams()
-  const navigate     = useNavigate()
+  const { id }         = useParams()
+  const navigate       = useNavigate()
+  const location       = useLocation()
   const { addWorkout } = useDailyStore()
-  const isNew        = id === 'new'
-  const workoutData  = isNew ? emptyWorkout : mockWorkout
+  const isNew          = id === 'new'
+
+  /* Build exercise list from the workout passed via navigation state */
+  const stateWorkout = (location.state as { workout?: { name: string; exerciseIds: string[] } } | null)?.workout
+  const workoutData = isNew
+    ? emptyWorkout
+    : stateWorkout
+      ? {
+          name: stateWorkout.name,
+          exercises: stateWorkout.exerciseIds
+            .map((eid) => {
+              const cat = EXERCISE_CATALOG.find((e) => e.id === eid)
+              if (!cat) return null
+              return {
+                id: cat.id,
+                name: cat.name,
+                sets: Array.from({ length: cat.defaultSets }, () => ({
+                  reps: cat.defaultReps,
+                  weight: cat.defaultWeight,
+                  completed: false,
+                })),
+                restSeconds: cat.restSeconds,
+              } as Exercise
+            })
+            .filter(Boolean) as Exercise[],
+        }
+      : mockWorkout
+
   const [exercises, setExercises] = useState<Exercise[]>(workoutData.exercises)
   const [elapsed, setElapsed]     = useState(0)
   const [running, setRunning]     = useState(false)
@@ -223,7 +251,7 @@ export default function WorkoutPage() {
       <div className="card">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-display font-bold">{workoutData.name}</h1>
+            <h1 className="text-2xl font-display font-bold">{workoutData.name ?? 'Entrenamiento'}</h1>
             <p className="text-white/40 text-sm">{exercises.length} ejercicios · {doneSets}/{totalSets} series</p>
           </div>
           <div className="text-center">

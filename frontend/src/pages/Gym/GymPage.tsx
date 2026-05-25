@@ -5,24 +5,28 @@ import { useTranslation } from 'react-i18next'
 import {
   Search, Play, Plus, Clock, Flame, ChevronRight,
   Dumbbell, BarChart2, Heart, RotateCcw, ArrowUp, Circle, Footprints, X, Check, Youtube,
+  Zap, TrendingUp, Wind, Activity, Stretch,
 } from 'lucide-react'
 import { cn } from '@utils/cn'
 import type { FC } from 'react'
 import type { LucideProps } from 'lucide-react'
 
-type Difficulty  = 'beginner' | 'intermediate' | 'advanced'
-type MuscleGroup = 'all' | 'chest' | 'back' | 'shoulders' | 'arms' | 'core' | 'legs'
+type Difficulty   = 'beginner' | 'intermediate' | 'advanced'
+type MuscleGroup  = 'all' | 'chest' | 'back' | 'shoulders' | 'arms' | 'core' | 'legs'
 type WorkableMuscle = Exclude<MuscleGroup, 'all'>
+type WorkoutType  = 'strength' | 'hypertrophy' | 'cardio' | 'endurance' | 'mobility'
 
 interface Workout {
-  id: string
-  name: string
-  difficulty: Difficulty
-  duration: number
-  calories: number
-  muscles: WorkableMuscle[]
-  exercises: number
-  isTemplate: boolean
+  id:          string
+  name:        string
+  difficulty:  Difficulty
+  duration:    number
+  calories:    number
+  muscles:     WorkableMuscle[]
+  exercises:   number
+  exerciseIds: string[]
+  isTemplate:  boolean
+  workoutType: WorkoutType
 }
 
 const muscleIconMap: Record<MuscleGroup, FC<LucideProps>> = {
@@ -35,28 +39,33 @@ const muscleIconMap: Record<MuscleGroup, FC<LucideProps>> = {
   legs:      Footprints,
 }
 
-const INITIAL_WORKOUTS: Workout[] = [
-  { id: '1', name: 'Push Day A', difficulty: 'intermediate', duration: 60, calories: 380, muscles: ['chest', 'shoulders', 'arms'], exercises: 6, isTemplate: true },
-  { id: '2', name: 'Pull Day A', difficulty: 'intermediate', duration: 65, calories: 400, muscles: ['back', 'arms'],               exercises: 7, isTemplate: true },
-  { id: '3', name: 'Leg Day',    difficulty: 'advanced',     duration: 75, calories: 520, muscles: ['legs', 'core'],               exercises: 8, isTemplate: true },
-  { id: '4', name: 'Full Body',  difficulty: 'beginner',     duration: 45, calories: 280, muscles: ['chest', 'back', 'legs'],      exercises: 5, isTemplate: true },
-  { id: '5', name: 'Core Blast', difficulty: 'intermediate', duration: 30, calories: 220, muscles: ['core'],                       exercises: 6, isTemplate: true },
-  { id: '6', name: 'Upper Body', difficulty: 'beginner',     duration: 50, calories: 310, muscles: ['chest', 'back', 'shoulders'], exercises: 6, isTemplate: true },
-]
+const WORKOUT_TYPE_CONFIG: Record<WorkoutType, { label: string; color: string; icon: FC<LucideProps> }> = {
+  strength:    { label: 'Fuerza',       color: 'bg-red-500/20 text-red-300 border-red-500/30',     icon: Zap       },
+  hypertrophy: { label: 'Hipertrofia',  color: 'bg-brand-500/20 text-brand-300 border-brand-500/30', icon: TrendingUp },
+  cardio:      { label: 'Cardio',       color: 'bg-orange-500/20 text-orange-300 border-orange-500/30', icon: Activity  },
+  endurance:   { label: 'Resistencia',  color: 'bg-green-500/20 text-green-300 border-green-500/30', icon: Wind      },
+  mobility:    { label: 'Movilidad',    color: 'bg-purple-500/20 text-purple-300 border-purple-500/30', icon: Stretch   },
+}
 
-const EXERCISE_CATALOG = [
-  { id: 'e1',  name: 'Press de banca',       muscle: 'chest'     as WorkableMuscle, difficulty: 'intermediate' as Difficulty, equipment: 'Barra',          youtubeId: 'gRVjAtPip0Y' },
-  { id: 'e2',  name: 'Dominadas',            muscle: 'back'      as WorkableMuscle, difficulty: 'intermediate' as Difficulty, equipment: 'Barra',          youtubeId: 'eGo4IYlbE5g' },
-  { id: 'e3',  name: 'Sentadilla',           muscle: 'legs'      as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Barra',          youtubeId: 'ultWZbUMPL8' },
-  { id: 'e4',  name: 'Press militar',        muscle: 'shoulders' as WorkableMuscle, difficulty: 'intermediate' as Difficulty, equipment: 'Barra',          youtubeId: '2yjwXTZQDDI' },
-  { id: 'e5',  name: 'Peso muerto',          muscle: 'back'      as WorkableMuscle, difficulty: 'advanced'     as Difficulty, equipment: 'Barra',          youtubeId: 'op9kVnSso6Q' },
-  { id: 'e6',  name: 'Curl de bíceps',       muscle: 'arms'      as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Mancuernas',    youtubeId: 'ykJmrZ5v0Oo' },
-  { id: 'e7',  name: 'Extensión tríceps',    muscle: 'arms'      as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Polea',          youtubeId: 'YbX7Wd8jQ-Q' },
-  { id: 'e8',  name: 'Plancha',              muscle: 'core'      as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Peso corporal',  youtubeId: 'pSHjTRCQxIw' },
-  { id: 'e9',  name: 'Remo con barra',       muscle: 'back'      as WorkableMuscle, difficulty: 'intermediate' as Difficulty, equipment: 'Barra',          youtubeId: 'FWJR5Ve8bnQ' },
-  { id: 'e10', name: 'Fondos en paralelas',  muscle: 'chest'     as WorkableMuscle, difficulty: 'intermediate' as Difficulty, equipment: 'Paralelas',      youtubeId: 'wjUmnZH528Y' },
-  { id: 'e11', name: 'Elevaciones laterales',muscle: 'shoulders' as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Mancuernas',    youtubeId: '3VcKaXpzqRo' },
-  { id: 'e12', name: 'Zancadas',             muscle: 'legs'      as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Mancuernas',    youtubeId: 'D7KaRcUTQeE' },
+export const EXERCISE_CATALOG = [
+  { id: 'e1',  name: 'Press de banca',        muscle: 'chest'     as WorkableMuscle, difficulty: 'intermediate' as Difficulty, equipment: 'Barra',         youtubeId: 'gRVjAtPip0Y', defaultSets: 4, defaultReps: 8,  defaultWeight: 70, restSeconds: 120 },
+  { id: 'e2',  name: 'Dominadas',             muscle: 'back'      as WorkableMuscle, difficulty: 'intermediate' as Difficulty, equipment: 'Barra',         youtubeId: 'eGo4IYlbE5g', defaultSets: 4, defaultReps: 8,  defaultWeight: 0,  restSeconds: 120 },
+  { id: 'e3',  name: 'Sentadilla',            muscle: 'legs'      as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Barra',         youtubeId: 'ultWZbUMPL8', defaultSets: 4, defaultReps: 8,  defaultWeight: 80, restSeconds: 120 },
+  { id: 'e4',  name: 'Press militar',         muscle: 'shoulders' as WorkableMuscle, difficulty: 'intermediate' as Difficulty, equipment: 'Barra',         youtubeId: '2yjwXTZQDDI', defaultSets: 4, defaultReps: 8,  defaultWeight: 50, restSeconds: 120 },
+  { id: 'e5',  name: 'Peso muerto',           muscle: 'back'      as WorkableMuscle, difficulty: 'advanced'     as Difficulty, equipment: 'Barra',         youtubeId: 'op9kVnSso6Q', defaultSets: 4, defaultReps: 5,  defaultWeight: 100,restSeconds: 180 },
+  { id: 'e6',  name: 'Curl de bíceps',        muscle: 'arms'      as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Mancuernas',   youtubeId: 'ykJmrZ5v0Oo', defaultSets: 3, defaultReps: 12, defaultWeight: 14, restSeconds: 60  },
+  { id: 'e7',  name: 'Extensión tríceps',     muscle: 'arms'      as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Polea',         youtubeId: 'YbX7Wd8jQ-Q', defaultSets: 3, defaultReps: 12, defaultWeight: 20, restSeconds: 60  },
+  { id: 'e8',  name: 'Plancha',               muscle: 'core'      as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Peso corporal', youtubeId: 'pSHjTRCQxIw', defaultSets: 3, defaultReps: 30, defaultWeight: 0,  restSeconds: 45  },
+  { id: 'e9',  name: 'Remo con barra',        muscle: 'back'      as WorkableMuscle, difficulty: 'intermediate' as Difficulty, equipment: 'Barra',         youtubeId: 'FWJR5Ve8bnQ', defaultSets: 4, defaultReps: 8,  defaultWeight: 60, restSeconds: 120 },
+  { id: 'e10', name: 'Fondos en paralelas',   muscle: 'chest'     as WorkableMuscle, difficulty: 'intermediate' as Difficulty, equipment: 'Paralelas',     youtubeId: 'wjUmnZH528Y', defaultSets: 3, defaultReps: 10, defaultWeight: 0,  restSeconds: 90  },
+  { id: 'e11', name: 'Elevaciones laterales', muscle: 'shoulders' as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Mancuernas',   youtubeId: '3VcKaXpzqRo', defaultSets: 3, defaultReps: 15, defaultWeight: 8,  restSeconds: 60  },
+  { id: 'e12', name: 'Zancadas',              muscle: 'legs'      as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Mancuernas',   youtubeId: 'D7KaRcUTQeE', defaultSets: 3, defaultReps: 12, defaultWeight: 20, restSeconds: 60  },
+  { id: 'e13', name: 'Press inclinado',       muscle: 'chest'     as WorkableMuscle, difficulty: 'intermediate' as Difficulty, equipment: 'Mancuernas',   youtubeId: 'DbFgADa26As', defaultSets: 3, defaultReps: 10, defaultWeight: 24, restSeconds: 90  },
+  { id: 'e14', name: 'Jalón al pecho',        muscle: 'back'      as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Polea',         youtubeId: 'CAwf7n6Luuc', defaultSets: 3, defaultReps: 12, defaultWeight: 50, restSeconds: 90  },
+  { id: 'e15', name: 'Prensa de piernas',     muscle: 'legs'      as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Máquina',       youtubeId: 'IZxyjW7MPJQ', defaultSets: 4, defaultReps: 10, defaultWeight: 100,restSeconds: 90  },
+  { id: 'e16', name: 'Crunch abdominal',      muscle: 'core'      as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Peso corporal', youtubeId: 'Xyd_fa5zoEU', defaultSets: 3, defaultReps: 20, defaultWeight: 0,  restSeconds: 45  },
+  { id: 'e17', name: 'Face pull',             muscle: 'shoulders' as WorkableMuscle, difficulty: 'beginner'     as Difficulty, equipment: 'Polea',         youtubeId: 'rep-qVOkqgk', defaultSets: 3, defaultReps: 15, defaultWeight: 15, restSeconds: 60  },
+  { id: 'e18', name: 'Hip thrust',            muscle: 'legs'      as WorkableMuscle, difficulty: 'intermediate' as Difficulty, equipment: 'Barra',         youtubeId: 'xDmFkJxPzeM', defaultSets: 4, defaultReps: 10, defaultWeight: 60, restSeconds: 90  },
 ]
 
 const muscleBadgeColors: Record<MuscleGroup, string> = {
@@ -76,25 +85,36 @@ const diffColors: Record<Difficulty, string> = {
 }
 
 const WORKABLE_MUSCLES: WorkableMuscle[] = ['chest', 'back', 'shoulders', 'arms', 'core', 'legs']
+const WORKOUT_TYPES: WorkoutType[]       = ['strength', 'hypertrophy', 'cardio', 'endurance', 'mobility']
 
 const EMPTY_FORM = {
   name:        '',
   difficulty:  'beginner' as Difficulty,
+  workoutType: 'hypertrophy' as WorkoutType,
   muscles:     [] as WorkableMuscle[],
   duration:    '',
   exerciseIds: [] as string[],
 }
 
+const INITIAL_WORKOUTS: Workout[] = [
+  { id: '1', name: 'Push Day A',  difficulty: 'intermediate', duration: 60, calories: 380, muscles: ['chest', 'shoulders', 'arms'], exercises: 6, exerciseIds: ['e1','e10','e13','e4','e11','e6'], isTemplate: true, workoutType: 'hypertrophy' },
+  { id: '2', name: 'Pull Day A',  difficulty: 'intermediate', duration: 65, calories: 400, muscles: ['back', 'arms'],               exercises: 7, exerciseIds: ['e2','e5','e9','e14','e7','e6'],  isTemplate: true, workoutType: 'hypertrophy' },
+  { id: '3', name: 'Leg Day',     difficulty: 'advanced',     duration: 75, calories: 520, muscles: ['legs', 'core'],               exercises: 8, exerciseIds: ['e3','e15','e12','e18','e8','e16'],isTemplate: true, workoutType: 'strength'    },
+  { id: '4', name: 'Full Body',   difficulty: 'beginner',     duration: 45, calories: 280, muscles: ['chest', 'back', 'legs'],      exercises: 5, exerciseIds: ['e1','e2','e3','e8','e12'],        isTemplate: true, workoutType: 'endurance'   },
+  { id: '5', name: 'Core Blast',  difficulty: 'intermediate', duration: 30, calories: 220, muscles: ['core'],                       exercises: 6, exerciseIds: ['e8','e16'],                       isTemplate: true, workoutType: 'endurance'   },
+  { id: '6', name: 'Upper Body',  difficulty: 'beginner',     duration: 50, calories: 310, muscles: ['chest', 'back', 'shoulders'], exercises: 6, exerciseIds: ['e1','e2','e4','e9','e11','e17'],  isTemplate: true, workoutType: 'hypertrophy' },
+]
+
 export default function GymPage() {
   const { t } = useTranslation()
   const location = useLocation()
-  const [tab, setTab]         = useState<'workouts' | 'exercises'>('workouts')
-  const [muscle, setMuscle]   = useState<MuscleGroup>('all')
-  const [search, setSearch]   = useState('')
+  const [tab, setTab]           = useState<'workouts' | 'exercises'>('workouts')
+  const [muscle, setMuscle]     = useState<MuscleGroup>('all')
+  const [search, setSearch]     = useState('')
   const [workouts, setWorkouts] = useState<Workout[]>(INITIAL_WORKOUTS)
   const [modalOpen, setModalOpen] = useState(false)
-  const [form, setForm]       = useState(EMPTY_FORM)
-  const [videoEx, setVideoEx] = useState<typeof EXERCISE_CATALOG[number] | null>(null)
+  const [form, setForm]         = useState(EMPTY_FORM)
+  const [videoEx, setVideoEx]   = useState<typeof EXERCISE_CATALOG[number] | null>(null)
 
   useEffect(() => {
     if (location.hash === '#routines') {
@@ -128,14 +148,27 @@ export default function GymPage() {
     (e) => (muscle === 'all' || e.muscle === muscle) && e.name.toLowerCase().includes(search.toLowerCase()),
   )
 
-  const openModal = () => { setForm(EMPTY_FORM); setModalOpen(true) }
+  /* Exercises shown in the create modal: filtered by selected muscles if any */
+  const modalExercises = form.muscles.length > 0
+    ? EXERCISE_CATALOG.filter((e) => form.muscles.includes(e.muscle))
+    : EXERCISE_CATALOG
+
+  const openModal  = () => { setForm(EMPTY_FORM); setModalOpen(true) }
   const closeModal = () => setModalOpen(false)
 
-  const toggleMuscle = (m: WorkableMuscle) =>
-    setForm((f) => ({
-      ...f,
-      muscles: f.muscles.includes(m) ? f.muscles.filter((x) => x !== m) : [...f.muscles, m],
-    }))
+  const toggleMuscle = (m: WorkableMuscle) => {
+    setForm((f) => {
+      const newMuscles = f.muscles.includes(m) ? f.muscles.filter((x) => x !== m) : [...f.muscles, m]
+      /* remove exercises that no longer match the new muscle selection */
+      const newExerciseIds = newMuscles.length === 0
+        ? f.exerciseIds
+        : f.exerciseIds.filter((id) => {
+            const ex = EXERCISE_CATALOG.find((e) => e.id === id)
+            return ex && newMuscles.includes(ex.muscle)
+          })
+      return { ...f, muscles: newMuscles, exerciseIds: newExerciseIds }
+    })
+  }
 
   const toggleExercise = (id: string) =>
     setForm((f) => ({
@@ -149,14 +182,16 @@ export default function GymPage() {
     e.preventDefault()
     const dur = parseInt(form.duration) || 0
     const newWorkout: Workout = {
-      id:         String(Date.now()),
-      name:       form.name.trim(),
-      difficulty: form.difficulty,
-      duration:   dur,
-      calories:   Math.round(dur * 5.5),
-      muscles:    form.muscles.length > 0 ? form.muscles : ['core'],
-      exercises:  form.exerciseIds.length,
-      isTemplate: false,
+      id:          String(Date.now()),
+      name:        form.name.trim(),
+      difficulty:  form.difficulty,
+      workoutType: form.workoutType,
+      duration:    dur,
+      calories:    Math.round(dur * 5.5),
+      muscles:     form.muscles.length > 0 ? form.muscles : ['core'],
+      exercises:   form.exerciseIds.length,
+      exerciseIds: form.exerciseIds,
+      isTemplate:  false,
     }
     setWorkouts((prev) => [newWorkout, ...prev])
     closeModal()
@@ -228,31 +263,45 @@ export default function GymPage() {
 
       {tab === 'workouts' ? (
         <div id="routines" className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {filteredWorkouts.map((w, i) => (
-            <motion.div
-              key={w.id}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.05 }}
-            >
-              <Link to={`/gym/workout/${w.id}`} className="card-hover block">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="w-10 h-10 rounded-lg bg-brand-500/20 flex items-center justify-center">
-                    <Dumbbell size={18} className="text-brand-400" />
+          {filteredWorkouts.map((w, i) => {
+            const typeConf = WORKOUT_TYPE_CONFIG[w.workoutType]
+            const TypeIcon = typeConf.icon
+            return (
+              <motion.div
+                key={w.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+              >
+                <Link
+                  to={`/gym/workout/${w.id}`}
+                  state={{ workout: w }}
+                  className="card-hover block"
+                >
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="w-10 h-10 rounded-lg bg-brand-500/20 flex items-center justify-center">
+                      <Dumbbell size={18} className="text-brand-400" />
+                    </div>
+                    <div className="flex gap-1.5">
+                      <span className={cn('inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs border font-medium', typeConf.color)}>
+                        <TypeIcon size={10} />
+                        {typeConf.label}
+                      </span>
+                      <span className={cn('badge', diffColors[w.difficulty])}>{diffLabels[w.difficulty]}</span>
+                    </div>
                   </div>
-                  <span className={cn('badge', diffColors[w.difficulty])}>{diffLabels[w.difficulty]}</span>
-                </div>
-                <h3 className="font-semibold mb-1">{w.name}</h3>
-                <p className="text-xs text-white/40 mb-3">
-                  {w.exercises} {t('gym:exercises').toLowerCase()} · {w.muscles.slice(0, 2).map(m => muscleLabels[m]).join(', ')}
-                </p>
-                <div className="flex items-center gap-4 text-xs text-white/50">
-                  <span className="flex items-center gap-1"><Clock size={12} /> {w.duration} min</span>
-                  <span className="flex items-center gap-1"><Flame size={12} /> ~{w.calories} kcal</span>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
+                  <h3 className="font-semibold mb-1">{w.name}</h3>
+                  <p className="text-xs text-white/40 mb-3">
+                    {w.exercises} {t('gym:exercises').toLowerCase()} · {w.muscles.slice(0, 2).map(m => muscleLabels[m]).join(', ')}
+                  </p>
+                  <div className="flex items-center gap-4 text-xs text-white/50">
+                    <span className="flex items-center gap-1"><Clock size={12} /> {w.duration} min</span>
+                    <span className="flex items-center gap-1"><Flame size={12} /> ~{w.calories} kcal</span>
+                  </div>
+                </Link>
+              </motion.div>
+            )
+          })}
 
           {filteredWorkouts.length === 0 && (
             <div className="col-span-3 text-center py-12 text-white/30 text-sm">
@@ -348,6 +397,7 @@ export default function GymPage() {
         </div>
       )}
 
+      {/* Create routine modal */}
       {modalOpen && (
         <div
           className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
@@ -365,6 +415,7 @@ export default function GymPage() {
             </div>
 
             <form onSubmit={handleSave} className="space-y-5">
+              {/* Name */}
               <div>
                 <label className="text-xs text-white/40 mb-1 block">{t('gym:routineName', 'Nombre de la rutina')}</label>
                 <input
@@ -376,6 +427,34 @@ export default function GymPage() {
                 />
               </div>
 
+              {/* Workout type */}
+              <div>
+                <label className="text-xs text-white/40 mb-2 block">Tipo de entrenamiento</label>
+                <div className="flex flex-wrap gap-2">
+                  {WORKOUT_TYPES.map((type) => {
+                    const conf = WORKOUT_TYPE_CONFIG[type]
+                    const TypeIcon = conf.icon
+                    const selected = form.workoutType === type
+                    return (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => setForm((f) => ({ ...f, workoutType: type }))}
+                        className={cn(
+                          'flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs border transition-all font-medium',
+                          selected ? conf.color : 'glass border-white/10 text-white/50 hover:text-white hover:border-white/30',
+                        )}
+                      >
+                        <TypeIcon size={11} />
+                        {conf.label}
+                        {selected && <Check size={10} />}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Difficulty + Duration */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-white/40 mb-1 block">{t('gym:difficulty', 'Dificultad')}</label>
@@ -391,7 +470,7 @@ export default function GymPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-white/40 mb-1 block">{t('gym:estimatedDuration', 'Duración estimada (min)')}</label>
+                  <label className="text-xs text-white/40 mb-1 block">{t('gym:estimatedDuration', 'Duración (min)')}</label>
                   <input
                     required
                     type="number"
@@ -405,8 +484,14 @@ export default function GymPage() {
                 </div>
               </div>
 
+              {/* Muscles worked */}
               <div>
-                <label className="text-xs text-white/40 mb-2 block">{t('gym:musclesWorked', 'Músculos trabajados')}</label>
+                <label className="text-xs text-white/40 mb-2 block">
+                  {t('gym:musclesWorked', 'Músculos trabajados')}
+                  {form.muscles.length > 0 && (
+                    <span className="ml-1 text-brand-400 text-[10px]">— los ejercicios se filtran automáticamente</span>
+                  )}
+                </label>
                 <div className="flex flex-wrap gap-2">
                   {WORKABLE_MUSCLES.map((m) => {
                     const Icon = muscleIconMap[m]
@@ -432,16 +517,22 @@ export default function GymPage() {
                 </div>
               </div>
 
+              {/* Exercises — filtered by selected muscles */}
               <div>
                 <label className="text-xs text-white/40 mb-2 block">
                   {t('gym:exercises')}
+                  {form.muscles.length > 0 && (
+                    <span className="ml-1 text-white/30">
+                      ({modalExercises.length} ejercicios para {form.muscles.map(m => muscleLabels[m]).join(', ')})
+                    </span>
+                  )}
                   {form.exerciseIds.length > 0 && (
-                    <span className="ml-1 text-brand-400">({form.exerciseIds.length} {t('gym:selected', 'seleccionados')})</span>
+                    <span className="ml-1 text-brand-400">· {form.exerciseIds.length} seleccionados</span>
                   )}
                 </label>
-                <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
-                  {EXERCISE_CATALOG.map((ex) => {
-                    const Icon = muscleIconMap[ex.muscle]
+                <div className="space-y-1.5 max-h-48 overflow-y-auto pr-1">
+                  {modalExercises.map((ex) => {
+                    const Icon    = muscleIconMap[ex.muscle]
                     const selected = form.exerciseIds.includes(ex.id)
                     return (
                       <button
@@ -471,6 +562,9 @@ export default function GymPage() {
                       </button>
                     )
                   })}
+                  {modalExercises.length === 0 && (
+                    <p className="text-center text-white/30 text-xs py-4">No hay ejercicios para los músculos seleccionados</p>
+                  )}
                 </div>
               </div>
 
