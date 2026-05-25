@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import {
   Search, Play, Plus, Clock, Flame, ChevronRight,
   Dumbbell, BarChart2, Heart, RotateCcw, ArrowUp, Circle, Footprints, X, Check, Youtube,
-  Zap, TrendingUp, Wind, Activity, Stretch,
+  Zap, TrendingUp, Wind, Activity, StretchHorizontal,
 } from 'lucide-react'
 import { cn } from '@utils/cn'
 import type { FC } from 'react'
@@ -44,7 +44,7 @@ const WORKOUT_TYPE_CONFIG: Record<WorkoutType, { label: string; color: string; i
   hypertrophy: { label: 'Hipertrofia',  color: 'bg-brand-500/20 text-brand-300 border-brand-500/30', icon: TrendingUp },
   cardio:      { label: 'Cardio',       color: 'bg-orange-500/20 text-orange-300 border-orange-500/30', icon: Activity  },
   endurance:   { label: 'Resistencia',  color: 'bg-green-500/20 text-green-300 border-green-500/30', icon: Wind      },
-  mobility:    { label: 'Movilidad',    color: 'bg-purple-500/20 text-purple-300 border-purple-500/30', icon: Stretch   },
+  mobility:    { label: 'Movilidad',    color: 'bg-purple-500/20 text-purple-300 border-purple-500/30', icon: StretchHorizontal },
 }
 
 export const EXERCISE_CATALOG = [
