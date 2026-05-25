@@ -40,127 +40,189 @@ const STARTERS_EN: QuickPrompt[] = [
 /* ─── Follow-up banks per category ─── */
 const FOLLOW_UPS_ES: Record<QCategory, QuickPrompt[]> = {
   nutrition: [
-    { icon: Clock,      text: '¿Cómo distribuyo las comidas al día?',    category: 'nutrition'    },
-    { icon: Apple,      text: '¿Qué comer antes de entrenar?',           category: 'nutrition'    },
-    { icon: Salad,      text: '¿Qué comer después de entrenar?',         category: 'nutrition'    },
-    { icon: TrendingUp, text: '¿Cuánta proteína necesito al día?',       category: 'protein'      },
+    { icon: Clock,      text: '¿Cómo distribuyo las comidas al día?',         category: 'nutrition'   },
+    { icon: Apple,      text: '¿Qué comer antes de entrenar?',                category: 'nutrition'   },
+    { icon: Salad,      text: '¿Qué comer después de entrenar?',              category: 'nutrition'   },
+    { icon: TrendingUp, text: '¿Cuánta proteína necesito al día?',            category: 'protein'     },
+    { icon: Apple,      text: '¿Cómo calculo mis macros?',                    category: 'nutrition'   },
+    { icon: Zap,        text: '¿Qué es el ayuno intermitente?',               category: 'nutrition'   },
+    { icon: Salad,      text: '¿Qué alimentos tienen más proteína?',          category: 'protein'     },
+    { icon: Clock,      text: '¿Es bueno desayunar antes de entrenar?',       category: 'nutrition'   },
   ],
   water: [
-    { icon: Coffee,    text: '¿El café cuenta como hidratación?',        category: 'water'        },
-    { icon: Droplets,  text: '¿Cuándo debo beber más agua?',             category: 'water'        },
-    { icon: Dumbbell,  text: '¿Agua antes o durante el entreno?',        category: 'exercise'     },
-    { icon: Heart,     text: '¿Cómo sé si estoy deshidratado?',          category: 'water'        },
+    { icon: Coffee,     text: '¿El café cuenta como hidratación?',            category: 'water'       },
+    { icon: Droplets,   text: '¿Cuándo debo beber más agua?',                 category: 'water'       },
+    { icon: Dumbbell,   text: '¿Agua antes o durante el entreno?',            category: 'exercise'    },
+    { icon: Heart,      text: '¿Cómo sé si estoy deshidratado?',              category: 'water'       },
+    { icon: Zap,        text: '¿Bebidas isotónicas o agua?',                  category: 'water'       },
+    { icon: Moon,       text: '¿Debo beber agua antes de dormir?',            category: 'water'       },
   ],
   exercise: [
-    { icon: Clock,     text: '¿Cuántos días debo entrenar a la semana?', category: 'exercise'     },
-    { icon: Flame,     text: '¿Qué es mejor, cardio o pesas?',           category: 'exercise'     },
-    { icon: ShieldCheck,text: '¿Cómo puedo evitar lesiones?',            category: 'exercise'     },
-    { icon: Dumbbell,  text: '¿Cuánto descanso entre series?',           category: 'exercise'     },
+    { icon: Clock,      text: '¿Cuántos días debo entrenar a la semana?',     category: 'exercise'    },
+    { icon: Flame,      text: '¿Qué es mejor, cardio o pesas?',               category: 'exercise'    },
+    { icon: ShieldCheck,text: '¿Cómo puedo evitar lesiones?',                 category: 'exercise'    },
+    { icon: Dumbbell,   text: '¿Cuánto descanso entre series?',               category: 'exercise'    },
+    { icon: Zap,        text: '¿Qué es el HIIT y sirve para perder grasa?',   category: 'exercise'    },
+    { icon: Clock,      text: '¿Es mejor entrenar por la mañana o por la noche?', category: 'exercise'},
+    { icon: ShieldCheck,text: '¿Cómo calentar correctamente antes de entrenar?', category: 'exercise' },
+    { icon: TrendingUp, text: '¿Qué es la sobrecarga progresiva?',            category: 'exercise'    },
   ],
   fat_loss: [
-    { icon: Flame,     text: '¿Cuánto déficit calórico es seguro?',      category: 'fat_loss'     },
-    { icon: Dumbbell,  text: '¿Qué cardio quema más grasa?',             category: 'fat_loss'     },
-    { icon: TrendingUp,text: '¿Puedo perder grasa y ganar músculo?',     category: 'muscle'       },
-    { icon: Apple,     text: '¿Qué alimentos evitar para adelgazar?',    category: 'fat_loss'     },
+    { icon: Flame,      text: '¿Cuánto déficit calórico es seguro?',          category: 'fat_loss'    },
+    { icon: Dumbbell,   text: '¿Qué cardio quema más grasa?',                 category: 'fat_loss'    },
+    { icon: TrendingUp, text: '¿Puedo perder grasa y ganar músculo?',         category: 'muscle'      },
+    { icon: Apple,      text: '¿Qué alimentos evitar para adelgazar?',        category: 'fat_loss'    },
+    { icon: Zap,        text: '¿Cómo acelerar el metabolismo?',               category: 'fat_loss'    },
+    { icon: Clock,      text: '¿El ayuno intermitente ayuda a perder grasa?', category: 'fat_loss'    },
+    { icon: Heart,      text: '¿Cuánto tiempo para ver resultados reales?',   category: 'fat_loss'    },
   ],
   protein: [
-    { icon: Zap,       text: '¿Los batidos de proteína son necesarios?', category: 'protein'      },
-    { icon: Clock,     text: '¿Cuándo es mejor tomar proteína?',         category: 'protein'      },
-    { icon: Salad,     text: '¿Proteínas vegetales vs animales?',        category: 'protein'      },
-    { icon: ShieldCheck,text: '¿Qué pasa si como demasiada proteína?',   category: 'protein'      },
+    { icon: Zap,        text: '¿Los batidos de proteína son necesarios?',     category: 'protein'     },
+    { icon: Clock,      text: '¿Cuándo es mejor tomar proteína?',             category: 'protein'     },
+    { icon: Salad,      text: '¿Proteínas vegetales vs animales?',            category: 'protein'     },
+    { icon: ShieldCheck,text: '¿Qué pasa si como demasiada proteína?',        category: 'protein'     },
+    { icon: Apple,      text: '¿Qué alimentos tienen más proteína?',          category: 'protein'     },
+    { icon: Heart,      text: '¿Son buenos los huevos todos los días?',       category: 'protein'     },
+    { icon: Dumbbell,   text: '¿Cuánta proteína necesito para ganar músculo?',category: 'muscle'      },
   ],
   sleep: [
-    { icon: Apple,     text: '¿Qué comer antes de dormir?',              category: 'sleep'        },
-    { icon: Flame,     text: '¿El sueño afecta la pérdida de grasa?',    category: 'sleep'        },
-    { icon: Moon,      text: '¿Cómo mejorar la calidad del sueño?',      category: 'sleep'        },
-    { icon: Clock,     text: '¿La siesta es beneficiosa?',               category: 'sleep'        },
+    { icon: Apple,      text: '¿Qué comer antes de dormir?',                  category: 'sleep'       },
+    { icon: Flame,      text: '¿El sueño afecta la pérdida de grasa?',        category: 'sleep'       },
+    { icon: Moon,       text: '¿Cómo mejorar la calidad del sueño?',          category: 'sleep'       },
+    { icon: Clock,      text: '¿La siesta es beneficiosa?',                   category: 'sleep'       },
+    { icon: Heart,      text: '¿El estrés afecta al sueño y al músculo?',     category: 'sleep'       },
+    { icon: TrendingUp, text: '¿El sueño afecta a la masa muscular?',         category: 'sleep'       },
+    { icon: Zap,        text: '¿Qué suplementos mejoran el sueño?',           category: 'supplements' },
   ],
   habits: [
-    { icon: Zap,       text: '¿Cómo mantener la motivación?',            category: 'habits'       },
-    { icon: Clock,     text: '¿Cuánto tarda en formarse un hábito?',     category: 'habits'       },
-    { icon: Heart,     text: '¿Qué hábito es el más importante?',        category: 'habits'       },
-    { icon: ShieldCheck,text: '¿Cómo gestionar los días malos?',         category: 'habits'       },
+    { icon: Zap,        text: '¿Cómo mantener la motivación?',                category: 'habits'      },
+    { icon: Clock,      text: '¿Cuánto tarda en formarse un hábito?',         category: 'habits'      },
+    { icon: Heart,      text: '¿Qué hábito es el más importante?',            category: 'habits'      },
+    { icon: ShieldCheck,text: '¿Cómo gestionar los días malos?',              category: 'habits'      },
+    { icon: Dumbbell,   text: '¿Cómo crear una rutina sostenible?',           category: 'habits'      },
+    { icon: TrendingUp, text: '¿Qué hacer si no tengo tiempo para entrenar?', category: 'habits'      },
+    { icon: Moon,       text: '¿Cómo mejorar la constancia en el deporte?',   category: 'habits'      },
   ],
   muscle: [
-    { icon: Apple,     text: '¿Cuántas calorías para ganar masa?',       category: 'muscle'       },
-    { icon: Clock,     text: '¿Cuánto tiempo hasta ver resultados?',     category: 'muscle'       },
-    { icon: Dumbbell,  text: '¿Cuáles son los mejores ejercicios?',      category: 'exercise'     },
-    { icon: Zap,       text: '¿Qué suplementos ayudan a ganar músculo?', category: 'supplements'  },
+    { icon: Apple,      text: '¿Cuántas calorías para ganar masa?',           category: 'muscle'      },
+    { icon: Clock,      text: '¿Cuánto tiempo hasta ver resultados?',         category: 'muscle'      },
+    { icon: Dumbbell,   text: '¿Cuáles son los mejores ejercicios?',          category: 'exercise'    },
+    { icon: Zap,        text: '¿Qué suplementos ayudan a ganar músculo?',     category: 'supplements' },
+    { icon: TrendingUp, text: '¿Qué es la memoria muscular?',                 category: 'muscle'      },
+    { icon: Heart,      text: '¿A qué edad es más fácil ganar músculo?',      category: 'muscle'      },
+    { icon: ShieldCheck,text: '¿Cuántas series por músculo a la semana?',     category: 'muscle'      },
+    { icon: Clock,      text: '¿Con qué frecuencia entrenar cada músculo?',   category: 'muscle'      },
   ],
   supplements: [
-    { icon: ShieldCheck,text: '¿La creatina es segura?',                 category: 'supplements'  },
-    { icon: Clock,     text: '¿Cuándo tomar creatina?',                  category: 'supplements'  },
-    { icon: Zap,       text: '¿Los BCAAs son útiles?',                   category: 'supplements'  },
-    { icon: Apple,     text: '¿Qué suplementos básicos recomiendas?',    category: 'supplements'  },
+    { icon: ShieldCheck,text: '¿La creatina es segura?',                      category: 'supplements' },
+    { icon: Clock,      text: '¿Cuándo tomar creatina?',                      category: 'supplements' },
+    { icon: Zap,        text: '¿Los BCAAs son útiles?',                       category: 'supplements' },
+    { icon: Apple,      text: '¿Qué suplementos básicos recomiendas?',        category: 'supplements' },
+    { icon: Flame,      text: '¿La cafeína mejora el rendimiento deportivo?', category: 'supplements' },
+    { icon: Heart,      text: '¿Para qué sirve la vitamina D?',               category: 'supplements' },
+    { icon: TrendingUp, text: '¿Son necesarios los multivitamínicos?',        category: 'supplements' },
   ],
   general: [
-    { icon: Apple,     text: '¿Qué debería comer hoy?',                  category: 'nutrition'    },
-    { icon: Flame,     text: '¿Cómo puedo perder grasa?',                category: 'fat_loss'     },
-    { icon: Dumbbell,  text: '¿Qué rutina me recomiendas?',              category: 'exercise'     },
-    { icon: TrendingUp,text: '¿Cuánta proteína necesito al día?',        category: 'protein'      },
+    { icon: Apple,      text: '¿Qué debería comer hoy?',                      category: 'nutrition'   },
+    { icon: Flame,      text: '¿Cómo puedo perder grasa?',                    category: 'fat_loss'    },
+    { icon: Dumbbell,   text: '¿Qué rutina me recomiendas?',                  category: 'exercise'    },
+    { icon: TrendingUp, text: '¿Cuánta proteína necesito al día?',            category: 'protein'     },
+    { icon: Droplets,   text: '¿Cuánta agua debo tomar?',                     category: 'water'       },
+    { icon: Moon,       text: '¿Cuántas horas debo dormir?',                  category: 'sleep'       },
   ],
 }
 
 const FOLLOW_UPS_EN: Record<QCategory, QuickPrompt[]> = {
   nutrition: [
-    { icon: Clock,      text: 'How should I distribute my meals?',       category: 'nutrition'    },
-    { icon: Apple,      text: 'What to eat before training?',            category: 'nutrition'    },
-    { icon: Salad,      text: 'What to eat after training?',             category: 'nutrition'    },
-    { icon: TrendingUp, text: 'How much protein do I need per day?',     category: 'protein'      },
+    { icon: Clock,      text: 'How should I distribute my meals?',            category: 'nutrition'   },
+    { icon: Apple,      text: 'What to eat before training?',                 category: 'nutrition'   },
+    { icon: Salad,      text: 'What to eat after training?',                  category: 'nutrition'   },
+    { icon: TrendingUp, text: 'How much protein do I need per day?',          category: 'protein'     },
+    { icon: Apple,      text: 'How do I calculate my macros?',                category: 'nutrition'   },
+    { icon: Zap,        text: 'What is intermittent fasting?',                category: 'nutrition'   },
+    { icon: Salad,      text: 'What foods have the most protein?',            category: 'protein'     },
+    { icon: Clock,      text: 'Is it good to have breakfast before training?',category: 'nutrition'   },
   ],
   water: [
-    { icon: Coffee,    text: 'Does coffee count as hydration?',          category: 'water'        },
-    { icon: Droplets,  text: 'When should I drink more water?',          category: 'water'        },
-    { icon: Dumbbell,  text: 'Water before or during workout?',          category: 'exercise'     },
-    { icon: Heart,     text: 'How do I know if I\'m dehydrated?',        category: 'water'        },
+    { icon: Coffee,     text: 'Does coffee count as hydration?',              category: 'water'       },
+    { icon: Droplets,   text: 'When should I drink more water?',              category: 'water'       },
+    { icon: Dumbbell,   text: 'Water before or during workout?',              category: 'exercise'    },
+    { icon: Heart,      text: 'How do I know if I\'m dehydrated?',            category: 'water'       },
+    { icon: Zap,        text: 'Sports drinks or water?',                      category: 'water'       },
+    { icon: Moon,       text: 'Should I drink water before bed?',             category: 'water'       },
   ],
   exercise: [
-    { icon: Clock,     text: 'How many days per week should I train?',   category: 'exercise'     },
-    { icon: Flame,     text: 'What\'s better, cardio or weights?',       category: 'exercise'     },
-    { icon: ShieldCheck,text: 'How can I avoid injuries?',               category: 'exercise'     },
-    { icon: Dumbbell,  text: 'How long to rest between sets?',           category: 'exercise'     },
+    { icon: Clock,      text: 'How many days per week should I train?',       category: 'exercise'    },
+    { icon: Flame,      text: 'What\'s better, cardio or weights?',           category: 'exercise'    },
+    { icon: ShieldCheck,text: 'How can I avoid injuries?',                    category: 'exercise'    },
+    { icon: Dumbbell,   text: 'How long to rest between sets?',               category: 'exercise'    },
+    { icon: Zap,        text: 'What is HIIT and does it burn fat?',           category: 'exercise'    },
+    { icon: Clock,      text: 'Is it better to train in the morning or evening?', category: 'exercise'},
+    { icon: ShieldCheck,text: 'How to warm up correctly before training?',    category: 'exercise'    },
+    { icon: TrendingUp, text: 'What is progressive overload?',                category: 'exercise'    },
   ],
   fat_loss: [
-    { icon: Flame,     text: 'How much of a calorie deficit is safe?',   category: 'fat_loss'     },
-    { icon: Dumbbell,  text: 'What cardio burns the most fat?',          category: 'fat_loss'     },
-    { icon: TrendingUp,text: 'Can I lose fat and gain muscle?',          category: 'muscle'       },
-    { icon: Apple,     text: 'What foods to avoid to lose weight?',      category: 'fat_loss'     },
+    { icon: Flame,      text: 'How much of a calorie deficit is safe?',       category: 'fat_loss'    },
+    { icon: Dumbbell,   text: 'What cardio burns the most fat?',              category: 'fat_loss'    },
+    { icon: TrendingUp, text: 'Can I lose fat and gain muscle?',              category: 'muscle'      },
+    { icon: Apple,      text: 'What foods to avoid to lose weight?',          category: 'fat_loss'    },
+    { icon: Zap,        text: 'How to speed up my metabolism?',               category: 'fat_loss'    },
+    { icon: Clock,      text: 'Does intermittent fasting help lose fat?',     category: 'fat_loss'    },
+    { icon: Heart,      text: 'How long until I see real results?',           category: 'fat_loss'    },
   ],
   protein: [
-    { icon: Zap,       text: 'Are protein shakes necessary?',            category: 'protein'      },
-    { icon: Clock,     text: 'When is the best time to take protein?',   category: 'protein'      },
-    { icon: Salad,     text: 'Plant vs animal protein?',                 category: 'protein'      },
-    { icon: ShieldCheck,text: 'What if I eat too much protein?',         category: 'protein'      },
+    { icon: Zap,        text: 'Are protein shakes necessary?',                category: 'protein'     },
+    { icon: Clock,      text: 'When is the best time to take protein?',       category: 'protein'     },
+    { icon: Salad,      text: 'Plant vs animal protein?',                     category: 'protein'     },
+    { icon: ShieldCheck,text: 'What if I eat too much protein?',              category: 'protein'     },
+    { icon: Apple,      text: 'What foods have the most protein?',            category: 'protein'     },
+    { icon: Heart,      text: 'Are eggs good every day?',                     category: 'protein'     },
+    { icon: Dumbbell,   text: 'How much protein to gain muscle?',             category: 'muscle'      },
   ],
   sleep: [
-    { icon: Apple,     text: 'What to eat before bed?',                  category: 'sleep'        },
-    { icon: Flame,     text: 'Does sleep affect fat loss?',              category: 'sleep'        },
-    { icon: Moon,      text: 'How to improve sleep quality?',            category: 'sleep'        },
-    { icon: Clock,     text: 'Are naps beneficial?',                     category: 'sleep'        },
+    { icon: Apple,      text: 'What to eat before bed?',                      category: 'sleep'       },
+    { icon: Flame,      text: 'Does sleep affect fat loss?',                  category: 'sleep'       },
+    { icon: Moon,       text: 'How to improve sleep quality?',                category: 'sleep'       },
+    { icon: Clock,      text: 'Are naps beneficial?',                         category: 'sleep'       },
+    { icon: Heart,      text: 'Does stress affect sleep and muscle?',         category: 'sleep'       },
+    { icon: TrendingUp, text: 'Does sleep affect muscle mass?',               category: 'sleep'       },
+    { icon: Zap,        text: 'What supplements improve sleep?',              category: 'supplements' },
   ],
   habits: [
-    { icon: Zap,       text: 'How to stay motivated?',                   category: 'habits'       },
-    { icon: Clock,     text: 'How long does it take to form a habit?',   category: 'habits'       },
-    { icon: Heart,     text: 'What\'s the most important habit?',        category: 'habits'       },
-    { icon: ShieldCheck,text: 'How to handle bad days?',                 category: 'habits'       },
+    { icon: Zap,        text: 'How to stay motivated?',                       category: 'habits'      },
+    { icon: Clock,      text: 'How long does it take to form a habit?',       category: 'habits'      },
+    { icon: Heart,      text: 'What\'s the most important habit?',            category: 'habits'      },
+    { icon: ShieldCheck,text: 'How to handle bad days?',                      category: 'habits'      },
+    { icon: Dumbbell,   text: 'How to create a sustainable routine?',         category: 'habits'      },
+    { icon: TrendingUp, text: 'What if I don\'t have time to train?',         category: 'habits'      },
+    { icon: Moon,       text: 'How to improve sport consistency?',            category: 'habits'      },
   ],
   muscle: [
-    { icon: Apple,     text: 'How many calories to bulk?',               category: 'muscle'       },
-    { icon: Clock,     text: 'How long until I see results?',            category: 'muscle'       },
-    { icon: Dumbbell,  text: 'What are the best exercises?',             category: 'exercise'     },
-    { icon: Zap,       text: 'What supplements help gain muscle?',       category: 'supplements'  },
+    { icon: Apple,      text: 'How many calories to bulk?',                   category: 'muscle'      },
+    { icon: Clock,      text: 'How long until I see results?',                category: 'muscle'      },
+    { icon: Dumbbell,   text: 'What are the best exercises?',                 category: 'exercise'    },
+    { icon: Zap,        text: 'What supplements help gain muscle?',           category: 'supplements' },
+    { icon: TrendingUp, text: 'What is muscle memory?',                       category: 'muscle'      },
+    { icon: Heart,      text: 'At what age is it easiest to gain muscle?',    category: 'muscle'      },
+    { icon: ShieldCheck,text: 'How many sets per muscle per week?',           category: 'muscle'      },
+    { icon: Clock,      text: 'How often should I train each muscle?',        category: 'muscle'      },
   ],
   supplements: [
-    { icon: ShieldCheck,text: 'Is creatine safe?',                       category: 'supplements'  },
-    { icon: Clock,     text: 'When to take creatine?',                   category: 'supplements'  },
-    { icon: Zap,       text: 'Are BCAAs useful?',                        category: 'supplements'  },
-    { icon: Apple,     text: 'What basic supplements do you recommend?', category: 'supplements'  },
+    { icon: ShieldCheck,text: 'Is creatine safe?',                            category: 'supplements' },
+    { icon: Clock,      text: 'When to take creatine?',                       category: 'supplements' },
+    { icon: Zap,        text: 'Are BCAAs useful?',                            category: 'supplements' },
+    { icon: Apple,      text: 'What basic supplements do you recommend?',     category: 'supplements' },
+    { icon: Flame,      text: 'Does caffeine improve athletic performance?',  category: 'supplements' },
+    { icon: Heart,      text: 'What is vitamin D and why is it important?',   category: 'supplements' },
+    { icon: TrendingUp, text: 'Are multivitamins necessary?',                 category: 'supplements' },
   ],
   general: [
-    { icon: Apple,     text: 'What should I eat today?',                 category: 'nutrition'    },
-    { icon: Flame,     text: 'How can I lose fat?',                      category: 'fat_loss'     },
-    { icon: Dumbbell,  text: 'What routine do you recommend?',           category: 'exercise'     },
-    { icon: TrendingUp,text: 'How much protein do I need per day?',      category: 'protein'      },
+    { icon: Apple,      text: 'What should I eat today?',                     category: 'nutrition'   },
+    { icon: Flame,      text: 'How can I lose fat?',                          category: 'fat_loss'    },
+    { icon: Dumbbell,   text: 'What routine do you recommend?',               category: 'exercise'    },
+    { icon: TrendingUp, text: 'How much protein do I need per day?',          category: 'protein'     },
+    { icon: Droplets,   text: 'How much water should I drink?',               category: 'water'       },
+    { icon: Moon,       text: 'How many hours of sleep do I need?',           category: 'sleep'       },
   ],
 }
 
@@ -395,21 +457,26 @@ export default function ChatbotWidget() {
   const { habits } = useHabitsStore()
   const { today }  = useDailyStore()
 
-  const [open, setOpen]         = useState(false)
-  const [messages, setMessages] = useState<ChatMessage[]>([])
-  const [input, setInput]       = useState('')
-  const [loading, setLoading]   = useState(false)
-  const [n8nOk, setN8nOk]       = useState<boolean | null>(null)
+  const [open, setOpen]           = useState(false)
+  const [messages, setMessages]   = useState<ChatMessage[]>([])
+  const [input, setInput]         = useState('')
+  const [loading, setLoading]     = useState(false)
+  const [n8nOk, setN8nOk]         = useState<boolean | null>(null)
   const [suggested, setSuggested] = useState<QuickPrompt[]>([])
+  const [askedTexts, setAskedTexts] = useState<Set<string>>(new Set())
   const bottomRef = useRef<HTMLDivElement>(null)
 
   const lang         = i18n.language.startsWith('es') ? 'es' : 'en'
   const starters     = lang === 'es' ? STARTERS_ES     : STARTERS_EN
   const followUpsMap = lang === 'es' ? FOLLOW_UPS_ES   : FOLLOW_UPS_EN
 
-  /* reset suggested when chat opens / closes */
+  /* reset on open */
   useEffect(() => {
-    if (open) setSuggested(starters)
+    if (open) {
+      setSuggested(starters)
+      setAskedTexts(new Set())
+      setMessages([])
+    }
   }, [open])  // eslint-disable-line
 
   useEffect(() => {
@@ -435,13 +502,32 @@ export default function ChatbotWidget() {
     language:        lang,
   })
 
+  const buildSuggestions = (text: string, newAsked: Set<string>): QuickPrompt[] => {
+    const cat = detectCategory(text)
+    const catPool = followUpsMap[cat]
+    const otherPool = (Object.keys(followUpsMap) as QCategory[])
+      .filter(k => k !== cat)
+      .flatMap(k => followUpsMap[k])
+      .sort(() => Math.random() - 0.5)
+    const combined = [...catPool, ...otherPool]
+    const seen = new Set<string>()
+    return combined.filter(p => {
+      if (newAsked.has(p.text) || seen.has(p.text)) return false
+      seen.add(p.text)
+      return true
+    }).slice(0, 10)
+  }
+
   const sendMessage = async (text: string) => {
     if (!text.trim() || loading) return
     const userMsg: ChatMessage = { role: 'user', content: text }
     setMessages(prev => [...prev, userMsg])
     setInput('')
     setLoading(true)
-    setSuggested([]) // hide while loading
+    setSuggested([])
+
+    const newAsked = new Set(askedTexts).add(text)
+    setAskedTexts(newAsked)
 
     try {
       let reply: string
@@ -453,18 +539,12 @@ export default function ChatbotWidget() {
         reply = getDemoResponse(text, lang, buildContext())
       }
       setMessages(prev => [...prev, { role: 'assistant', content: reply }])
-
-      /* pick follow-ups based on what the user asked */
-      const cat = detectCategory(text)
-      const pool = followUpsMap[cat]
-      /* shuffle and take 3 */
-      const shuffled = [...pool].sort(() => Math.random() - 0.5)
-      setSuggested(shuffled.slice(0, 3))
+      setSuggested(buildSuggestions(text, newAsked))
     } catch {
       await new Promise(r => setTimeout(r, 400))
       const reply = getDemoResponse(text, lang, buildContext())
       setMessages(prev => [...prev, { role: 'assistant', content: reply }])
-      setSuggested(starters.slice(0, 3))
+      setSuggested(buildSuggestions(text, newAsked))
     } finally {
       setLoading(false)
     }
@@ -575,23 +655,23 @@ export default function ChatbotWidget() {
               <div ref={bottomRef} />
             </div>
 
-            {/* Suggested questions — always visible, updates after each response */}
+            {/* Suggested questions — scrollable list, updates after each response */}
             {suggested.length > 0 && !loading && (
-              <div className="px-3 pb-2 flex flex-col gap-1.5 shrink-0">
+              <div className="px-3 pb-2 shrink-0">
                 <AnimatePresence mode="wait">
                   <motion.div
-                    key={suggested.map(s => s.text).join()}
+                    key={suggested.map(s => s.text).join('|')}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.2 }}
-                    className="flex flex-col gap-1.5"
+                    className="flex flex-col gap-1 max-h-[220px] overflow-y-auto no-scrollbar"
                   >
                     {suggested.map(({ icon: Icon, text }) => (
                       <button
                         key={text}
                         onClick={() => sendMessage(text)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#2a2a2a] hover:bg-[#333] text-xs text-white/60 hover:text-white transition-all text-left"
+                        className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#2a2a2a] hover:bg-[#333] text-xs text-white/60 hover:text-white transition-all text-left shrink-0"
                       >
                         <Icon size={12} className="text-brand-400 shrink-0" />
                         {text}
