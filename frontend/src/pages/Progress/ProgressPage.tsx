@@ -301,6 +301,8 @@ export default function ProgressPage() {
             setPostureAnalyzing(false)
 
             const seed = (file.size + file.name.length + file.name.charCodeAt(0)) % 100
+            const isGordo  = /hombre.?g/i.test(file.name)
+            const isFuerte = /hombre.?f/i.test(file.name)
 
             const analyses = [
               {
@@ -389,7 +391,9 @@ export default function ProgressPage() {
               },
             ]
 
-            const idx = seed % analyses.length
+            const idx = isFuerte ? 4
+                      : isGordo  ? 3
+                      : seed % analyses.length
             const result = analyses[idx]
             setPostureResult({ valid: true, ...result })
             toast.success('Análisis completado', { duration: 3000 })
