@@ -19,7 +19,6 @@ function WaterBlob({ fillPct }: WaterBlobProps) {
   })
 
   const fill = Math.max(0.1, Math.min(1, fillPct / 100))
-  // Interpolate color: low water = red/orange, high = cyan/blue
   const color = fill < 0.4
     ? new THREE.Color(0.9, 0.4, 0.1)
     : fill < 0.7

@@ -111,7 +111,6 @@ export default function GymPage() {
     advanced:     t('gym:advanced'),
   }
 
-  // ── Filters ────────────────────────────────────────────────────────────────
   const filteredWorkouts = workouts.filter(
     (w) => muscle === 'all' || w.muscles.includes(muscle as WorkableMuscle),
   )
@@ -120,7 +119,6 @@ export default function GymPage() {
     (e) => (muscle === 'all' || e.muscle === muscle) && e.name.toLowerCase().includes(search.toLowerCase()),
   )
 
-  // ── Modal helpers ──────────────────────────────────────────────────────────
   const openModal = () => { setForm(EMPTY_FORM); setModalOpen(true) }
   const closeModal = () => setModalOpen(false)
 
@@ -316,7 +314,7 @@ export default function GymPage() {
         </>
       )}
 
-      {/* ── YouTube video modal ──────────────────────────────────────────────── */}
+      {/* YouTube video modal */}
       {videoEx && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={() => setVideoEx(null)}>
           <motion.div
@@ -345,7 +343,7 @@ export default function GymPage() {
         </div>
       )}
 
-      {/* ── Create routine modal ─────────────────────────────────────────────── */}
+      {/* Create routine modal */}
       {modalOpen && (
         <div
           className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
@@ -363,7 +361,6 @@ export default function GymPage() {
             </div>
 
             <form onSubmit={handleSave} className="space-y-5">
-              {/* Name */}
               <div>
                 <label className="text-xs text-white/40 mb-1 block">{t('gym:routineName', 'Nombre de la rutina')}</label>
                 <input
@@ -375,7 +372,6 @@ export default function GymPage() {
                 />
               </div>
 
-              {/* Difficulty + Duration */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-white/40 mb-1 block">{t('gym:difficulty', 'Dificultad')}</label>
@@ -404,7 +400,6 @@ export default function GymPage() {
                 </div>
               </div>
 
-              {/* Muscles */}
               <div>
                 <label className="text-xs text-white/40 mb-2 block">{t('gym:musclesWorked', 'Músculos trabajados')}</label>
                 <div className="flex flex-wrap gap-2">
@@ -432,7 +427,6 @@ export default function GymPage() {
                 </div>
               </div>
 
-              {/* Exercises */}
               <div>
                 <label className="text-xs text-white/40 mb-2 block">
                   {t('gym:exercises')}

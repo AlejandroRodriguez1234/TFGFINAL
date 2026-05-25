@@ -129,7 +129,6 @@ export default function ChatbotWidget() {
         const reply = res.reply ?? getDemoResponse(text, lang, buildContext())
         setMessages((prev) => [...prev, { role: 'assistant', content: reply }])
       } else {
-        // Demo mode: smart local responses without n8n
         await new Promise((r) => setTimeout(r, 600 + Math.random() * 400))
         const reply = getDemoResponse(text, lang, buildContext())
         setMessages((prev) => [...prev, { role: 'assistant', content: reply }])
