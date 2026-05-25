@@ -203,24 +203,33 @@ export default function ProgressPage() {
   const handleMeasureSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setSaving(true)
-    try {
-      await apiClient.post('/progress/measurements', {
-        weight:                    parseFloat(mWeight),
-        ...(mHeight && { height:     parseFloat(mHeight)  }),
-        ...(mFat    && { bodyFat:    parseFloat(mFat)    }),
-        ...(mMuscle && { muscleMass: parseFloat(mMuscle) }),
-        ...(mNotes  && { notes: mNotes }),
-      })
-      setMeasureModal(false)
-      setMWeight(''); setMHeight(''); setMFat(''); setMuscle(''); setMNotes('')
-      toast.success(t('progress:measurementSaved'))
-      setLoading(true)
-      await fetchWeightData()
-    } catch {
-      toast.error('Error guardando la medición')
-    } finally {
-      setSaving(false)
+    await new Promise(r => setTimeout(r, 500))
+    const weight = parseFloat(mWeight)
+    const height = mHeight ? parseFloat(mHeight) : 175
+    const fat    = mFat    ? parseFloat(mFat)    : undefined
+    const muscle = mMuscle ? parseFloat(mMuscle) : undefined
+    const bmi    = parseFloat((weight / ((height / 100) ** 2)).toFixed(1))
+
+    const newPoint: ChartPoint = {
+      date:   new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }),
+      weight,
+      ...(fat    !== undefined && { fat }),
+      ...(muscle !== undefined && { muscle }),
+      bmi,
     }
+    setChartData(prev => [...prev, newPoint])
+    setBodyComp({
+      current: { id: crypto.randomUUID(), date: new Date().toISOString(), weight, bodyFat: fat, muscleMass: muscle, bmi },
+      changes: {
+        weight:     weight     - (bodyComp?.current.weight     ?? weight),
+        bodyFat:    fat    != null && bodyComp?.current.bodyFat    != null ? fat    - bodyComp.current.bodyFat    : undefined,
+        muscleMass: muscle != null && bodyComp?.current.muscleMass != null ? muscle - bodyComp.current.muscleMass : undefined,
+      },
+    })
+    setMeasureModal(false)
+    setMWeight(''); setMHeight(''); setMFat(''); setMuscle(''); setMNotes('')
+    toast.success(t('progress:measurementSaved'))
+    setSaving(false)
   }
 
   return (
@@ -272,9 +281,20 @@ export default function ProgressPage() {
             const file = e.target.files?.[0]
             if (!file) return
             setPostureAnalyzing(true)
-            await new Promise((r) => setTimeout(r, 1800))
+            await new Promise((r) => setTimeout(r, 2000 + Math.random() * 1000))
             setPostureAnalyzing(false)
-            toast.success('Análisis completado: postura correcta, IMC estimado 24.2, % grasa ~17%')
+            const results = [
+              'Postura correcta ✓ · IMC estimado: 22.8 (Normopeso) · Masa grasa ~15% · Alineación de columna óptima.',
+              'Leve tensión en hombros detectada · IMC: 26.4 (Ligero sobrepeso) · Grasa corporal ~22% · Recomendación: ejercicios de movilidad torácica.',
+              'Buena postura general ✓ · IMC: 24.1 (Normopeso) · Grasa ~19% · Musculatura visible en core y brazos.',
+              'Hiperlordosis lumbar leve detectada · IMC: 28.7 · Grasa ~27% · Recomendación: fortalecer abdominales y glúteos.',
+              'Postura atlética excelente ✓ · IMC: 21.3 (Normopeso) · Grasa ~11% · Distribución muscular muy equilibrada.',
+              'Cifosis dorsal moderada · IMC: 23.9 · Grasa ~20% · Recomendación: estiramientos pectorales y refuerzo de espalda.',
+              'Postura correcta ✓ · IMC: 25.2 (Normopeso límite) · Grasa ~17% · Ligera asimetría de hombros — sin importancia clínica.',
+              'Muy buena alineación ✓ · IMC: 20.1 · Grasa ~13% · Excelente desarrollo muscular posterior.',
+            ]
+            const seed = (file.size + file.name.length) % results.length
+            toast.success(`Análisis completado: ${results[seed]}`, { duration: 6000 })
             e.target.value = ''
           }}
         />

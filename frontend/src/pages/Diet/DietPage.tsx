@@ -5,7 +5,6 @@ import { cn } from '@utils/cn'
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts'
 import toast from 'react-hot-toast'
 import { useTranslation } from 'react-i18next'
-import { dietApi } from '@services/api'
 import { useDailyStore } from '@store/dailyStore'
 
 type FoodItem = {
@@ -50,6 +49,57 @@ const MEAL_TYPES = [
 const TARGET = { calories: 2200, protein: 165, carbs: 220, fat: 73 }
 const MACRO_COLORS = { protein: '#0ea5e9', carbs: '#f97316', fat: '#a855f7' }
 
+const LOCAL_FOOD_DB: FoodResult[] = [
+  { id: 'db1',  name: 'Pechuga de pollo a la plancha', calories: 165, protein: 31,   carbs: 0,   fat: 3.6, serving_size: 100, serving_unit: 'g'  },
+  { id: 'db2',  name: 'Arroz blanco cocido',           calories: 130, protein: 2.7,  carbs: 28,  fat: 0.3, serving_size: 100, serving_unit: 'g'  },
+  { id: 'db3',  name: 'Huevos revueltos',              calories: 148, protein: 10,   carbs: 1.6, fat: 11,  serving_size: 100, serving_unit: 'g'  },
+  { id: 'db4',  name: 'Avena con leche',               calories: 372, protein: 13,   carbs: 58,  fat: 8,   serving_size: 100, serving_unit: 'g'  },
+  { id: 'db5',  name: 'Plátano',                       calories: 89,  protein: 1.1,  carbs: 23,  fat: 0.3, serving_size: 100, serving_unit: 'g'  },
+  { id: 'db6',  name: 'Manzana',                       calories: 52,  protein: 0.3,  carbs: 14,  fat: 0.2, serving_size: 100, serving_unit: 'g'  },
+  { id: 'db7',  name: 'Atún en lata (escurrido)',       calories: 116, protein: 26,   carbs: 0,   fat: 1,   serving_size: 100, serving_unit: 'g'  },
+  { id: 'db8',  name: 'Salmón al horno',               calories: 208, protein: 20,   carbs: 0,   fat: 13,  serving_size: 100, serving_unit: 'g'  },
+  { id: 'db9',  name: 'Leche entera',                  calories: 61,  protein: 3.2,  carbs: 4.8, fat: 3.3, serving_size: 100, serving_unit: 'ml' },
+  { id: 'db10', name: 'Yogur natural',                 calories: 59,  protein: 3.5,  carbs: 4.7, fat: 3.3, serving_size: 100, serving_unit: 'g'  },
+  { id: 'db11', name: 'Almendras',                     calories: 579, protein: 21,   carbs: 22,  fat: 50,  serving_size: 30,  serving_unit: 'g'  },
+  { id: 'db12', name: 'Pan integral',                  calories: 247, protein: 13,   carbs: 41,  fat: 4.2, serving_size: 100, serving_unit: 'g'  },
+  { id: 'db13', name: 'Pasta cocida',                  calories: 158, protein: 5.8,  carbs: 31,  fat: 0.9, serving_size: 100, serving_unit: 'g'  },
+  { id: 'db14', name: 'Brócoli cocido',                calories: 34,  protein: 2.8,  carbs: 7,   fat: 0.4, serving_size: 100, serving_unit: 'g'  },
+  { id: 'db15', name: 'Patata cocida',                 calories: 87,  protein: 1.9,  carbs: 20,  fat: 0.1, serving_size: 100, serving_unit: 'g'  },
+  { id: 'db16', name: 'Tortilla de 2 huevos',          calories: 185, protein: 13,   carbs: 1.2, fat: 14,  serving_size: 100, serving_unit: 'g'  },
+  { id: 'db17', name: 'Lenteja cocida',                calories: 116, protein: 9,    carbs: 20,  fat: 0.4, serving_size: 100, serving_unit: 'g'  },
+  { id: 'db18', name: 'Queso fresco',                  calories: 98,  protein: 11,   carbs: 3.4, fat: 4.5, serving_size: 100, serving_unit: 'g'  },
+  { id: 'db19', name: 'Proteína de suero (Whey)',      calories: 400, protein: 80,   carbs: 8,   fat: 6,   serving_size: 30,  serving_unit: 'g', brand: 'MyProtein' },
+  { id: 'db20', name: 'Aceite de oliva',               calories: 884, protein: 0,    carbs: 0,   fat: 100, serving_size: 10,  serving_unit: 'ml' },
+  { id: 'db21', name: 'Jamón serrano',                 calories: 241, protein: 30,   carbs: 0,   fat: 14,  serving_size: 100, serving_unit: 'g'  },
+  { id: 'db22', name: 'Naranja',                       calories: 47,  protein: 0.9,  carbs: 12,  fat: 0.1, serving_size: 100, serving_unit: 'g'  },
+  { id: 'db23', name: 'Pavo en lonchas',               calories: 107, protein: 21,   carbs: 1.4, fat: 1.6, serving_size: 100, serving_unit: 'g'  },
+  { id: 'db24', name: 'Nueces',                        calories: 654, protein: 15,   carbs: 14,  fat: 65,  serving_size: 30,  serving_unit: 'g'  },
+  { id: 'db25', name: 'Leche de avena',                calories: 45,  protein: 1,    carbs: 9,   fat: 0.5, serving_size: 100, serving_unit: 'ml', brand: 'Oatly' },
+]
+
+const DEMO_MEALS: MealEntry[] = [
+  {
+    id: 'demo1', meal_type: 'breakfast', quantity: 150, logged_at: new Date().toISOString(),
+    food_item: { id: 'f1', name: 'Avena con leche', calories: 372, protein: 13, carbs: 58, fat: 8, serving_size: 100, serving_unit: 'g' },
+  },
+  {
+    id: 'demo2', meal_type: 'breakfast', quantity: 1, logged_at: new Date().toISOString(),
+    food_item: { id: 'f2', name: 'Plátano', calories: 89, protein: 1.1, carbs: 23, fat: 0.3, serving_size: 1, serving_unit: 'ud' },
+  },
+  {
+    id: 'demo3', meal_type: 'lunch', quantity: 200, logged_at: new Date().toISOString(),
+    food_item: { id: 'f3', name: 'Pechuga de pollo a la plancha', calories: 165, protein: 31, carbs: 0, fat: 3.6, serving_size: 100, serving_unit: 'g' },
+  },
+  {
+    id: 'demo4', meal_type: 'lunch', quantity: 180, logged_at: new Date().toISOString(),
+    food_item: { id: 'f4', name: 'Arroz blanco cocido', calories: 130, protein: 2.7, carbs: 28, fat: 0.3, serving_size: 100, serving_unit: 'g' },
+  },
+  {
+    id: 'demo5', meal_type: 'snack', quantity: 30, logged_at: new Date().toISOString(),
+    food_item: { id: 'f5', name: 'Almendras', calories: 579, protein: 21, carbs: 22, fat: 50, serving_size: 30, serving_unit: 'g' },
+  },
+]
+
 function calcMacros(entries: MealEntry[]) {
   return entries.reduce(
     (acc, e) => {
@@ -67,9 +117,8 @@ function calcMacros(entries: MealEntry[]) {
 export default function DietPage() {
   const { t } = useTranslation()
   const { today, setCalories, setWater } = useDailyStore()
-  const [entries, setEntries]             = useState<MealEntry[]>([])
-  const [loadingMeals, setLoadingMeals]   = useState(true)
-  const [waterMl, setWaterMl]             = useState(today.waterMl)
+  const [entries, setEntries]             = useState<MealEntry[]>(DEMO_MEALS)
+  const [waterMl, setWaterMl]             = useState(today.waterMl || 500)
 
   const [addModal, setAddModal]           = useState<string | null>(null)
   const [barcodeModal, setBarcodeModal]   = useState(false)
@@ -80,10 +129,8 @@ export default function DietPage() {
 
   const [searchQuery, setSearchQuery]     = useState('')
   const [searchResults, setSearchResults] = useState<FoodResult[]>([])
-  const [searchLoading, setSearchLoading] = useState(false)
   const [selectedFood, setSelectedFood]   = useState<FoodResult | null>(null)
   const [quantity, setQuantity]           = useState('100')
-  const searchTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const [foodName, setFoodName]   = useState('')
   const [foodCals, setFoodCals]   = useState('')
@@ -91,17 +138,7 @@ export default function DietPage() {
   const [foodCarbs, setFoodCarbs] = useState('')
   const [foodFat, setFoodFat]     = useState('')
 
-  useEffect(() => {
-    dietApi.get<{ success: boolean; data: MealEntry[] }>('/api/meals/today')
-      .then(r => setEntries(r.data.data))
-      .catch(() => setLoadingMeals(false))
-      .finally(() => setLoadingMeals(false))
-
-    dietApi.get<{ success: boolean; data: { total_ml: number } }>('/api/hydration/today')
-      .then(r => { setWaterMl(r.data.data.total_ml); setWater(r.data.data.total_ml) })
-      .catch(() => {/* usa valor del store */})
-  }, [])
-
+  // Sync macros to global store
   useEffect(() => {
     const macros = calcMacros(entries)
     if (macros.calories > 0) setCalories(Math.round(macros.calories))
@@ -111,27 +148,17 @@ export default function DietPage() {
     setWater(waterMl)
   }, [waterMl, setWater])
 
+  // Local food search
   useEffect(() => {
     if (!searchQuery.trim()) {
       setSearchResults([])
       return
     }
-    if (searchTimer.current) clearTimeout(searchTimer.current)
-    searchTimer.current = setTimeout(async () => {
-      setSearchLoading(true)
-      try {
-        const r = await dietApi.get<{ success: boolean; data: { local: FoodResult[]; remote: FoodResult[] } }>(
-          '/api/foods/search',
-          { params: { q: searchQuery } },
-        )
-        setSearchResults([...r.data.data.local, ...r.data.data.remote])
-      } catch {
-        setSearchResults([])
-      } finally {
-        setSearchLoading(false)
-      }
-    }, 350)
-    return () => { if (searchTimer.current) clearTimeout(searchTimer.current) }
+    const q = searchQuery.toLowerCase()
+    const results = LOCAL_FOOD_DB.filter(
+      f => f.name.toLowerCase().includes(q) || f.brand?.toLowerCase().includes(q)
+    )
+    setSearchResults(results)
   }, [searchQuery])
 
   const resetModal = () => {
@@ -143,17 +170,6 @@ export default function DietPage() {
     setFoodName(''); setFoodCals(''); setFoodProt(''); setFoodCarbs(''); setFoodFat('')
   }
 
-  const addEntry = async (foodItemId: string, mealType: string, qty: number) => {
-    const r = await dietApi.post<{ success: boolean; data: MealEntry }>('/api/meals', {
-      food_item_id: foodItemId,
-      meal_type: mealType,
-      quantity: qty,
-    })
-    setEntries(prev => [...prev, r.data.data])
-    toast.success(t('diet:foodAdded'))
-    resetModal()
-  }
-
   const handleSelectFood = (food: FoodResult) => {
     setSelectedFood(food)
     setSearchQuery('')
@@ -161,36 +177,41 @@ export default function DietPage() {
     setQuantity(String(food.serving_size))
   }
 
-  const handleSubmitSelected = async (e: React.FormEvent) => {
+  const handleSubmitSelected = (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedFood || !addModal) return
-    const qty = parseFloat(quantity)
-    try {
-      if (selectedFood.id) {
-        await addEntry(selectedFood.id, addModal, qty)
-      } else {
-        const r = await dietApi.post<{ success: boolean; data: FoodItem }>('/api/foods', {
-          name:         selectedFood.name,
-          brand:        selectedFood.brand ?? undefined,
-          calories:     selectedFood.calories,
-          protein:      selectedFood.protein,
-          carbs:        selectedFood.carbs,
-          fat:          selectedFood.fat,
-          serving_size: selectedFood.serving_size,
-          serving_unit: selectedFood.serving_unit,
-        })
-        await addEntry(r.data.data.id, addModal, qty)
-      }
-    } catch {
-      toast.error(t('diet:errorAddingFood'))
+    const entry: MealEntry = {
+      id:        crypto.randomUUID(),
+      meal_type: addModal as MealEntry['meal_type'],
+      quantity:  parseFloat(quantity),
+      logged_at: new Date().toISOString(),
+      food_item: {
+        id:           selectedFood.id ?? crypto.randomUUID(),
+        name:         selectedFood.name,
+        brand:        selectedFood.brand,
+        calories:     selectedFood.calories,
+        protein:      selectedFood.protein,
+        carbs:        selectedFood.carbs,
+        fat:          selectedFood.fat,
+        serving_size: selectedFood.serving_size,
+        serving_unit: selectedFood.serving_unit,
+      },
     }
+    setEntries(prev => [...prev, entry])
+    toast.success(t('diet:foodAdded'))
+    resetModal()
   }
 
-  const handleSubmitManual = async (e: React.FormEvent) => {
+  const handleSubmitManual = (e: React.FormEvent) => {
     e.preventDefault()
-    if (!addModal) return
-    try {
-      const r = await dietApi.post<{ success: boolean; data: FoodItem }>('/api/foods', {
+    if (!addModal || !foodName || !foodCals) return
+    const entry: MealEntry = {
+      id:        crypto.randomUUID(),
+      meal_type: addModal as MealEntry['meal_type'],
+      quantity:  parseFloat(quantity || '100'),
+      logged_at: new Date().toISOString(),
+      food_item: {
+        id:           crypto.randomUUID(),
         name:         foodName,
         calories:     parseFloat(foodCals),
         protein:      parseFloat(foodProt  || '0'),
@@ -198,32 +219,21 @@ export default function DietPage() {
         fat:          parseFloat(foodFat   || '0'),
         serving_size: 100,
         serving_unit: 'g',
-      })
-      await addEntry(r.data.data.id, addModal, parseFloat(quantity || '100'))
-    } catch {
-      toast.error(t('diet:errorAddingFood'))
+      },
     }
+    setEntries(prev => [...prev, entry])
+    toast.success(t('diet:foodAdded'))
+    resetModal()
   }
 
-  const handleAddWater = async () => {
+  const handleAddWater = () => {
     if (waterMl >= 2500) return
     setWaterMl(prev => prev + 250)
-    try {
-      await dietApi.post('/api/hydration/log', { amount_ml: 250 })
-    } catch {
-      setWaterMl(prev => prev - 250)
-      toast.error(t('diet:errorWater'))
-    }
   }
 
-  const handleDelete = async (entryId: string) => {
-    try {
-      await dietApi.delete(`/api/meals/${entryId}`)
-      setEntries(prev => prev.filter(e => e.id !== entryId))
-      toast.success(t('diet:foodDeleted'))
-    } catch {
-      toast.error(t('diet:errorDeleting'))
-    }
+  const handleDelete = (entryId: string) => {
+    setEntries(prev => prev.filter(e => e.id !== entryId))
+    toast.success(t('diet:foodDeleted'))
   }
 
   const closeBarcodeModal = () => {
@@ -265,13 +275,13 @@ export default function DietPage() {
     }
   }
 
-  const handleBarcodeAdd = async () => {
+  const handleBarcodeAdd = () => {
     if (!barcodeResult) return
-    const demoEntry: MealEntry = {
-      id:         crypto.randomUUID(),
-      meal_type:  barcodeMeal as MealEntry['meal_type'],
-      quantity:   100,
-      logged_at:  new Date().toISOString(),
+    const entry: MealEntry = {
+      id:        crypto.randomUUID(),
+      meal_type: barcodeMeal as MealEntry['meal_type'],
+      quantity:  100,
+      logged_at: new Date().toISOString(),
       food_item: {
         id:           crypto.randomUUID(),
         name:         barcodeResult.name,
@@ -284,19 +294,9 @@ export default function DietPage() {
         serving_unit: 'g',
       },
     }
-    try {
-      const rf = await dietApi.post<{ success: boolean; data: FoodItem }>('/api/foods', {
-        name: barcodeResult.name, brand: barcodeResult.brand,
-        calories: barcodeResult.calories, protein: barcodeResult.protein,
-        carbs: barcodeResult.carbs, fat: barcodeResult.fat,
-        serving_size: 100, serving_unit: 'g',
-      })
-      await addEntry(rf.data.data.id, barcodeMeal, 100)
-    } catch {
-      setEntries(prev => [...prev, demoEntry])
-      toast.success(t('diet:foodAdded'))
-      closeBarcodeModal()
-    }
+    setEntries(prev => [...prev, entry])
+    toast.success(t('diet:foodAdded'))
+    closeBarcodeModal()
   }
 
   const todayMacros = calcMacros(entries)
@@ -389,73 +389,67 @@ export default function DietPage() {
 
       {/* Meal cards */}
       <div className="space-y-4">
-        {loadingMeals ? (
-          <div className="flex justify-center py-12">
-            <Loader2 size={24} className="animate-spin text-white/30" />
-          </div>
-        ) : (
-          MEAL_TYPES.map(({ type, icon: MealIcon }) => {
-            const mealLabel = t(`diet:${type}`)
-            const mealEntries = entries.filter(e => e.meal_type === type)
-            const mealCal = mealEntries.reduce(
-              (sum, e) => sum + (e.food_item.calories / e.food_item.serving_size) * e.quantity, 0,
-            )
-            return (
-              <motion.div key={type} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card">
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-lg bg-surface-100 flex items-center justify-center shrink-0">
-                      <MealIcon size={16} className="text-brand-400" />
-                    </div>
-                    <h3 className="font-semibold text-sm">{mealLabel}</h3>
+        {MEAL_TYPES.map(({ type, icon: MealIcon }) => {
+          const mealLabel = t(`diet:${type}`)
+          const mealEntries = entries.filter(e => e.meal_type === type)
+          const mealCal = mealEntries.reduce(
+            (sum, e) => sum + (e.food_item.calories / e.food_item.serving_size) * e.quantity, 0,
+          )
+          return (
+            <motion.div key={type} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-lg bg-surface-100 flex items-center justify-center shrink-0">
+                    <MealIcon size={16} className="text-brand-400" />
                   </div>
-                  <div className="flex items-center gap-3">
-                    {mealCal > 0 && (
-                      <span className="flex items-center gap-1 text-sm text-white/50">
-                        <Flame size={13} className="text-orange-400" /> {Math.round(mealCal)} kcal
-                      </span>
-                    )}
-                    <button onClick={() => setAddModal(type)} className="btn-ghost p-1.5">
-                      <Plus size={16} />
-                    </button>
-                  </div>
+                  <h3 className="font-semibold text-sm">{mealLabel}</h3>
                 </div>
-
-                {mealEntries.length > 0 ? (
-                  <div className="space-y-2">
-                    {mealEntries.map(entry => {
-                      const r = entry.quantity / entry.food_item.serving_size
-                      return (
-                        <div key={entry.id} className="flex items-center justify-between p-2.5 rounded-lg bg-surface-100 hover:bg-surface-200 transition-colors group">
-                          <div>
-                            <p className="text-sm font-medium">{entry.food_item.name}</p>
-                            <p className="text-xs text-white/30">
-                              {entry.quantity}{entry.food_item.serving_unit} · P:{Math.round(entry.food_item.protein * r)}g C:{Math.round(entry.food_item.carbs * r)}g G:{Math.round(entry.food_item.fat * r)}g
-                            </p>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm text-white/50">{Math.round(entry.food_item.calories * r)} kcal</span>
-                            <button
-                              onClick={() => handleDelete(entry.id)}
-                              className="opacity-0 group-hover:opacity-100 btn-ghost p-1 text-red-400 hover:text-red-300 transition-all"
-                            >
-                              <Trash2 size={14} />
-                            </button>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                ) : (
-                  <button onClick={() => setAddModal(type)}
-                    className="w-full py-4 rounded-xl border border-dashed border-white/10 text-white/30 hover:border-brand-500/30 hover:text-brand-400 transition-all text-sm flex items-center justify-center gap-2">
-                    <Plus size={16} /> {t('diet:addFood')}
+                <div className="flex items-center gap-3">
+                  {mealCal > 0 && (
+                    <span className="flex items-center gap-1 text-sm text-white/50">
+                      <Flame size={13} className="text-orange-400" /> {Math.round(mealCal)} kcal
+                    </span>
+                  )}
+                  <button onClick={() => setAddModal(type)} className="btn-ghost p-1.5">
+                    <Plus size={16} />
                   </button>
-                )}
-              </motion.div>
-            )
-          })
-        )}
+                </div>
+              </div>
+
+              {mealEntries.length > 0 ? (
+                <div className="space-y-2">
+                  {mealEntries.map(entry => {
+                    const r = entry.quantity / entry.food_item.serving_size
+                    return (
+                      <div key={entry.id} className="flex items-center justify-between p-2.5 rounded-lg bg-surface-100 hover:bg-surface-200 transition-colors group">
+                        <div>
+                          <p className="text-sm font-medium">{entry.food_item.name}</p>
+                          <p className="text-xs text-white/30">
+                            {entry.quantity}{entry.food_item.serving_unit} · P:{Math.round(entry.food_item.protein * r)}g C:{Math.round(entry.food_item.carbs * r)}g G:{Math.round(entry.food_item.fat * r)}g
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-white/50">{Math.round(entry.food_item.calories * r)} kcal</span>
+                          <button
+                            onClick={() => handleDelete(entry.id)}
+                            className="opacity-0 group-hover:opacity-100 btn-ghost p-1 text-red-400 hover:text-red-300 transition-all"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              ) : (
+                <button onClick={() => setAddModal(type)}
+                  className="w-full py-4 rounded-xl border border-dashed border-white/10 text-white/30 hover:border-brand-500/30 hover:text-brand-400 transition-all text-sm flex items-center justify-center gap-2">
+                  <Plus size={16} /> {t('diet:addFood')}
+                </button>
+              )}
+            </motion.div>
+          )
+        })}
       </div>
 
       {/* Barcode modal */}
@@ -471,7 +465,8 @@ export default function DietPage() {
               </div>
               <button onClick={closeBarcodeModal} className="btn-ghost p-1.5"><X size={16} /></button>
             </div>
-            <p className="text-white/50 text-xs mb-4">{t('diet:barcodeSubtitle')}</p>
+            <p className="text-white/50 text-xs mb-1">{t('diet:barcodeSubtitle')}</p>
+            <p className="text-white/30 text-xs mb-4">Ej: 8410188036148 (Aquarius), 5449000133335 (Coca-Cola)</p>
 
             <form onSubmit={handleBarcodeSearch} className="flex gap-2 mb-4">
               <input
@@ -512,7 +507,7 @@ export default function DietPage() {
                 </div>
                 <div>
                   <label className="text-xs text-white/40 mb-1 block">{t('diet:addFood')}</label>
-                  <select value={barcodeMeal} onChange={e => setBarcodeMeal(e.target.value)} className="input w-full text-sm mb-3">
+                  <select value={barcodeMeal} onChange={e => setBarcodeMeal(e.target.value)} className="input w-full text-sm mb-3" style={{ colorScheme: 'dark' }}>
                     {MEAL_TYPES.map(m => (
                       <option key={m.type} value={m.type}>{t(`diet:${m.type}`)}</option>
                     ))}
@@ -544,7 +539,7 @@ export default function DietPage() {
                   <p className="text-sm font-medium">{selectedFood.name}</p>
                   {selectedFood.brand && <p className="text-xs text-white/40 mt-0.5">{selectedFood.brand}</p>}
                   <p className="text-xs text-white/30 mt-1">
-                    {Math.round(selectedFood.calories)} kcal · P:{Math.round(selectedFood.protein)}g C:{Math.round(selectedFood.carbs)}g G:{Math.round(selectedFood.fat)}g {t('diet:quantity', { unit: selectedFood.serving_unit }).split('(')[0].trim()} {selectedFood.serving_size}{selectedFood.serving_unit}
+                    {Math.round(selectedFood.calories)} kcal · P:{Math.round(selectedFood.protein)}g C:{Math.round(selectedFood.carbs)}g G:{Math.round(selectedFood.fat)}g por {selectedFood.serving_size}{selectedFood.serving_unit}
                   </p>
                 </div>
                 <div>
@@ -571,9 +566,6 @@ export default function DietPage() {
                     placeholder={t('diet:searchFood')}
                     className="input pl-9"
                   />
-                  {searchLoading && (
-                    <Loader2 size={14} className="absolute right-3 top-1/2 -translate-y-1/2 animate-spin text-white/30" />
-                  )}
                 </div>
 
                 {searchResults.length > 0 && (
@@ -591,7 +583,7 @@ export default function DietPage() {
                   </div>
                 )}
 
-                {searchQuery && !searchLoading && searchResults.length === 0 && (
+                {searchQuery && searchResults.length === 0 && (
                   <p className="text-xs text-white/30 mb-3 text-center">{t('diet:noResults')}</p>
                 )}
 

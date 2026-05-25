@@ -24,9 +24,9 @@ function DashboardPreview() {
     <div className="relative hidden md:block" style={{ animation: 'float 4s ease-in-out infinite' }}>
       <style>{`@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}`}</style>
 
-      <div className="absolute inset-0 bg-brand-500/20 blur-3xl rounded-full scale-75 pointer-events-none" />
+      <div className="absolute inset-0 z-0 bg-brand-500/25 blur-[80px] rounded-full scale-90 pointer-events-none" />
 
-      <div className="relative w-80 rounded-2xl bg-[#141414]/90 backdrop-blur-xl border border-white/10 shadow-2xl p-5">
+      <div className="relative z-10 w-80 rounded-2xl bg-[#1c1c1c] border border-white/20 shadow-2xl shadow-black/60 p-5">
         <div className="flex items-center justify-between mb-4">
           <div>
             <p className="text-xs text-white/40">{t('dashboard:goodAfternoon')},</p>

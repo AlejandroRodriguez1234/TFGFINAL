@@ -383,6 +383,7 @@ export default function GymPage() {
                     value={form.difficulty}
                     onChange={(e) => setForm((f) => ({ ...f, difficulty: e.target.value as Difficulty }))}
                     className="input text-sm"
+                    style={{ colorScheme: 'dark' }}
                   >
                     {(['beginner', 'intermediate', 'advanced'] as Difficulty[]).map((d) => (
                       <option key={d} value={d}>{diffLabels[d]}</option>
