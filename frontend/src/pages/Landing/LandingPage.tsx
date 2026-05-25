@@ -13,39 +13,13 @@ import { cn } from '@utils/cn'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const features = [
-  { icon: Brain,      title: 'IA Integrada',          desc: 'Análisis de postura, recomendaciones personalizadas y chatbot nutricional con inteligencia artificial.', color: 'from-purple-500 to-pink-500',   span: 'col-span-2' },
-  { icon: Shield,     title: 'Seguridad Total',        desc: '2FA, cifrado end-to-end y GDPR. Tus datos protegidos.',                                                   color: 'from-indigo-500 to-violet-400', span: 'col-span-1' },
-  { icon: Dumbbell,   title: 'Rutinas Inteligentes',   desc: 'Más de 200 ejercicios con vídeo, progresión automática y records personales.',                            color: 'from-brand-500 to-cyan-400',    span: 'col-span-1' },
-  { icon: Apple,      title: 'Nutrición Avanzada',     desc: 'Escaneo de código de barras, 500K alimentos y planes de dieta personalizados.',                           color: 'from-green-500 to-emerald-400', span: 'col-span-1' },
-  { icon: TrendingUp, title: 'Analíticas Detalladas',  desc: 'Dashboards interactivos, predicciones de progreso y análisis de composición corporal.',                   color: 'from-orange-500 to-yellow-400', span: 'col-span-1' },
-  { icon: Users,      title: 'Comunidad Social',       desc: 'Retos entre amigos, clasificación, feed de actividad y logros gamificados.',                              color: 'from-pink-500 to-rose-400',    span: 'col-span-2' },
-]
-
-const plans = [
-  {
-    name: 'Starter', price: 'Gratis', period: '',
-    features: ['Dashboard básico', '50 ejercicios', 'Registro de comidas', 'Comunidad'],
-    cta: 'Empezar gratis', featured: false,
-  },
-  {
-    name: 'Pro', price: '€9.99', period: '/mes',
-    features: ['Todo en Starter', '200+ ejercicios con vídeo', 'IA postura y nutrición', 'Sin límites', 'Analíticas avanzadas', 'Soporte prioritario'],
-    cta: 'Empezar Pro', featured: true,
-  },
-  {
-    name: 'Trainer', price: '€24.99', period: '/mes',
-    features: ['Todo en Pro', 'Panel de entrenador', 'Gestión de clientes', 'Planes personalizados', 'API access', 'White-label'],
-    cta: 'Contactar', featured: false,
-  },
-]
-
 const LANGS = [
   { code: 'es', label: 'Español', short: 'ES' },
   { code: 'en', label: 'English', short: 'EN' },
 ]
 
 function DashboardPreview() {
+  const { t } = useTranslation()
   return (
     <div className="relative hidden md:block" style={{ animation: 'float 4s ease-in-out infinite' }}>
       <style>{`@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-14px)}}`}</style>
@@ -55,18 +29,18 @@ function DashboardPreview() {
       <div className="relative w-80 rounded-2xl bg-[#141414]/90 backdrop-blur-xl border border-white/10 shadow-2xl p-5">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <p className="text-xs text-white/40">Buenas tardes,</p>
+            <p className="text-xs text-white/40">{t('dashboard:goodAfternoon')},</p>
             <p className="text-lg font-bold text-white">Alejandro</p>
           </div>
           <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/20 border border-brand-500/30">
             <Trophy size={11} className="text-brand-300" />
-            <span className="text-brand-300 text-xs font-bold">Nv. 10</span>
+            <span className="text-brand-300 text-xs font-bold">{t('common:levelPrefix')} 10</span>
           </div>
         </div>
 
         <div className="mb-4">
           <div className="flex justify-between text-[10px] text-white/30 mb-1">
-            <span>Progreso XP</span><span>9,500 / 10,000</span>
+            <span>{t('landing:xpProgressLabel')}</span><span>9,500 / 10,000</span>
           </div>
           <div className="h-1.5 bg-white/10 rounded-full overflow-hidden">
             <div className="h-full w-[95%] bg-gradient-to-r from-brand-500 to-cyan-400 rounded-full" />
@@ -75,9 +49,9 @@ function DashboardPreview() {
 
         <div className="grid grid-cols-3 gap-2 mb-4">
           {[
-            { val: '1,840', label: 'kcal',  Icon: Flame,    cls: 'text-orange-400', bg: 'bg-orange-500/10' },
-            { val: '7h 20', label: 'sueño', Icon: Moon,     cls: 'text-purple-400', bg: 'bg-purple-500/10' },
-            { val: '1.8L',  label: 'agua',  Icon: Droplets, cls: 'text-cyan-400',   bg: 'bg-cyan-500/10'   },
+            { val: '1,840', label: 'kcal',                    Icon: Flame,    cls: 'text-orange-400', bg: 'bg-orange-500/10' },
+            { val: '7h 20', label: t('dashboard:sleep'),      Icon: Moon,     cls: 'text-purple-400', bg: 'bg-purple-500/10' },
+            { val: '1.8L',  label: t('dashboard:water'),      Icon: Droplets, cls: 'text-cyan-400',   bg: 'bg-cyan-500/10'   },
           ].map(({ val, label, Icon, cls, bg }) => (
             <div key={label} className={`${bg} rounded-xl p-2.5 text-center`}>
               <Icon size={12} className={cn(cls, 'mx-auto mb-1')} />
@@ -88,14 +62,16 @@ function DashboardPreview() {
         </div>
 
         <div>
-          <p className="text-[10px] text-white/30 mb-2 uppercase tracking-wide">Actividad semanal</p>
+          <p className="text-[10px] text-white/30 mb-2 uppercase tracking-wide">{t('landing:weeklyActivity')}</p>
           <div className="flex items-end gap-1.5 h-10">
             {[65,80,45,90,70,85,60].map((h, i) => (
               <div key={i} className="flex-1 rounded-sm" style={{ height: `${h}%`, background: i === 3 ? 'linear-gradient(to top,#0ea5e9,#22d3ee)' : 'rgba(255,255,255,0.08)' }} />
             ))}
           </div>
           <div className="flex justify-between mt-1.5">
-            {['L','M','X','J','V','S','D'].map((d) => <span key={d} className="flex-1 text-center text-[9px] text-white/20">{d}</span>)}
+            {(t('landing:weekDaysShort', { returnObjects: true }) as string[]).map((d, i) => (
+              <span key={i} className="flex-1 text-center text-[9px] text-white/20">{d}</span>
+            ))}
           </div>
         </div>
       </div>
@@ -105,17 +81,44 @@ function DashboardPreview() {
       </div>
       <div className="absolute -bottom-3 -left-4 bg-[#141414] border border-white/10 rounded-xl px-3 py-2 shadow-xl flex items-center gap-2">
         <div className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-        <span className="text-xs text-white/70 font-medium">Racha: 30 días</span>
+        <span className="text-xs text-white/70 font-medium">{t('landing:streakLabel')}</span>
       </div>
     </div>
   )
 }
 
 export default function LandingPage() {
-  const { i18n } = useTranslation()
+  const { i18n, t } = useTranslation()
   const heroRef = useRef<HTMLDivElement>(null)
   const [langOpen, setLangOpen] = useState(false)
   const currentLang = LANGS.find((l) => l.code === i18n.language) ?? LANGS[0]
+
+  const features = [
+    { icon: Brain,      title: t('landing:featureAITitle'),     desc: t('landing:featureAIDesc'),     color: 'from-purple-500 to-pink-500',   span: 'col-span-2' },
+    { icon: Shield,     title: t('landing:featureSecTitle'),    desc: t('landing:featureSecDesc'),    color: 'from-indigo-500 to-violet-400', span: 'col-span-1' },
+    { icon: Dumbbell,   title: t('landing:featureGymTitle'),    desc: t('landing:featureGymDesc'),    color: 'from-brand-500 to-cyan-400',    span: 'col-span-1' },
+    { icon: Apple,      title: t('landing:featureNutTitle'),    desc: t('landing:featureNutDesc'),    color: 'from-green-500 to-emerald-400', span: 'col-span-1' },
+    { icon: TrendingUp, title: t('landing:featureAnalTitle'),   desc: t('landing:featureAnalDesc'),   color: 'from-orange-500 to-yellow-400', span: 'col-span-1' },
+    { icon: Users,      title: t('landing:featureSocialTitle'), desc: t('landing:featureSocialDesc'), color: 'from-pink-500 to-rose-400',     span: 'col-span-2' },
+  ]
+
+  const plans = [
+    {
+      name: 'Starter', price: t('landing:planStarterPrice'), period: '',
+      features: [t('landing:planStarterF1'), t('landing:planStarterF2'), t('landing:planStarterF3'), t('landing:planStarterF4')],
+      cta: t('landing:planStarterCta'), featured: false,
+    },
+    {
+      name: 'Pro', price: '€9.99', period: t('landing:planPeriodMonth'),
+      features: [t('landing:planProF1'), t('landing:planProF2'), t('landing:planProF3'), t('landing:planProF4'), t('landing:planProF5'), t('landing:planProF6')],
+      cta: t('landing:planProCta'), featured: true,
+    },
+    {
+      name: 'Trainer', price: '€24.99', period: t('landing:planPeriodMonth'),
+      features: [t('landing:planTrainerF1'), t('landing:planTrainerF2'), t('landing:planTrainerF3'), t('landing:planTrainerF4'), t('landing:planTrainerF5'), t('landing:planTrainerF6')],
+      cta: t('landing:planTrainerCta'), featured: false,
+    },
+  ]
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -155,9 +158,9 @@ export default function LandingPage() {
         </div>
 
         <div className="hidden md:flex items-center gap-8 text-sm text-white/60">
-          <a href="#features" className="hover:text-white transition-colors">Funciones</a>
-          <a href="#pricing"  className="hover:text-white transition-colors">Precios</a>
-          <a href="#about"    className="hover:text-white transition-colors">Nosotros</a>
+          <a href="#features" className="hover:text-white transition-colors">{t('landing:navFeatures')}</a>
+          <a href="#pricing"  className="hover:text-white transition-colors">{t('landing:navPricing')}</a>
+          <a href="#about"    className="hover:text-white transition-colors">{t('landing:navAbout')}</a>
         </div>
 
         <div className="flex items-center gap-2">
@@ -193,8 +196,8 @@ export default function LandingPage() {
               </>
             )}
           </div>
-          <Link to="/login"    className="px-4 py-2 text-sm text-white/70 hover:text-white transition-colors">Entrar</Link>
-          <Link to="/register" className="px-4 py-2 text-sm bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-medium transition-colors">Empezar gratis</Link>
+          <Link to="/login"    className="px-4 py-2 text-sm text-white/70 hover:text-white transition-colors">{t('landing:signIn')}</Link>
+          <Link to="/register" className="px-4 py-2 text-sm bg-brand-500 hover:bg-brand-600 text-white rounded-lg font-medium transition-colors">{t('landing:startFree')}</Link>
         </div>
       </nav>
 
@@ -209,34 +212,34 @@ export default function LandingPage() {
           <div className="space-y-8">
             <div className="hero-badge inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-brand-500/30 bg-brand-500/10 text-sm text-brand-300">
               <Activity size={13} />
-              <span>IA-Powered Fitness Platform</span>
+              <span>{t('landing:heroBadge')}</span>
             </div>
 
             <h1 className="hero-title text-5xl md:text-6xl lg:text-[4.5rem] font-display font-black leading-[1.05] tracking-tight">
-              Forja tu<br />
-              <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">mejor versión</span><br />
-              <span className="text-white/80">con IA</span>
+              {t('landing:heroTitle1')}<br />
+              <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">{t('landing:heroTitle2')}</span><br />
+              <span className="text-white/80">{t('landing:heroTitle3')}</span>
             </h1>
 
             <p className="hero-sub text-lg text-white/55 max-w-lg leading-relaxed">
-              La plataforma fitness más avanzada: entrena con IA, come inteligente, conecta con tu comunidad y mide tu evolución con analíticas de nivel profesional.
+              {t('landing:heroSubtitle')}
             </p>
 
             <div className="hero-cta flex flex-col sm:flex-row gap-3">
               <Link to="/register" className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-all text-base group">
-                Empieza gratis <ArrowRight size={17} className="group-hover:translate-x-1 transition-transform" />
+                {t('landing:startFreeBtn')} <ArrowRight size={17} className="group-hover:translate-x-1 transition-transform" />
               </Link>
               <button className="inline-flex items-center justify-center gap-2 px-8 py-4 border border-white/15 hover:border-white/30 text-white/80 hover:text-white rounded-xl transition-all text-base">
-                <Play size={15} className="text-brand-400" /> Ver demo
+                <Play size={15} className="text-brand-400" /> {t('landing:watchDemo')}
               </button>
             </div>
 
             <div className="flex flex-wrap gap-8">
               {[
-                { value: '50K+', label: 'Usuarios activos', star: false },
-                { value: '200+', label: 'Ejercicios',        star: false },
-                { value: '500K', label: 'Alimentos en BD',   star: false },
-                { value: '4.9',  label: 'Valoración media',  star: true  },
+                { value: '50K+', label: t('landing:statActiveUsers'), star: false },
+                { value: '200+', label: t('landing:statExercises'),    star: false },
+                { value: '500K', label: t('landing:statFoods'),        star: false },
+                { value: '4.9',  label: t('landing:statRating'),       star: true  },
               ].map(({ value, label, star }) => (
                 <div key={label} className="hero-stats">
                   <div className="flex items-center gap-1 text-2xl font-bold bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">
@@ -254,7 +257,7 @@ export default function LandingPage() {
         </div>
 
         <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-white/25 text-xs">
-          <span>Scroll</span>
+          <span>{t('landing:scrollHint')}</span>
           <div className="w-px h-8 bg-gradient-to-b from-white/25 to-transparent" />
         </div>
       </section>
@@ -264,11 +267,11 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">
-              Todo lo que necesitas<br />
-              <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">en un solo lugar</span>
+              {t('landing:featuresTitle1')}<br />
+              <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">{t('landing:featuresTitle2')}</span>
             </h2>
             <p className="text-white/45 text-lg max-w-2xl mx-auto">
-              Desde análisis con IA hasta gamificación social, FitForge tiene cada aspecto de tu fitness cubierto.
+              {t('landing:featuresSubtitle')}
             </p>
           </div>
 
@@ -297,10 +300,10 @@ export default function LandingPage() {
       <section className="stats-section py-20 px-6 md:px-12 border-y border-white/5">
         <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8">
           {[
-            { icon: Users,    value: '50,000+', label: 'Usuarios activos' },
-            { icon: Dumbbell, value: '2M+',     label: 'Entrenamientos completados' },
-            { icon: Target,   value: '87%',     label: 'Usuarios que logran sus metas' },
-            { icon: Award,    value: '4.9/5',   label: 'Valoración media' },
+            { icon: Users,    value: '50,000+', label: t('landing:statsActiveUsers') },
+            { icon: Dumbbell, value: '2M+',     label: t('landing:statsWorkouts') },
+            { icon: Target,   value: '87%',     label: t('landing:statsGoal') },
+            { icon: Award,    value: '4.9/5',   label: t('landing:statsRating') },
           ].map(({ icon: Icon, value, label }) => (
             <div key={label} className="stat-item text-center">
               <Icon size={26} className="text-brand-400 mx-auto mb-3 opacity-80" />
@@ -316,9 +319,9 @@ export default function LandingPage() {
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-4xl md:text-5xl font-display font-bold mb-4">
-              Precios <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">transparentes</span>
+              {t('landing:pricingTitle1')} <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">{t('landing:pricingTitle2')}</span>
             </h2>
-            <p className="text-white/45 text-lg">Empieza gratis, escala cuando lo necesites.</p>
+            <p className="text-white/45 text-lg">{t('landing:pricingSubtitle')}</p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-5 items-center">
@@ -334,7 +337,7 @@ export default function LandingPage() {
               >
                 {featured && (
                   <span className="inline-block text-xs font-semibold px-2.5 py-1 rounded-full bg-brand-500/20 text-brand-300 border border-brand-500/30 mb-3">
-                    Más popular
+                    {t('landing:mostPopular')}
                   </span>
                 )}
                 <h3 className="text-xl font-bold mb-2 text-white">{name}</h3>
@@ -369,28 +372,28 @@ export default function LandingPage() {
         <div className="max-w-3xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 mb-6 text-white/40 text-sm">
             <Smartphone size={16} className="text-brand-400" />
-            <span>Disponible como PWA en móvil y escritorio</span>
+            <span>{t('landing:pwaBadge')}</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-display font-bold mb-6">
-            Listo para forjar<br />
-            <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">tu mejor versión</span>
+            {t('landing:ctaTitle1')}<br />
+            <span className="bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">{t('landing:ctaTitle2')}</span>
           </h2>
           <p className="text-white/50 text-lg mb-10">
-            Únete a más de 50,000 personas que ya están transformando su vida con FitForge.
+            {t('landing:ctaSubtitle')}
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link to="/register" className="inline-flex items-center gap-2 px-10 py-4 bg-brand-500 hover:bg-brand-600 text-white font-semibold rounded-xl transition-all text-base">
-              Crear cuenta gratis <ArrowRight size={17} />
+              {t('landing:createFreeAccount')} <ArrowRight size={17} />
             </Link>
             <div className="flex items-center gap-2 text-white/40 text-sm">
-              <Check size={13} className="text-green-400" /> Sin tarjeta de crédito
+              <Check size={13} className="text-green-400" /> {t('landing:noCreditCard')}
             </div>
           </div>
           <div className="flex items-center justify-center gap-1 mt-8">
             {Array.from({ length: 5 }).map((_, i) => (
               <Star key={i} size={15} className="fill-yellow-400 text-yellow-400" />
             ))}
-            <span className="text-white/40 text-sm ml-2">4.9/5 · más de 2,000 reseñas</span>
+            <span className="text-white/40 text-sm ml-2">{t('landing:reviews')}</span>
           </div>
         </div>
       </section>
@@ -405,12 +408,12 @@ export default function LandingPage() {
             <span className="font-bold bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">FitForge</span>
           </div>
           <p className="text-white/25 text-sm text-center">
-            © 2025 FitForge. La plataforma fitness más avanzada.
+            © 2025 FitForge. {t('common:tagline')}.
           </p>
           <div className="flex gap-6 text-sm text-white/35">
-            <a href="#" className="hover:text-white transition-colors">Privacidad</a>
-            <a href="#" className="hover:text-white transition-colors">Términos</a>
-            <a href="#" className="hover:text-white transition-colors">Contacto</a>
+            <a href="#" className="hover:text-white transition-colors">{t('landing:privacy')}</a>
+            <a href="#" className="hover:text-white transition-colors">{t('landing:terms')}</a>
+            <a href="#" className="hover:text-white transition-colors">{t('landing:contact')}</a>
           </div>
         </div>
       </footer>

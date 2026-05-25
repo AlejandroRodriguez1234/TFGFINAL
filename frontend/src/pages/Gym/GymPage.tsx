@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useLocation } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import {
@@ -87,6 +87,7 @@ const EMPTY_FORM = {
 
 export default function GymPage() {
   const { t } = useTranslation()
+  const location = useLocation()
   const [tab, setTab]         = useState<'workouts' | 'exercises'>('workouts')
   const [muscle, setMuscle]   = useState<MuscleGroup>('all')
   const [search, setSearch]   = useState('')
@@ -94,6 +95,14 @@ export default function GymPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [form, setForm]       = useState(EMPTY_FORM)
   const [videoEx, setVideoEx] = useState<typeof EXERCISE_CATALOG[number] | null>(null)
+
+  useEffect(() => {
+    if (location.hash === '#routines') {
+      setTimeout(() => {
+        document.getElementById('routines')?.scrollIntoView({ behavior: 'smooth' })
+      }, 100)
+    }
+  }, [location.hash])
 
   const muscleKeys: MuscleGroup[] = ['all', 'chest', 'back', 'shoulders', 'arms', 'core', 'legs']
   const muscleLabels: Record<MuscleGroup, string> = {
@@ -111,7 +120,6 @@ export default function GymPage() {
     advanced:     t('gym:advanced'),
   }
 
-  // ── Filters ────────────────────────────────────────────────────────────────
   const filteredWorkouts = workouts.filter(
     (w) => muscle === 'all' || w.muscles.includes(muscle as WorkableMuscle),
   )
@@ -120,7 +128,6 @@ export default function GymPage() {
     (e) => (muscle === 'all' || e.muscle === muscle) && e.name.toLowerCase().includes(search.toLowerCase()),
   )
 
-  // ── Modal helpers ──────────────────────────────────────────────────────────
   const openModal = () => { setForm(EMPTY_FORM); setModalOpen(true) }
   const closeModal = () => setModalOpen(false)
 
@@ -167,7 +174,6 @@ export default function GymPage() {
         </Link>
       </div>
 
-      {/* Quick action cards */}
       <div className="grid grid-cols-3 gap-4">
         {[
           { icon: Play,      label: t('gym:start'),    sub: t('gym:quickWorkout'),           color: 'from-brand-500 to-cyan-400',    to: '/gym/workout/quick' },
@@ -184,7 +190,6 @@ export default function GymPage() {
         ))}
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-1 p-1 rounded-xl bg-surface-100 w-fit">
         {(['workouts', 'exercises'] as const).map((tabKey) => (
           <button
@@ -200,7 +205,6 @@ export default function GymPage() {
         ))}
       </div>
 
-      {/* Muscle group filter */}
       <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
         {muscleKeys.map((key) => {
           const Icon = muscleIconMap[key]
@@ -316,7 +320,6 @@ export default function GymPage() {
         </>
       )}
 
-      {/* ── YouTube video modal ──────────────────────────────────────────────── */}
       {videoEx && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={() => setVideoEx(null)}>
           <motion.div
@@ -345,7 +348,6 @@ export default function GymPage() {
         </div>
       )}
 
-      {/* ── Create routine modal ─────────────────────────────────────────────── */}
       {modalOpen && (
         <div
           className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
@@ -363,7 +365,6 @@ export default function GymPage() {
             </div>
 
             <form onSubmit={handleSave} className="space-y-5">
-              {/* Name */}
               <div>
                 <label className="text-xs text-white/40 mb-1 block">{t('gym:routineName', 'Nombre de la rutina')}</label>
                 <input
@@ -375,7 +376,6 @@ export default function GymPage() {
                 />
               </div>
 
-              {/* Difficulty + Duration */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-white/40 mb-1 block">{t('gym:difficulty', 'Dificultad')}</label>
@@ -404,7 +404,6 @@ export default function GymPage() {
                 </div>
               </div>
 
-              {/* Muscles */}
               <div>
                 <label className="text-xs text-white/40 mb-2 block">{t('gym:musclesWorked', 'Músculos trabajados')}</label>
                 <div className="flex flex-wrap gap-2">
@@ -432,7 +431,6 @@ export default function GymPage() {
                 </div>
               </div>
 
-              {/* Exercises */}
               <div>
                 <label className="text-xs text-white/40 mb-2 block">
                   {t('gym:exercises')}
