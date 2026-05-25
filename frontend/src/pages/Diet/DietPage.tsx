@@ -64,20 +64,24 @@ const HEALTH_CONFIG: Record<HealthLabel, { label: string; color: string; bg: str
 }
 
 const PRODUCT_CATALOG: CatalogProduct[] = [
+  // Carnes y aves
   { refCode: '#FF001', name: 'Pechuga de pollo a la plancha', category: 'Carnes y aves',    health: 'healthy',   calories: 165, protein: 31,  carbs: 0,   fat: 3.6, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF002', name: 'Muslo de pollo al horno',       category: 'Carnes y aves',    health: 'moderate',  calories: 215, protein: 26,  carbs: 0,   fat: 12,  serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF003', name: 'Ternera magra a la plancha',    category: 'Carnes y aves',    health: 'moderate',  calories: 172, protein: 28,  carbs: 0,   fat: 6,   serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF004', name: 'Lomo de cerdo al horno',        category: 'Carnes y aves',    health: 'moderate',  calories: 182, protein: 27,  carbs: 0,   fat: 8,   serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF005', name: 'Pavo en lonchas',               category: 'Carnes y aves',    health: 'healthy',   calories: 107, protein: 21,  carbs: 1.4, fat: 1.6, serving_size: 100, serving_unit: 'g'  },
+  // Embutidos
   { refCode: '#FF006', name: 'Jamón serrano',                 category: 'Embutidos',        health: 'moderate',  calories: 241, protein: 30,  carbs: 0,   fat: 14,  serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF007', name: 'Chorizo',                       category: 'Embutidos',        health: 'unhealthy', calories: 455, protein: 24,  carbs: 1.9, fat: 40,  serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF008', name: 'Salchichón',                    category: 'Embutidos',        health: 'unhealthy', calories: 430, protein: 22,  carbs: 2,   fat: 37,  serving_size: 100, serving_unit: 'g'  },
+  // Pescados
   { refCode: '#FF009', name: 'Salmón al horno',               category: 'Pescados',         health: 'healthy',   calories: 208, protein: 20,  carbs: 0,   fat: 13,  serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF010', name: 'Atún en lata (escurrido)',       category: 'Pescados',         health: 'healthy',   calories: 116, protein: 26,  carbs: 0,   fat: 1,   serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF011', name: 'Merluza al vapor',              category: 'Pescados',         health: 'healthy',   calories: 80,  protein: 18,  carbs: 0,   fat: 0.8, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF012', name: 'Sardinas en aceite',            category: 'Pescados',         health: 'moderate',  calories: 208, protein: 25,  carbs: 0,   fat: 12,  serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF013', name: 'Gambas cocidas',                category: 'Pescados',         health: 'healthy',   calories: 99,  protein: 21,  carbs: 0,   fat: 1.7, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF014', name: 'Bacalao desalado',              category: 'Pescados',         health: 'healthy',   calories: 82,  protein: 19,  carbs: 0,   fat: 0.7, serving_size: 100, serving_unit: 'g'  },
+  // Lácteos y huevos
   { refCode: '#FF015', name: 'Huevos revueltos',              category: 'Lácteos y huevos', health: 'moderate',  calories: 148, protein: 10,  carbs: 1.6, fat: 11,  serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF016', name: 'Tortilla de 2 huevos',          category: 'Lácteos y huevos', health: 'moderate',  calories: 185, protein: 13,  carbs: 1.2, fat: 14,  serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF017', name: 'Yogur natural',                 category: 'Lácteos y huevos', health: 'moderate',  calories: 59,  protein: 3.5, carbs: 4.7, fat: 3.3, serving_size: 100, serving_unit: 'g'  },
@@ -85,6 +89,7 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
   { refCode: '#FF019', name: 'Queso fresco',                  category: 'Lácteos y huevos', health: 'moderate',  calories: 98,  protein: 11,  carbs: 3.4, fat: 4.5, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF020', name: 'Queso manchego curado',         category: 'Lácteos y huevos', health: 'unhealthy', calories: 395, protein: 27,  carbs: 0.5, fat: 32,  serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF021', name: 'Requesón',                      category: 'Lácteos y huevos', health: 'healthy',   calories: 74,  protein: 13,  carbs: 3,   fat: 1.3, serving_size: 100, serving_unit: 'g'  },
+  // Cereales
   { refCode: '#FF022', name: 'Avena con leche',               category: 'Cereales',         health: 'moderate',  calories: 372, protein: 13,  carbs: 58,  fat: 8,   serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF023', name: 'Arroz blanco cocido',           category: 'Cereales',         health: 'moderate',  calories: 130, protein: 2.7, carbs: 28,  fat: 0.3, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF024', name: 'Pasta cocida',                  category: 'Cereales',         health: 'moderate',  calories: 158, protein: 5.8, carbs: 31,  fat: 0.9, serving_size: 100, serving_unit: 'g'  },
@@ -92,6 +97,7 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
   { refCode: '#FF026', name: 'Pan blanco',                    category: 'Cereales',         health: 'unhealthy', calories: 265, protein: 9,   carbs: 51,  fat: 3.2, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF027', name: 'Quinoa cocida',                 category: 'Cereales',         health: 'healthy',   calories: 120, protein: 4.4, carbs: 22,  fat: 1.9, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF028', name: 'Copos de avena',                category: 'Cereales',         health: 'healthy',   calories: 389, protein: 17,  carbs: 66,  fat: 7,   serving_size: 100, serving_unit: 'g'  },
+  // Frutas
   { refCode: '#FF029', name: 'Plátano',                       category: 'Frutas',           health: 'healthy',   calories: 89,  protein: 1.1, carbs: 23,  fat: 0.3, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF030', name: 'Manzana',                       category: 'Frutas',           health: 'healthy',   calories: 52,  protein: 0.3, carbs: 14,  fat: 0.2, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF031', name: 'Naranja',                       category: 'Frutas',           health: 'healthy',   calories: 47,  protein: 0.9, carbs: 12,  fat: 0.1, serving_size: 100, serving_unit: 'g'  },
@@ -100,6 +106,7 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
   { refCode: '#FF034', name: 'Uvas',                          category: 'Frutas',           health: 'moderate',  calories: 69,  protein: 0.7, carbs: 18,  fat: 0.2, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF035', name: 'Mango',                         category: 'Frutas',           health: 'moderate',  calories: 60,  protein: 0.8, carbs: 15,  fat: 0.4, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF036', name: 'Sandía',                        category: 'Frutas',           health: 'healthy',   calories: 30,  protein: 0.6, carbs: 7.6, fat: 0.2, serving_size: 100, serving_unit: 'g'  },
+  // Verduras
   { refCode: '#FF037', name: 'Brócoli cocido',                category: 'Verduras',         health: 'healthy',   calories: 34,  protein: 2.8, carbs: 7,   fat: 0.4, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF038', name: 'Patata cocida',                 category: 'Verduras',         health: 'moderate',  calories: 87,  protein: 1.9, carbs: 20,  fat: 0.1, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF039', name: 'Espinacas',                     category: 'Verduras',         health: 'healthy',   calories: 23,  protein: 2.9, carbs: 3.6, fat: 0.4, serving_size: 100, serving_unit: 'g'  },
@@ -107,16 +114,20 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
   { refCode: '#FF041', name: 'Zanahoria',                     category: 'Verduras',         health: 'healthy',   calories: 41,  protein: 0.9, carbs: 10,  fat: 0.2, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF042', name: 'Aguacate',                      category: 'Verduras',         health: 'healthy',   calories: 160, protein: 2,   carbs: 9,   fat: 15,  serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF043', name: 'Pepino',                        category: 'Verduras',         health: 'healthy',   calories: 16,  protein: 0.7, carbs: 3.6, fat: 0.1, serving_size: 100, serving_unit: 'g'  },
+  // Legumbres
   { refCode: '#FF044', name: 'Lenteja cocida',                category: 'Legumbres',        health: 'healthy',   calories: 116, protein: 9,   carbs: 20,  fat: 0.4, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF045', name: 'Garbanzo cocido',               category: 'Legumbres',        health: 'healthy',   calories: 164, protein: 9,   carbs: 27,  fat: 2.6, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF046', name: 'Judía blanca cocida',           category: 'Legumbres',        health: 'healthy',   calories: 127, protein: 9,   carbs: 23,  fat: 0.5, serving_size: 100, serving_unit: 'g'  },
   { refCode: '#FF047', name: 'Edamame',                       category: 'Legumbres',        health: 'healthy',   calories: 122, protein: 11,  carbs: 10,  fat: 5,   serving_size: 100, serving_unit: 'g'  },
+  // Frutos secos
   { refCode: '#FF048', name: 'Almendras',                     category: 'Frutos secos',     health: 'healthy',   calories: 579, protein: 21,  carbs: 22,  fat: 50,  serving_size: 30,  serving_unit: 'g'  },
   { refCode: '#FF049', name: 'Nueces',                        category: 'Frutos secos',     health: 'healthy',   calories: 654, protein: 15,  carbs: 14,  fat: 65,  serving_size: 30,  serving_unit: 'g'  },
   { refCode: '#FF050', name: 'Cacahuetes',                    category: 'Frutos secos',     health: 'moderate',  calories: 567, protein: 26,  carbs: 16,  fat: 49,  serving_size: 30,  serving_unit: 'g'  },
   { refCode: '#FF051', name: 'Semillas de chía',              category: 'Frutos secos',     health: 'healthy',   calories: 486, protein: 17,  carbs: 42,  fat: 31,  serving_size: 20,  serving_unit: 'g'  },
+  // Aceites
   { refCode: '#FF052', name: 'Aceite de oliva',               category: 'Aceites',          health: 'moderate',  calories: 884, protein: 0,   carbs: 0,   fat: 100, serving_size: 10,  serving_unit: 'ml' },
   { refCode: '#FF053', name: 'Mantequilla',                   category: 'Aceites',          health: 'unhealthy', calories: 717, protein: 0.9, carbs: 0.1, fat: 81,  serving_size: 10,  serving_unit: 'g'  },
+  // Suplementos y bebidas
   { refCode: '#FF054', name: 'Proteína de suero (Whey)',      category: 'Suplementos',      health: 'healthy',   calories: 400, protein: 80,  carbs: 8,   fat: 6,   serving_size: 30,  serving_unit: 'g', brand: 'MyProtein' },
   { refCode: '#FF055', name: 'Leche de avena',                category: 'Bebidas',          health: 'moderate',  calories: 45,  protein: 1,   carbs: 9,   fat: 0.5, serving_size: 100, serving_unit: 'ml', brand: 'Oatly' },
   { refCode: '#FF056', name: 'Leche de almendra',             category: 'Bebidas',          health: 'healthy',   calories: 17,  protein: 0.6, carbs: 1.4, fat: 1.1, serving_size: 100, serving_unit: 'ml' },
@@ -124,11 +135,26 @@ const PRODUCT_CATALOG: CatalogProduct[] = [
 ]
 
 const DEMO_MEALS: MealEntry[] = [
-  { id: 'demo1', meal_type: 'breakfast', quantity: 150, logged_at: new Date().toISOString(), food_item: { id: 'f1', refCode: '#FF022', name: 'Avena con leche', calories: 372, protein: 13, carbs: 58, fat: 8, serving_size: 100, serving_unit: 'g' } },
-  { id: 'demo2', meal_type: 'breakfast', quantity: 100, logged_at: new Date().toISOString(), food_item: { id: 'f2', refCode: '#FF029', name: 'Plátano', calories: 89, protein: 1.1, carbs: 23, fat: 0.3, serving_size: 100, serving_unit: 'g' } },
-  { id: 'demo3', meal_type: 'lunch', quantity: 200, logged_at: new Date().toISOString(), food_item: { id: 'f3', refCode: '#FF001', name: 'Pechuga de pollo a la plancha', calories: 165, protein: 31, carbs: 0, fat: 3.6, serving_size: 100, serving_unit: 'g' } },
-  { id: 'demo4', meal_type: 'lunch', quantity: 180, logged_at: new Date().toISOString(), food_item: { id: 'f4', refCode: '#FF023', name: 'Arroz blanco cocido', calories: 130, protein: 2.7, carbs: 28, fat: 0.3, serving_size: 100, serving_unit: 'g' } },
-  { id: 'demo5', meal_type: 'snack', quantity: 30, logged_at: new Date().toISOString(), food_item: { id: 'f5', refCode: '#FF048', name: 'Almendras', calories: 579, protein: 21, carbs: 22, fat: 50, serving_size: 30, serving_unit: 'g' } },
+  {
+    id: 'demo1', meal_type: 'breakfast', quantity: 150, logged_at: new Date().toISOString(),
+    food_item: { id: 'f1', refCode: '#FF022', name: 'Avena con leche', calories: 372, protein: 13, carbs: 58, fat: 8, serving_size: 100, serving_unit: 'g' },
+  },
+  {
+    id: 'demo2', meal_type: 'breakfast', quantity: 100, logged_at: new Date().toISOString(),
+    food_item: { id: 'f2', refCode: '#FF029', name: 'Plátano', calories: 89, protein: 1.1, carbs: 23, fat: 0.3, serving_size: 100, serving_unit: 'g' },
+  },
+  {
+    id: 'demo3', meal_type: 'lunch', quantity: 200, logged_at: new Date().toISOString(),
+    food_item: { id: 'f3', refCode: '#FF001', name: 'Pechuga de pollo a la plancha', calories: 165, protein: 31, carbs: 0, fat: 3.6, serving_size: 100, serving_unit: 'g' },
+  },
+  {
+    id: 'demo4', meal_type: 'lunch', quantity: 180, logged_at: new Date().toISOString(),
+    food_item: { id: 'f4', refCode: '#FF023', name: 'Arroz blanco cocido', calories: 130, protein: 2.7, carbs: 28, fat: 0.3, serving_size: 100, serving_unit: 'g' },
+  },
+  {
+    id: 'demo5', meal_type: 'snack', quantity: 30, logged_at: new Date().toISOString(),
+    food_item: { id: 'f5', refCode: '#FF048', name: 'Almendras', calories: 579, protein: 21, carbs: 22, fat: 50, serving_size: 30, serving_unit: 'g' },
+  },
 ]
 
 function calcMacros(entries: MealEntry[]) {
@@ -150,6 +176,8 @@ export default function DietPage() {
   const { today, setCalories, setWater } = useDailyStore()
   const [entries, setEntries]   = useState<MealEntry[]>(DEMO_MEALS)
   const [waterMl, setWaterMl]   = useState(today.waterMl || 500)
+
+  // Add food modal
   const [addModal, setAddModal]         = useState<string | null>(null)
   const [searchQuery, setSearchQuery]   = useState('')
   const [searchResults, setSearchResults] = useState<CatalogProduct[]>([])
@@ -160,6 +188,8 @@ export default function DietPage() {
   const [foodProt, setFoodProt]   = useState('')
   const [foodCarbs, setFoodCarbs] = useState('')
   const [foodFat, setFoodFat]     = useState('')
+
+  // Catalog modal
   const [catalogModal, setCatalogModal]   = useState(false)
   const [catalogSearch, setCatalogSearch] = useState('')
   const [catalogFilter, setCatalogFilter] = useState<'all' | HealthLabel>('all')
@@ -177,9 +207,13 @@ export default function DietPage() {
   useEffect(() => {
     if (!searchQuery.trim()) { setSearchResults([]); return }
     const q = searchQuery.toLowerCase()
-    setSearchResults(PRODUCT_CATALOG.filter(p =>
-      p.name.toLowerCase().includes(q) || p.brand?.toLowerCase().includes(q) || p.refCode.toLowerCase().includes(q)
-    ))
+    setSearchResults(
+      PRODUCT_CATALOG.filter(p =>
+        p.name.toLowerCase().includes(q) ||
+        p.brand?.toLowerCase().includes(q) ||
+        p.refCode.toLowerCase().includes(q),
+      ),
+    )
   }, [searchQuery])
 
   const resetModal = () => {
@@ -188,16 +222,30 @@ export default function DietPage() {
   }
 
   const handleSelectFood = (food: CatalogProduct) => {
-    setSelectedFood(food); setSearchQuery(''); setSearchResults([]); setQuantity(String(food.serving_size))
+    setSelectedFood(food); setSearchQuery(''); setSearchResults([])
+    setQuantity(String(food.serving_size))
   }
 
   const handleSubmitSelected = (e: React.FormEvent) => {
     e.preventDefault()
     if (!selectedFood || !addModal) return
     setEntries(prev => [...prev, {
-      id: crypto.randomUUID(), meal_type: addModal as MealEntry['meal_type'],
-      quantity: parseFloat(quantity), logged_at: new Date().toISOString(),
-      food_item: { id: crypto.randomUUID(), refCode: selectedFood.refCode, name: selectedFood.name, brand: selectedFood.brand, calories: selectedFood.calories, protein: selectedFood.protein, carbs: selectedFood.carbs, fat: selectedFood.fat, serving_size: selectedFood.serving_size, serving_unit: selectedFood.serving_unit },
+      id: crypto.randomUUID(),
+      meal_type: addModal as MealEntry['meal_type'],
+      quantity: parseFloat(quantity),
+      logged_at: new Date().toISOString(),
+      food_item: {
+        id: crypto.randomUUID(),
+        refCode: selectedFood.refCode,
+        name: selectedFood.name,
+        brand: selectedFood.brand,
+        calories: selectedFood.calories,
+        protein: selectedFood.protein,
+        carbs: selectedFood.carbs,
+        fat: selectedFood.fat,
+        serving_size: selectedFood.serving_size,
+        serving_unit: selectedFood.serving_unit,
+      },
     }])
     toast.success(t('diet:foodAdded'))
     resetModal()
@@ -207,9 +255,20 @@ export default function DietPage() {
     e.preventDefault()
     if (!addModal || !foodName || !foodCals) return
     setEntries(prev => [...prev, {
-      id: crypto.randomUUID(), meal_type: addModal as MealEntry['meal_type'],
-      quantity: parseFloat(quantity || '100'), logged_at: new Date().toISOString(),
-      food_item: { id: crypto.randomUUID(), name: foodName, calories: parseFloat(foodCals), protein: parseFloat(foodProt || '0'), carbs: parseFloat(foodCarbs || '0'), fat: parseFloat(foodFat || '0'), serving_size: 100, serving_unit: 'g' },
+      id: crypto.randomUUID(),
+      meal_type: addModal as MealEntry['meal_type'],
+      quantity: parseFloat(quantity || '100'),
+      logged_at: new Date().toISOString(),
+      food_item: {
+        id: crypto.randomUUID(),
+        name: foodName,
+        calories: parseFloat(foodCals),
+        protein: parseFloat(foodProt  || '0'),
+        carbs:   parseFloat(foodCarbs || '0'),
+        fat:     parseFloat(foodFat   || '0'),
+        serving_size: 100,
+        serving_unit: 'g',
+      },
     }])
     toast.success(t('diet:foodAdded'))
     resetModal()
@@ -220,14 +279,29 @@ export default function DietPage() {
     toast.success(t('diet:foodDeleted'))
   }
 
-  const handleAddWater = () => { if (waterMl < 2500) setWaterMl(prev => prev + 250) }
+  const handleAddWater = () => {
+    if (waterMl < 2500) setWaterMl(prev => prev + 250)
+  }
 
   const handleCatalogAdd = (product: CatalogProduct) => {
     const qty = parseFloat(catalogAddQty) || product.serving_size
     setEntries(prev => [...prev, {
-      id: crypto.randomUUID(), meal_type: catalogAddMeal as MealEntry['meal_type'],
-      quantity: qty, logged_at: new Date().toISOString(),
-      food_item: { id: crypto.randomUUID(), refCode: product.refCode, name: product.name, brand: product.brand, calories: product.calories, protein: product.protein, carbs: product.carbs, fat: product.fat, serving_size: product.serving_size, serving_unit: product.serving_unit },
+      id: crypto.randomUUID(),
+      meal_type: catalogAddMeal as MealEntry['meal_type'],
+      quantity: qty,
+      logged_at: new Date().toISOString(),
+      food_item: {
+        id: crypto.randomUUID(),
+        refCode: product.refCode,
+        name: product.name,
+        brand: product.brand,
+        calories: product.calories,
+        protein: product.protein,
+        carbs: product.carbs,
+        fat: product.fat,
+        serving_size: product.serving_size,
+        serving_unit: product.serving_unit,
+      },
     }])
     toast.success(`${product.name} añadido a ${t(`diet:${catalogAddMeal}`)}`)
     setCatalogAddRef(null)
@@ -241,7 +315,11 @@ export default function DietPage() {
 
   const filteredCatalog = PRODUCT_CATALOG.filter(p => {
     const q = catalogSearch.toLowerCase()
-    const matchSearch = !q || p.name.toLowerCase().includes(q) || p.refCode.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || p.brand?.toLowerCase().includes(q)
+    const matchSearch = !q ||
+      p.name.toLowerCase().includes(q) ||
+      p.refCode.toLowerCase().includes(q) ||
+      p.category.toLowerCase().includes(q) ||
+      p.brand?.toLowerCase().includes(q)
     return matchSearch && (catalogFilter === 'all' || p.health === catalogFilter)
   })
 
@@ -265,10 +343,13 @@ export default function DietPage() {
         </button>
       </div>
 
+      {/* Macro summary */}
       <div className="card">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold">{t('diet:daySummary')}</h2>
-          <span className="text-sm text-white/40">{Math.round(todayMacros.calories)} / {TARGET.calories} kcal</span>
+          <span className="text-sm text-white/40">
+            {Math.round(todayMacros.calories)} / {TARGET.calories} kcal
+          </span>
         </div>
         <div className="grid md:grid-cols-2 gap-6">
           <div className="flex items-center gap-6">
@@ -287,7 +368,11 @@ export default function DietPage() {
               </div>
             </div>
             <div className="space-y-2 flex-1">
-              {([{key:'protein',val:todayMacros.protein,target:TARGET.protein,color:MACRO_COLORS.protein},{key:'carbs',val:todayMacros.carbs,target:TARGET.carbs,color:MACRO_COLORS.carbs},{key:'fat',val:todayMacros.fat,target:TARGET.fat,color:MACRO_COLORS.fat}] as const).map(({ key, val, target, color }) => (
+              {([
+                { key: 'protein', val: todayMacros.protein, target: TARGET.protein, color: MACRO_COLORS.protein },
+                { key: 'carbs',   val: todayMacros.carbs,   target: TARGET.carbs,   color: MACRO_COLORS.carbs },
+                { key: 'fat',     val: todayMacros.fat,     target: TARGET.fat,     color: MACRO_COLORS.fat },
+              ] as const).map(({ key, val, target, color }) => (
                 <div key={key}>
                   <div className="flex justify-between text-xs mb-1">
                     <span className="text-white/60">{t(`diet:${key}`)}</span>
@@ -300,6 +385,7 @@ export default function DietPage() {
               ))}
             </div>
           </div>
+
           <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-sm font-medium">{t('diet:hydration')}</h3>
@@ -317,28 +403,42 @@ export default function DietPage() {
                 )
               })}
             </div>
-            <p className="text-xs text-white/30 mt-2">{t('diet:glassesRemaining', { n: Math.max(0, 10 - Math.floor(waterMl / 250)) })}</p>
+            <p className="text-xs text-white/30 mt-2">
+              {t('diet:glassesRemaining', { n: Math.max(0, 10 - Math.floor(waterMl / 250)) })}
+            </p>
           </div>
         </div>
       </div>
 
+      {/* Meal cards */}
       <div className="space-y-4">
         {MEAL_TYPES.map(({ type, icon: MealIcon }) => {
           const mealLabel   = t(`diet:${type}`)
           const mealEntries = entries.filter(e => e.meal_type === type)
-          const mealCal     = mealEntries.reduce((sum, e) => sum + (e.food_item.calories / e.food_item.serving_size) * e.quantity, 0)
+          const mealCal     = mealEntries.reduce(
+            (sum, e) => sum + (e.food_item.calories / e.food_item.serving_size) * e.quantity, 0,
+          )
           return (
             <motion.div key={type} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card">
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-surface-100 flex items-center justify-center shrink-0"><MealIcon size={16} className="text-brand-400" /></div>
+                  <div className="w-8 h-8 rounded-lg bg-surface-100 flex items-center justify-center shrink-0">
+                    <MealIcon size={16} className="text-brand-400" />
+                  </div>
                   <h3 className="font-semibold text-sm">{mealLabel}</h3>
                 </div>
                 <div className="flex items-center gap-3">
-                  {mealCal > 0 && <span className="flex items-center gap-1 text-sm text-white/50"><Flame size={13} className="text-orange-400" /> {Math.round(mealCal)} kcal</span>}
-                  <button onClick={() => setAddModal(type)} className="btn-ghost p-1.5"><Plus size={16} /></button>
+                  {mealCal > 0 && (
+                    <span className="flex items-center gap-1 text-sm text-white/50">
+                      <Flame size={13} className="text-orange-400" /> {Math.round(mealCal)} kcal
+                    </span>
+                  )}
+                  <button onClick={() => setAddModal(type)} className="btn-ghost p-1.5">
+                    <Plus size={16} />
+                  </button>
                 </div>
               </div>
+
               {mealEntries.length > 0 ? (
                 <div className="space-y-2">
                   {mealEntries.map(entry => {
@@ -349,21 +449,31 @@ export default function DietPage() {
                           <div className="flex items-center gap-1.5">
                             <p className="text-sm font-medium">{entry.food_item.name}</p>
                             {entry.food_item.refCode && (
-                              <span className="font-mono text-[10px] text-brand-400/80 bg-brand-500/10 px-1.5 py-0.5 rounded">{entry.food_item.refCode}</span>
+                              <span className="font-mono text-[10px] text-brand-400/80 bg-brand-500/10 px-1.5 py-0.5 rounded">
+                                {entry.food_item.refCode}
+                              </span>
                             )}
                           </div>
-                          <p className="text-xs text-white/30">{entry.quantity}{entry.food_item.serving_unit} · P:{Math.round(entry.food_item.protein * r)}g C:{Math.round(entry.food_item.carbs * r)}g G:{Math.round(entry.food_item.fat * r)}g</p>
+                          <p className="text-xs text-white/30">
+                            {entry.quantity}{entry.food_item.serving_unit} · P:{Math.round(entry.food_item.protein * r)}g C:{Math.round(entry.food_item.carbs * r)}g G:{Math.round(entry.food_item.fat * r)}g
+                          </p>
                         </div>
                         <div className="flex items-center gap-2">
                           <span className="text-sm text-white/50">{Math.round(entry.food_item.calories * r)} kcal</span>
-                          <button onClick={() => handleDelete(entry.id)} className="opacity-0 group-hover:opacity-100 btn-ghost p-1 text-red-400 hover:text-red-300 transition-all"><Trash2 size={14} /></button>
+                          <button
+                            onClick={() => handleDelete(entry.id)}
+                            className="opacity-0 group-hover:opacity-100 btn-ghost p-1 text-red-400 hover:text-red-300 transition-all"
+                          >
+                            <Trash2 size={14} />
+                          </button>
                         </div>
                       </div>
                     )
                   })}
                 </div>
               ) : (
-                <button onClick={() => setAddModal(type)} className="w-full py-4 rounded-xl border border-dashed border-white/10 text-white/30 hover:border-brand-500/30 hover:text-brand-400 transition-all text-sm flex items-center justify-center gap-2">
+                <button onClick={() => setAddModal(type)}
+                  className="w-full py-4 rounded-xl border border-dashed border-white/10 text-white/30 hover:border-brand-500/30 hover:text-brand-400 transition-all text-sm flex items-center justify-center gap-2">
                   <Plus size={16} /> {t('diet:addFood')}
                 </button>
               )}
@@ -372,11 +482,19 @@ export default function DietPage() {
         })}
       </div>
 
+      {/* ── Catalog modal ── */}
       {catalogModal && (
-        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={() => { setCatalogModal(false); setCatalogAddRef(null) }}>
-          <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }}
+        <div
+          className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm"
+          onClick={() => { setCatalogModal(false); setCatalogAddRef(null) }}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.97 }}
+            animate={{ opacity: 1, scale: 1 }}
             onClick={e => e.stopPropagation()}
-            className="glass border border-white/10 rounded-2xl w-full max-w-4xl max-h-[88vh] flex flex-col">
+            className="glass border border-white/10 rounded-2xl w-full max-w-6xl max-h-[88vh] flex flex-col"
+          >
+            {/* Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 shrink-0">
               <div className="flex items-center gap-3">
                 <BookOpen size={20} className="text-brand-400" />
@@ -385,82 +503,161 @@ export default function DietPage() {
                   <p className="text-xs text-white/40">Busca por nombre, código (#FF001) o categoría</p>
                 </div>
               </div>
-              <button onClick={() => { setCatalogModal(false); setCatalogAddRef(null) }} className="btn-ghost p-1.5"><X size={16} /></button>
+              <button onClick={() => { setCatalogModal(false); setCatalogAddRef(null) }} className="btn-ghost p-1.5">
+                <X size={16} />
+              </button>
             </div>
+
+            {/* Search + filters */}
             <div className="px-6 py-3 space-y-3 border-b border-white/10 shrink-0">
               <div className="relative">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-                <input autoFocus value={catalogSearch} onChange={e => { setCatalogSearch(e.target.value); setCatalogAddRef(null) }}
-                  placeholder="Buscar por nombre o código (#FF001)…" className="input pl-9 text-sm" />
+                <input
+                  autoFocus
+                  value={catalogSearch}
+                  onChange={e => { setCatalogSearch(e.target.value); setCatalogAddRef(null) }}
+                  placeholder="Buscar por nombre o código (#FF001)…"
+                  className="input pl-9 text-sm"
+                />
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                {([{key:'all' as const,label:'Todos'},{key:'healthy' as const,label:'🟢 Saludable'},{key:'moderate' as const,label:'🟡 Moderado'},{key:'unhealthy' as const,label:'🔴 Menos saludable'}]).map(({ key, label }) => (
-                  <button key={key} onClick={() => { setCatalogFilter(key); setCatalogAddRef(null) }}
-                    className={cn('px-3 py-1 rounded-full text-xs font-medium transition-all',
-                      catalogFilter === key ? 'bg-brand-500/30 text-brand-300 border border-brand-500/40' : 'glass border border-white/10 text-white/50 hover:text-white/80')}>
+                {([
+                  { key: 'all'       as const, label: 'Todos' },
+                  { key: 'healthy'   as const, label: '🟢 Saludable' },
+                  { key: 'moderate'  as const, label: '🟡 Moderado' },
+                  { key: 'unhealthy' as const, label: '🔴 Menos saludable' },
+                ]).map(({ key, label }) => (
+                  <button
+                    key={key}
+                    onClick={() => { setCatalogFilter(key); setCatalogAddRef(null) }}
+                    className={cn(
+                      'px-3 py-1 rounded-full text-xs font-medium transition-all',
+                      catalogFilter === key
+                        ? 'bg-brand-500/30 text-brand-300 border border-brand-500/40'
+                        : 'glass border border-white/10 text-white/50 hover:text-white/80',
+                    )}
+                  >
                     {label}
                   </button>
                 ))}
                 <span className="text-xs text-white/30 ml-auto">{filteredCatalog.length} productos</span>
               </div>
             </div>
-            <div className="hidden md:grid grid-cols-[90px_1fr_110px_52px_52px_52px_52px_130px_90px] gap-2 px-6 py-2 text-xs text-white/30 border-b border-white/5 shrink-0">
+
+            {/* Table header (desktop) */}
+            <div className="hidden md:grid grid-cols-[90px_1fr_130px_52px_52px_52px_52px_140px_90px] gap-2 px-6 py-2 text-xs text-white/30 border-b border-white/5 shrink-0">
               <span>Código</span><span>Nombre</span><span>Categoría</span>
-              <span className="text-center">Cal</span><span className="text-center text-sky-400/70">Prot</span>
-              <span className="text-center text-orange-400/70">HC</span><span className="text-center text-purple-400/70">Gras</span>
+              <span className="text-center">Cal</span>
+              <span className="text-center text-sky-400/70">Prot</span>
+              <span className="text-center text-orange-400/70">HC</span>
+              <span className="text-center text-purple-400/70">Gras</span>
               <span>Salud</span><span></span>
             </div>
+
+            {/* Product list */}
             <div className="overflow-y-auto flex-1 divide-y divide-white/5">
               {filteredCatalog.map(product => {
                 const usage    = getProductUsage(product.refCode)
                 const isAdding = catalogAddRef === product.refCode
                 const hCfg     = HEALTH_CONFIG[product.health]
+
                 return (
                   <div key={product.refCode} className={cn(isAdding && 'bg-brand-500/5')}>
-                    <div className={cn('grid grid-cols-[90px_1fr_auto] md:grid-cols-[90px_1fr_110px_52px_52px_52px_52px_130px_90px] gap-2 px-6 py-3 items-center transition-colors', !isAdding && 'hover:bg-white/[0.03]')}>
+                    {/* Row */}
+                    <div className={cn(
+                      'grid grid-cols-[90px_1fr_auto] md:grid-cols-[90px_1fr_130px_52px_52px_52px_52px_140px_90px] gap-2 px-6 py-3 items-center transition-colors',
+                      !isAdding && 'hover:bg-white/[0.03]',
+                    )}>
                       <span className="font-mono text-xs text-brand-400 font-semibold">{product.refCode}</span>
+
                       <div className="min-w-0">
-                        <p className="text-sm font-medium truncate">{product.name}</p>
+                        <p className="text-sm font-medium">{product.name}</p>
                         {product.brand && <p className="text-xs text-white/30">{product.brand}</p>}
-                        <p className="text-xs text-white/30 md:hidden mt-0.5">{Math.round(product.calories)} kcal · P:{Math.round(product.protein)}g C:{Math.round(product.carbs)}g G:{Math.round(product.fat)}g</p>
+                        {/* Mobile: macros + usage */}
+                        <p className="text-xs text-white/30 md:hidden mt-0.5">
+                          {Math.round(product.calories)} kcal · P:{Math.round(product.protein)}g C:{Math.round(product.carbs)}g G:{Math.round(product.fat)}g
+                        </p>
                         {usage && <p className="text-xs text-cyan-400 md:hidden mt-0.5">En uso: {usage}</p>}
                       </div>
+
                       <span className="hidden md:block text-xs text-white/40 truncate">{product.category}</span>
                       <span className="hidden md:block text-xs text-center text-white/70">{Math.round(product.calories)}</span>
                       <span className="hidden md:block text-xs text-center text-sky-400">{Math.round(product.protein)}g</span>
                       <span className="hidden md:block text-xs text-center text-orange-400">{Math.round(product.carbs)}g</span>
                       <span className="hidden md:block text-xs text-center text-purple-400">{Math.round(product.fat)}g</span>
+
                       <div className="hidden md:flex items-center gap-1.5 flex-wrap">
-                        <span className={cn('px-2 py-0.5 rounded-full text-[10px] font-semibold', hCfg.bg, hCfg.color)}>{hCfg.label}</span>
-                        {usage && <span className="flex items-center gap-0.5 text-[10px] text-cyan-400" title={`En: ${usage}`}><CheckCircle2 size={10} /> {usage}</span>}
+                        <span className={cn('px-2 py-0.5 rounded-full text-[10px] font-semibold', hCfg.bg, hCfg.color)}>
+                          {hCfg.label}
+                        </span>
+                        {usage && (
+                          <span className="flex items-center gap-0.5 text-[10px] text-cyan-400" title={`En: ${usage}`}>
+                            <CheckCircle2 size={10} /> {usage}
+                          </span>
+                        )}
                       </div>
-                      <button onClick={() => { if (isAdding) { setCatalogAddRef(null); return } setCatalogAddRef(product.refCode); setCatalogAddMeal('breakfast'); setCatalogAddQty(String(product.serving_size)) }}
-                        className={cn('flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all',
-                          isAdding ? 'bg-brand-500/30 text-brand-300 border border-brand-500/40' : 'glass border border-white/10 text-white/70 hover:text-white hover:border-brand-500/30')}>
+
+                      <button
+                        onClick={() => {
+                          if (isAdding) { setCatalogAddRef(null); return }
+                          setCatalogAddRef(product.refCode)
+                          setCatalogAddMeal('breakfast')
+                          setCatalogAddQty(String(product.serving_size))
+                        }}
+                        className={cn(
+                          'flex items-center justify-center gap-1 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all',
+                          isAdding
+                            ? 'bg-brand-500/30 text-brand-300 border border-brand-500/40'
+                            : 'glass border border-white/10 text-white/70 hover:text-white hover:border-brand-500/30',
+                        )}
+                      >
                         {isAdding ? <X size={12} /> : <Plus size={12} />}
                         {isAdding ? 'Cerrar' : 'Añadir'}
                       </button>
                     </div>
+
+                    {/* Inline add panel */}
                     {isAdding && (
-                      <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="px-6 pb-4 bg-brand-500/5 border-t border-brand-500/20">
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="px-6 pb-4 bg-brand-500/5 border-t border-brand-500/20"
+                      >
                         <div className="flex flex-wrap gap-3 pt-3 items-end">
                           <div>
                             <label className="text-xs text-white/40 mb-1 block">Añadir a comida</label>
-                            <select value={catalogAddMeal} onChange={e => setCatalogAddMeal(e.target.value)} className="input text-sm w-36" style={{ colorScheme: 'dark' }}>
-                              {MEAL_TYPES.map(m => <option key={m.type} value={m.type}>{t(`diet:${m.type}`)}</option>)}
+                            <select
+                              value={catalogAddMeal}
+                              onChange={e => setCatalogAddMeal(e.target.value)}
+                              className="input text-sm w-36"
+                              style={{ colorScheme: 'dark' }}
+                            >
+                              {MEAL_TYPES.map(m => (
+                                <option key={m.type} value={m.type}>{t(`diet:${m.type}`)}</option>
+                              ))}
                             </select>
                           </div>
                           <div>
-                            <label className="text-xs text-white/40 mb-1 block">Cantidad ({product.serving_unit})</label>
-                            <input type="number" min="1" value={catalogAddQty} onChange={e => setCatalogAddQty(e.target.value)} className="input text-sm w-28" />
+                            <label className="text-xs text-white/40 mb-1 block">
+                              Cantidad ({product.serving_unit})
+                            </label>
+                            <input
+                              type="number" min="1"
+                              value={catalogAddQty}
+                              onChange={e => setCatalogAddQty(e.target.value)}
+                              className="input text-sm w-28"
+                            />
                           </div>
-                          <button onClick={() => handleCatalogAdd(product)} className="btn-primary text-sm"><Plus size={15} /> Añadir a comida</button>
+                          <button onClick={() => handleCatalogAdd(product)} className="btn-primary text-sm">
+                            <Plus size={15} /> Añadir a comida
+                          </button>
                         </div>
                       </motion.div>
                     )}
                   </div>
                 )
               })}
+
               {filteredCatalog.length === 0 && (
                 <div className="py-16 text-center text-white/30 text-sm">
                   <Tag size={24} className="mx-auto mb-3 opacity-30" />
@@ -472,23 +669,30 @@ export default function DietPage() {
         </div>
       )}
 
+      {/* Add food modal */}
       {addModal && (
         <div className="fixed inset-0 bg-black/70 flex items-end sm:items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={resetModal}>
           <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }}
-            onClick={e => e.stopPropagation()} className="glass border border-white/10 rounded-2xl p-6 w-full max-w-md">
+            onClick={e => e.stopPropagation()}
+            className="glass border border-white/10 rounded-2xl p-6 w-full max-w-md">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-semibold">{t('diet:addFood')}</h3>
               <button onClick={resetModal} className="btn-ghost p-1.5"><X size={16} /></button>
             </div>
+
             {selectedFood ? (
               <form onSubmit={handleSubmitSelected} className="space-y-4">
                 <div className="p-3 rounded-xl bg-surface-100 border border-brand-500/20">
                   <div className="flex items-center gap-2 mb-1">
                     <p className="text-sm font-medium">{selectedFood.name}</p>
-                    <span className="font-mono text-[10px] text-brand-400 bg-brand-500/10 px-1.5 py-0.5 rounded">{selectedFood.refCode}</span>
+                    <span className="font-mono text-[10px] text-brand-400 bg-brand-500/10 px-1.5 py-0.5 rounded">
+                      {selectedFood.refCode}
+                    </span>
                   </div>
                   {selectedFood.brand && <p className="text-xs text-white/40">{selectedFood.brand}</p>}
-                  <p className="text-xs text-white/30 mt-1">{Math.round(selectedFood.calories)} kcal · P:{Math.round(selectedFood.protein)}g C:{Math.round(selectedFood.carbs)}g G:{Math.round(selectedFood.fat)}g por {selectedFood.serving_size}{selectedFood.serving_unit}</p>
+                  <p className="text-xs text-white/30 mt-1">
+                    {Math.round(selectedFood.calories)} kcal · P:{Math.round(selectedFood.protein)}g C:{Math.round(selectedFood.carbs)}g G:{Math.round(selectedFood.fat)}g por {selectedFood.serving_size}{selectedFood.serving_unit}
+                  </p>
                 </div>
                 <div>
                   <label className="text-xs text-white/40 mb-1 block">{t('diet:quantity', { unit: selectedFood.serving_unit })}</label>
@@ -503,8 +707,14 @@ export default function DietPage() {
               <>
                 <div className="relative mb-3">
                   <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
-                  <input autoFocus value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder={t('diet:searchFood')} className="input pl-9" />
+                  <input
+                    autoFocus value={searchQuery}
+                    onChange={e => setSearchQuery(e.target.value)}
+                    placeholder={t('diet:searchFood')}
+                    className="input pl-9"
+                  />
                 </div>
+
                 {searchResults.length > 0 && (
                   <div className="mb-3 max-h-48 overflow-y-auto rounded-xl border border-white/10 divide-y divide-white/5">
                     {searchResults.map(food => (
@@ -522,29 +732,51 @@ export default function DietPage() {
                     ))}
                   </div>
                 )}
-                {searchQuery && searchResults.length === 0 && <p className="text-xs text-white/30 mb-3 text-center">{t('diet:noResults')}</p>}
+
+                {searchQuery && searchResults.length === 0 && (
+                  <p className="text-xs text-white/30 mb-3 text-center">{t('diet:noResults')}</p>
+                )}
+
                 <div className="relative flex items-center gap-2 mb-4">
                   <div className="flex-1 h-px bg-white/10" />
                   <span className="text-xs text-white/30 shrink-0">{t('diet:orEnterManually')}</span>
                   <div className="flex-1 h-px bg-white/10" />
                 </div>
+
                 <form onSubmit={handleSubmitManual} className="space-y-3">
                   <div>
                     <label className="text-xs text-white/40 mb-1 block">{t('diet:foodName')}</label>
-                    <input required value={foodName} onChange={e => setFoodName(e.target.value)} placeholder="Ej. Pechuga de pollo" className="input text-sm" />
+                    <input required value={foodName} onChange={e => setFoodName(e.target.value)}
+                      placeholder="Ej. Pechuga de pollo" className="input text-sm" />
                   </div>
                   <div className="grid grid-cols-2 gap-3">
-                    <div><label className="text-xs text-white/40 mb-1 block">{t('diet:caloriesPer100g')}</label><input required type="number" min="0" value={foodCals} onChange={e => setFoodCals(e.target.value)} placeholder="0" className="input text-sm" /></div>
-                    <div><label className="text-xs text-white/40 mb-1 block">{t('diet:proteinPer100g')}</label><input type="number" min="0" value={foodProt} onChange={e => setFoodProt(e.target.value)} placeholder="0" className="input text-sm" /></div>
-                    <div><label className="text-xs text-white/40 mb-1 block">{t('diet:carbsPer100g')}</label><input type="number" min="0" value={foodCarbs} onChange={e => setFoodCarbs(e.target.value)} placeholder="0" className="input text-sm" /></div>
-                    <div><label className="text-xs text-white/40 mb-1 block">{t('diet:fatPer100g')}</label><input type="number" min="0" value={foodFat} onChange={e => setFoodFat(e.target.value)} placeholder="0" className="input text-sm" /></div>
+                    <div>
+                      <label className="text-xs text-white/40 mb-1 block">{t('diet:caloriesPer100g')}</label>
+                      <input required type="number" min="0" value={foodCals} onChange={e => setFoodCals(e.target.value)} placeholder="0" className="input text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-white/40 mb-1 block">{t('diet:proteinPer100g')}</label>
+                      <input type="number" min="0" value={foodProt} onChange={e => setFoodProt(e.target.value)} placeholder="0" className="input text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-white/40 mb-1 block">{t('diet:carbsPer100g')}</label>
+                      <input type="number" min="0" value={foodCarbs} onChange={e => setFoodCarbs(e.target.value)} placeholder="0" className="input text-sm" />
+                    </div>
+                    <div>
+                      <label className="text-xs text-white/40 mb-1 block">{t('diet:fatPer100g')}</label>
+                      <input type="number" min="0" value={foodFat} onChange={e => setFoodFat(e.target.value)} placeholder="0" className="input text-sm" />
+                    </div>
                   </div>
-                  <div><label className="text-xs text-white/40 mb-1 block">{t('diet:quantityG')}</label><input type="number" min="1" value={quantity} onChange={e => setQuantity(e.target.value)} placeholder="100" className="input text-sm" /></div>
+                  <div>
+                    <label className="text-xs text-white/40 mb-1 block">{t('diet:quantityG')}</label>
+                    <input type="number" min="1" value={quantity} onChange={e => setQuantity(e.target.value)} placeholder="100" className="input text-sm" />
+                  </div>
                   <div className="flex gap-2 pt-1">
                     <button type="button" onClick={resetModal} className="btn-secondary flex-1 text-sm">{t('common:cancel')}</button>
                     <button type="submit" className="btn-primary flex-1 text-sm"><Plus size={15} /> {t('common:add')}</button>
                   </div>
                 </form>
+
                 <p className="text-xs text-white/30 text-center mt-4">{t('diet:foodDatabase')}</p>
               </>
             )}

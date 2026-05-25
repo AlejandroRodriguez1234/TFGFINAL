@@ -300,25 +300,7 @@ export default function ProgressPage() {
             await new Promise((r) => setTimeout(r, 2200 + Math.random() * 800))
             setPostureAnalyzing(false)
 
-            // Reject tiny files (<40 KB) as they're unlikely to be person photos
             const seed = (file.size + file.name.length + file.name.charCodeAt(0)) % 100
-            const isLikelyNotPerson = file.size < 40_000
-
-            if (isLikelyNotPerson) {
-              setPostureResult({
-                valid: false,
-                title: 'No se detectó un cuerpo humano',
-                details: 'La imagen no parece contener una persona completa. Para obtener un análisis preciso, sube una foto de cuerpo completo o de busto con buena iluminación.',
-                recommendations: [
-                  'Usa una foto de cuerpo entero o al menos hasta la cintura',
-                  'Asegúrate de que haya buena iluminación',
-                  'Fondo liso preferiblemente',
-                  'Posición erguida, de frente o de perfil',
-                ],
-              })
-              e.target.value = ''
-              return
-            }
 
             const analyses = [
               {
