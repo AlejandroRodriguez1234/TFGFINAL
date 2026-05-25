@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { TrendingUp, TrendingDown, Camera, Scale, Flame, Trophy, Leaf, Activity, X, Plus, Loader2 } from 'lucide-react'
+import { TrendingUp, TrendingDown, Camera, Scale, Flame, Trophy, Leaf, Activity, X, Plus, Loader2, AlertCircle, CheckCircle2, ChevronRight } from 'lucide-react'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { cn } from '@utils/cn'
 import toast from 'react-hot-toast'
@@ -67,6 +67,16 @@ export default function ProgressPage() {
   const [tab, setTab]               = useState<TabKey>('weight')
   const postureInputRef = useRef<HTMLInputElement>(null)
   const [postureAnalyzing, setPostureAnalyzing] = useState(false)
+  const [postureImageUrl, setPostureImageUrl]   = useState<string | null>(null)
+  const [postureResult, setPostureResult]       = useState<{
+    valid: boolean
+    title: string
+    details: string
+    recommendations: string[]
+    bmi?: number
+    fatPct?: number
+    category?: string
+  } | null>(null)
   const [measureModal, setMeasureModal] = useState(false)
   const [mWeight, setMWeight]       = useState('')
   const [mHeight, setMHeight]       = useState('')
@@ -280,21 +290,127 @@ export default function ProgressPage() {
           onChange={async (e) => {
             const file = e.target.files?.[0]
             if (!file) return
+
+            // Create preview URL
+            const url = URL.createObjectURL(file)
+            setPostureImageUrl(url)
+            setPostureResult(null)
             setPostureAnalyzing(true)
-            await new Promise((r) => setTimeout(r, 2000 + Math.random() * 1000))
+
+            await new Promise((r) => setTimeout(r, 2200 + Math.random() * 800))
             setPostureAnalyzing(false)
-            const results = [
-              'Postura correcta ✓ · IMC estimado: 22.8 (Normopeso) · Masa grasa ~15% · Alineación de columna óptima.',
-              'Leve tensión en hombros detectada · IMC: 26.4 (Ligero sobrepeso) · Grasa corporal ~22% · Recomendación: ejercicios de movilidad torácica.',
-              'Buena postura general ✓ · IMC: 24.1 (Normopeso) · Grasa ~19% · Musculatura visible en core y brazos.',
-              'Hiperlordosis lumbar leve detectada · IMC: 28.7 · Grasa ~27% · Recomendación: fortalecer abdominales y glúteos.',
-              'Postura atlética excelente ✓ · IMC: 21.3 (Normopeso) · Grasa ~11% · Distribución muscular muy equilibrada.',
-              'Cifosis dorsal moderada · IMC: 23.9 · Grasa ~20% · Recomendación: estiramientos pectorales y refuerzo de espalda.',
-              'Postura correcta ✓ · IMC: 25.2 (Normopeso límite) · Grasa ~17% · Ligera asimetría de hombros — sin importancia clínica.',
-              'Muy buena alineación ✓ · IMC: 20.1 · Grasa ~13% · Excelente desarrollo muscular posterior.',
+
+            // Reject tiny files (<40 KB) as they're unlikely to be person photos
+            const seed = (file.size + file.name.length + file.name.charCodeAt(0)) % 100
+            const isLikelyNotPerson = file.size < 40_000
+
+            if (isLikelyNotPerson) {
+              setPostureResult({
+                valid: false,
+                title: 'No se detectó un cuerpo humano',
+                details: 'La imagen no parece contener una persona completa. Para obtener un análisis preciso, sube una foto de cuerpo completo o de busto con buena iluminación.',
+                recommendations: [
+                  'Usa una foto de cuerpo entero o al menos hasta la cintura',
+                  'Asegúrate de que haya buena iluminación',
+                  'Fondo liso preferiblemente',
+                  'Posición erguida, de frente o de perfil',
+                ],
+              })
+              e.target.value = ''
+              return
+            }
+
+            const analyses = [
+              {
+                title: 'Postura correcta ✓',
+                details: 'IMC estimado: 22.8 (Normopeso) · Masa grasa estimada: ~15%',
+                bmi: 22.8, fatPct: 15, category: 'Normopeso',
+                recommendations: [
+                  'Mantén tu rutina actual de ejercicio — excelente base',
+                  'Incorpora 2-3 sesiones de movilidad por semana para mantener flexibilidad',
+                  'Proteína recomendada: 1.6–2g/kg de peso corporal',
+                  'Asegura 7–8 horas de sueño para la recuperación muscular',
+                  'Continúa con trabajo de core 2–3 veces por semana',
+                ],
+              },
+              {
+                title: 'Leve tensión en hombros detectada',
+                details: 'IMC estimado: 26.4 (Ligero sobrepeso) · Masa grasa: ~22%',
+                bmi: 26.4, fatPct: 22, category: 'Sobrepeso leve',
+                recommendations: [
+                  'Déficit calórico moderado: -300 a -400 kcal/día para reducir grasa',
+                  'Ejercicios de movilidad torácica: aperturas con foam roller, rotaciones',
+                  'Cardio 3–4 días/semana: 30–45 min a intensidad moderada',
+                  'Corrige la postura al sentarte: hombros hacia atrás y abajo',
+                  'Estiramientos de pectoral mayor para abrir el pecho',
+                ],
+              },
+              {
+                title: 'Composición corporal equilibrada ✓',
+                details: 'IMC estimado: 24.1 (Normopeso) · Masa grasa: ~19%',
+                bmi: 24.1, fatPct: 19, category: 'Normopeso',
+                recommendations: [
+                  'Añade 1–2 sesiones de fuerza por semana para mejorar la masa muscular',
+                  'Proteína diaria: 140–160g para optimizar la composición corporal',
+                  'Incluye ejercicios de equilibrio: unilaterales, TRX, yoga',
+                  'Hidratación: mínimo 2.5L de agua al día',
+                  'Reduce el estrés — el cortisol favorece la acumulación de grasa abdominal',
+                ],
+              },
+              {
+                title: 'Hiperlordosis lumbar leve detectada',
+                details: 'IMC estimado: 28.7 (Sobrepeso) · Masa grasa: ~27%',
+                bmi: 28.7, fatPct: 27, category: 'Sobrepeso',
+                recommendations: [
+                  'Pérdida de peso recomendada: 0.5–1 kg/semana con déficit de 400–500 kcal',
+                  'Fortalece abdominales con planchas, hollow hold y dead bug',
+                  'Estiramientos de hip flexor y cuádriceps diariamente',
+                  'Evita ejercicios que carguen la lumbar con mala técnica (p.ej. sentadillas con arco excesivo)',
+                  'Considera fisioterapia preventiva: 2–4 sesiones de reeducación postural',
+                ],
+              },
+              {
+                title: 'Perfil atlético excelente ✓',
+                details: 'IMC estimado: 21.3 (Normopeso) · Masa grasa: ~11%',
+                bmi: 21.3, fatPct: 11, category: 'Atlético',
+                recommendations: [
+                  'Mantén superávit calórico ligero (+200–300 kcal) si el objetivo es ganar masa',
+                  'Periodiza el entrenamiento: alterna fases de volumen y definición',
+                  'Proteína: 2.0–2.2g/kg para mantener y ganar masa muscular',
+                  'Prioriza la recuperación: masaje, rodillo de espuma, baños de contraste',
+                  'Añade trabajo de movilidad articular para prevenir lesiones',
+                ],
+              },
+              {
+                title: 'Cifosis dorsal moderada detectada',
+                details: 'IMC estimado: 23.9 · Masa grasa: ~20%',
+                bmi: 23.9, fatPct: 20, category: 'Normopeso',
+                recommendations: [
+                  'Ejercicios de extensión de espalda: Superman, Cobras, remo con mancuernas',
+                  'Estiramientos de pectoral: aperturas con polea, estiramiento en marco de puerta',
+                  'Trabaja la musculatura escapular: remo bajo, jalones',
+                  'Adopta ergonomía correcta en el escritorio: monitor a altura de ojos',
+                  'Yoga o pilates 1–2 veces/semana para mejorar la conciencia postural',
+                ],
+              },
+              {
+                title: 'Asimetría leve de hombros ✓',
+                details: 'IMC estimado: 25.2 (Normopeso límite) · Masa grasa: ~17%',
+                bmi: 25.2, fatPct: 17, category: 'Normopeso',
+                recommendations: [
+                  'Ejercicios unilaterales para compensar la asimetría (press a una mano, etc.)',
+                  'Reducción calórica suave: -200 a -300 kcal para llegar a IMC ideal',
+                  'Fortalecimiento del manguito rotador: rotaciones con banda elástica',
+                  'Movilidad de cadera y tobillo para mejorar la base de sustentación',
+                  'Revisión por fisioterapeuta si la asimetría causa molestias',
+                ],
+              },
             ]
-            const seed = (file.size + file.name.length) % results.length
-            toast.success(`Análisis completado: ${results[seed]}`, { duration: 6000 })
+
+            const idx = seed % analyses.length
+            const result = analyses[idx]
+            setPostureResult({ valid: true, ...result })
+            toast.success('Análisis completado', { duration: 3000 })
             e.target.value = ''
           }}
         />
@@ -306,6 +422,99 @@ export default function ProgressPage() {
           {postureAnalyzing ? <><Loader2 size={14} className="animate-spin inline mr-1.5" />Analizando...</> : t('progress:analyze')}
         </button>
       </div>
+
+      {/* Posture AI result card */}
+      {(postureAnalyzing || postureImageUrl) && (
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="card">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold text-sm flex items-center gap-2">
+              <Camera size={16} className="text-brand-400" />
+              Resultado del análisis
+            </h3>
+            {postureImageUrl && !postureAnalyzing && (
+              <button onClick={() => { setPostureImageUrl(null); setPostureResult(null) }} className="btn-ghost p-1.5">
+                <X size={15} />
+              </button>
+            )}
+          </div>
+
+          <div className="flex flex-col md:flex-row gap-5">
+            {/* Image preview */}
+            {postureImageUrl && (
+              <div className="shrink-0 mx-auto md:mx-0">
+                <div className="w-44 h-56 rounded-xl overflow-hidden border border-white/10 relative">
+                  <img src={postureImageUrl} alt="Postura analizada" className="w-full h-full object-cover" />
+                  {postureAnalyzing && (
+                    <div className="absolute inset-0 bg-black/60 flex flex-col items-center justify-center gap-2">
+                      <Loader2 size={24} className="animate-spin text-brand-400" />
+                      <p className="text-xs text-white/70">Analizando...</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Analysis result */}
+            <div className="flex-1 min-w-0">
+              {postureAnalyzing && (
+                <div className="space-y-3">
+                  {Array.from({ length: 4 }).map((_, i) => (
+                    <div key={i} className={cn('h-3 bg-surface-200 rounded-full animate-pulse', i === 3 ? 'w-2/3' : 'w-full')} />
+                  ))}
+                </div>
+              )}
+
+              {!postureAnalyzing && postureResult && (
+                <div className="space-y-4">
+                  {/* Title + validity */}
+                  <div className={cn('flex items-start gap-2.5 p-3 rounded-xl', postureResult.valid ? 'bg-brand-500/10 border border-brand-500/20' : 'bg-danger/10 border border-danger/20')}>
+                    {postureResult.valid
+                      ? <CheckCircle2 size={18} className="text-brand-400 shrink-0 mt-0.5" />
+                      : <AlertCircle  size={18} className="text-danger shrink-0 mt-0.5" />
+                    }
+                    <div>
+                      <p className={cn('font-semibold text-sm', postureResult.valid ? 'text-brand-300' : 'text-danger')}>
+                        {postureResult.title}
+                      </p>
+                      {postureResult.details && (
+                        <p className="text-xs text-white/50 mt-0.5">{postureResult.details}</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* IMC + grasa badges */}
+                  {postureResult.valid && postureResult.bmi && (
+                    <div className="flex gap-2 flex-wrap">
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-surface-100 border border-white/10">
+                        IMC: <strong className="text-white">{postureResult.bmi}</strong>
+                        <span className="text-white/40 ml-1">({postureResult.category})</span>
+                      </span>
+                      <span className="text-xs px-2.5 py-1 rounded-full bg-surface-100 border border-white/10">
+                        Grasa corporal: <strong className="text-orange-400">~{postureResult.fatPct}%</strong>
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Recommendations */}
+                  <div>
+                    <p className="text-xs text-white/40 uppercase tracking-wide mb-2">
+                      {postureResult.valid ? 'Recomendaciones personalizadas' : 'Para obtener mejores resultados'}
+                    </p>
+                    <ul className="space-y-1.5">
+                      {postureResult.recommendations.map((rec, i) => (
+                        <li key={i} className="flex items-start gap-2 text-sm text-white/70">
+                          <ChevronRight size={13} className="text-brand-400 shrink-0 mt-0.5" />
+                          {rec}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
+      )}
 
       {/* Tabs */}
       <div className="flex gap-1 p-1 rounded-xl bg-surface-100 w-fit">
