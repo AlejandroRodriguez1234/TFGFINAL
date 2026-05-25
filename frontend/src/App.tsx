@@ -4,6 +4,7 @@ import { Suspense, lazy } from 'react'
 import { PageLoader } from '@components/ui/PageLoader'
 import AppLayout from '@components/layout/AppLayout'
 import AuthLayout from '@components/layout/AuthLayout'
+import ChatbotWidget from '@components/Chatbot/ChatbotWidget'
 
 // Lazy load pages for code splitting
 const Landing        = lazy(() => import('@pages/Landing/LandingPage'))
@@ -69,6 +70,7 @@ export default function App() {
           <Route path="/habits"           element={<Habits />} />
           <Route path="/gym"              element={<Gym />} />
           <Route path="/gym/workout/quick" element={<GymWorkout />} />
+          <Route path="/gym/workout/new"  element={<GymWorkout />} />
           <Route path="/gym/workout/:id"  element={<GymWorkout />} />
           <Route path="/diet"             element={<Diet />} />
           <Route path="/diet/planner"     element={<DietPlanner />} />
@@ -91,6 +93,12 @@ export default function App() {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
+      <ChatbotGate />
     </Suspense>
   )
+}
+
+function ChatbotGate() {
+  const { isAuthenticated } = useAuthStore()
+  return isAuthenticated ? <ChatbotWidget /> : null
 }

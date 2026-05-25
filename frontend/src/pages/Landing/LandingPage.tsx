@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import {
   Zap, Dumbbell, Apple, Brain, Users, TrendingUp,
   Shield, Star, ChevronRight, Play, ArrowRight, Check,
-  Activity, Target, Award, Smartphone, Globe, Heart,
+  Activity, Target, Award, Smartphone, Globe,
   Flame, Droplets, Moon, Trophy,
 } from 'lucide-react'
 import { cn } from '@utils/cn'
@@ -404,8 +404,8 @@ export default function LandingPage() {
             </div>
             <span className="font-bold bg-gradient-to-r from-brand-400 to-cyan-400 bg-clip-text text-transparent">FitForge</span>
           </div>
-          <p className="text-white/25 text-sm text-center flex items-center gap-1.5">
-            © 2025 FitForge. Hecho con <Heart size={12} className="text-red-400 fill-red-400" /> para el TFG.
+          <p className="text-white/25 text-sm text-center">
+            © 2025 FitForge. La plataforma fitness más avanzada.
           </p>
           <div className="flex gap-6 text-sm text-white/35">
             <a href="#" className="hover:text-white transition-colors">Privacidad</a>

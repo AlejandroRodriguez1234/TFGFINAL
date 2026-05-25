@@ -173,4 +173,40 @@ fitforge/
 
 ---
 
-*Desarrollado con ❤️ como TFG de Ingeniería Informática.*
+## 🔑 Credenciales de Acceso (Demo)
+
+| Rol | Email | Contraseña |
+|-----|-------|------------|
+| **Admin** | admin@fitforge.app | admin123 |
+| **Trainer** | trainer@fitforge.app | trainer123 |
+| **Cliente** | demo@fitforge.app | demo123 |
+
+## 👤 Funcionalidades por Rol
+
+### 🏃 Cliente (demo@fitforge.app)
+- **Dashboard**: resumen diario con calorías, agua, sueño y ejercicios; anillos de actividad; racha y XP
+- **Hábitos**: crear/eliminar hábitos, marcar como completado, ver racha semanal y tasa de cumplimiento
+- **Gimnasio**: navegar rutinas por músculo y dificultad, iniciar entrenamiento rápido o por plantilla, registrar series/reps/peso con temporizador de descanso
+- **Nutrición**: registrar comidas por tipo (desayuno, comida, cena, snack), búsqueda de alimentos, tracker de agua, análisis de foto de comida con IA
+- **Planificador de dieta**: generador automático de plan semanal con cálculo BMR/TDEE
+- **Progreso**: evolución de peso y composición corporal, récords personales, calculadora nutricional, logros y badges
+- **Social**: feed de actividad, sistema de amigos, retos y tabla de clasificación
+- **Perfil**: editar datos personales, estadísticas fitness, historial de logros
+- **Ajustes**: cambio de contraseña, configuración 2FA, preferencias de notificaciones, selector ES/EN
+- **Asistente IA**: chatbot contextual con datos del día (calorías, agua, hábitos, entrenamiento)
+
+### 💼 Entrenador (trainer@fitforge.app)
+- Acceso a todo lo del rol Cliente, más:
+- **Panel de Entrenador**: estadísticas globales (clientes activos, sesiones del día, tasa de retención, ingresos)
+- **Gestión de clientes**: lista de clientes con búsqueda, estado de racha y último entreno
+- **Mensajería directa**: enviar mensajes personalizados a clientes desde el panel
+- **Planes de entrenamiento**: vista y gestión de plantillas asignadas a clientes
+- **Sesiones del día**: agenda de sesiones con estado (completada/programada)
+
+### 🛡️ Administrador (admin@fitforge.app)
+- Acceso a todo lo del rol Entrenador, más:
+- **Panel de Administración**: KPIs globales (usuarios totales, activos hoy, nuevos esta semana, entrenamientos)
+- **Gráficas**: nuevos registros por mes, distribución de usuarios por rol
+- **Gestión de usuarios**: lista completa con roles (Admin/Trainer/Client), fecha de registro, acciones por usuario
+- **Estado de servicios**: monitorización en tiempo real de Auth, API, Diet y AI services
+- **Acceso a `/admin/users`**: CRUD completo de usuarios con filtrado y cambio de rol

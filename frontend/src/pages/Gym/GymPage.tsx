@@ -171,7 +171,7 @@ export default function GymPage() {
       <div className="grid grid-cols-3 gap-4">
         {[
           { icon: Play,      label: t('gym:start'),    sub: t('gym:quickWorkout'),           color: 'from-brand-500 to-cyan-400',    to: '/gym/workout/quick' },
-          { icon: Dumbbell,  label: t('gym:routines'), sub: `${workouts.length} templates`,  color: 'from-purple-500 to-pink-500',   to: '#'                  },
+          { icon: Dumbbell,  label: t('gym:routines'), sub: `${workouts.length} templates`,  color: 'from-purple-500 to-pink-500',   to: '/gym#routines'      },
           { icon: BarChart2, label: t('gym:history'),  sub: t('gym:viewProgress'),           color: 'from-orange-500 to-yellow-400', to: '/progress'          },
         ].map(({ icon: Icon, label, sub, color, to }) => (
           <Link key={label} to={to} className="card-hover text-center">

@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, Suspense, lazy } from 'react'
 import { useAuthStore } from '@store/authStore'
 import { useHabitsStore } from '@store/habitsStore'
 import { useDailyStore } from '@store/dailyStore'
@@ -14,6 +14,8 @@ import {
   AreaChart, Area, XAxis, YAxis, Tooltip, CartesianGrid,
 } from 'recharts'
 import { Link } from 'react-router-dom'
+
+const WaterDrop3D = lazy(() => import('@components/ui/WaterDrop3D'))
 
 export default function DashboardPage() {
   const { user } = useAuthStore()
@@ -62,6 +64,7 @@ export default function DashboardPage() {
       value: today.calories.toLocaleString('es'),
       sub: `de ${today.caloriesTarget.toLocaleString('es')} kcal`,
       color: 'text-orange-400', bg: 'bg-orange-500/10', bar: calPct,
+      water: false,
     },
     {
       Icon: Dumbbell,
@@ -70,6 +73,7 @@ export default function DashboardPage() {
       sub: `de ${habitsTotal} completados`,
       color: 'text-brand-400', bg: 'bg-brand-500/10',
       bar: habitsTotal > 0 ? Math.round((habitsCompleted / habitsTotal) * 100) : 0,
+      water: false,
     },
     {
       Icon: Droplets,
@@ -77,6 +81,7 @@ export default function DashboardPage() {
       value: `${waterL} L`,
       sub: `de ${(today.waterTargetMl / 1000).toFixed(1)} L`,
       color: 'text-cyan-400', bg: 'bg-cyan-500/10', bar: waterPct,
+      water: true,
     },
     {
       Icon: Moon,
@@ -84,6 +89,7 @@ export default function DashboardPage() {
       value: '7h 20',
       sub: t('dashboard:sleepQuality'),
       color: 'text-purple-400', bg: 'bg-purple-500/10', bar: 92,
+      water: false,
     },
   ]
 
@@ -160,12 +166,18 @@ export default function DashboardPage() {
 
       {/* STATS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        {statsCards.map(({ Icon, label, value, sub, color, bg, bar }, i) => (
+        {statsCards.map(({ Icon, label, value, sub, color, bg, bar, water }, i) => (
           <motion.div key={label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.07 }} className="card">
             <div className="flex items-center justify-between mb-3">
-              <div className={`w-9 h-9 rounded-xl ${bg} flex items-center justify-center`}>
-                <Icon size={18} className={color} />
-              </div>
+              {water ? (
+                <Suspense fallback={<div className={`w-9 h-9 rounded-xl ${bg} flex items-center justify-center`}><Icon size={18} className={color} /></div>}>
+                  <WaterDrop3D fillPct={bar} size={48} />
+                </Suspense>
+              ) : (
+                <div className={`w-9 h-9 rounded-xl ${bg} flex items-center justify-center`}>
+                  <Icon size={18} className={color} />
+                </div>
+              )}
               <TrendingUp size={13} className="text-success opacity-60" />
             </div>
             <p className="text-2xl font-bold tracking-tight">{value}</p>
