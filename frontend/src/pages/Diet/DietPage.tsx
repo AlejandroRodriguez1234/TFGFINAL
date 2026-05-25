@@ -126,7 +126,7 @@ export default function DietPage() {
         )
         setSearchResults([...r.data.data.local, ...r.data.data.remote])
       } catch {
-        // silent
+        setSearchResults([])
       } finally {
         setSearchLoading(false)
       }

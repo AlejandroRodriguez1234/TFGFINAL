@@ -364,13 +364,13 @@ export default function SocialPage() {
               <div className="flex items-center justify-between">
                 <span className="text-xs text-white/40">{t('social:participants', { n: c.participants })}</span>
                 <div className="flex gap-2">
-                  <button className="btn-secondary text-xs px-3 py-1.5">{t('social:viewChallenge')}</button>
+                  <button onClick={() => toast.success(`Reto "${c.name}" — ${c.participants} participantes. ¡Únete para competir!`)} className="btn-secondary text-xs px-3 py-1.5">{t('social:viewChallenge')}</button>
                   <button onClick={() => toast.success(t('social:joinedChallenge'))} className="btn-primary text-xs px-3 py-1.5">{t('social:joinChallenge')}</button>
                 </div>
               </div>
             </div>
           ))}
-          <button className="btn-secondary w-full py-3">
+          <button onClick={() => toast.success('Función disponible próximamente — crea retos personalizados con tus amigos')} className="btn-secondary w-full py-3">
             <Swords size={16} /> {t('social:createNewChallenge')}
           </button>
         </div>

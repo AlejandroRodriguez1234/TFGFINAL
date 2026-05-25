@@ -1,6 +1,7 @@
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
-import { Users, Activity, TrendingUp, Shield, Database, AlertTriangle, ChevronRight, MoreVertical } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Users, Activity, TrendingUp, Shield, Database, ChevronRight, MoreVertical } from 'lucide-react'
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 
 const registrationData = [
@@ -98,9 +99,9 @@ export default function AdminPage() {
       <div className="card">
         <div className="flex items-center justify-between mb-4">
           <h2 className="font-semibold">{t('recentUsers')}</h2>
-          <a href="/admin/users" className="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1">
+          <Link to="/admin/users" className="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1">
             {t('viewAll')} <ChevronRight size={12} />
-          </a>
+          </Link>
         </div>
         <div className="space-y-3">
           {recentUsers.map((u) => (

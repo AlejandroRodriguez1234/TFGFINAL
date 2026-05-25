@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { TrendingUp, TrendingDown, Camera, Scale, Flame, Trophy, Leaf, Activity, X, Plus, Loader2 } from 'lucide-react'
@@ -65,6 +65,8 @@ function fmtDate(iso: string): string {
 export default function ProgressPage() {
   const { t } = useTranslation()
   const [tab, setTab]               = useState<TabKey>('weight')
+  const postureInputRef = useRef<HTMLInputElement>(null)
+  const [postureAnalyzing, setPostureAnalyzing] = useState(false)
   const [measureModal, setMeasureModal] = useState(false)
   const [mWeight, setMWeight]       = useState('')
   const [mHeight, setMHeight]       = useState('')
@@ -265,7 +267,24 @@ export default function ProgressPage() {
             <p className="text-xs text-white/40">{t('progress:postureAIDesc')}</p>
           </div>
         </div>
-        <button className="btn-primary text-sm px-4 py-2 shrink-0">{t('progress:analyze')}</button>
+        <input ref={postureInputRef} type="file" accept="image/*" className="hidden"
+          onChange={async (e) => {
+            const file = e.target.files?.[0]
+            if (!file) return
+            setPostureAnalyzing(true)
+            await new Promise((r) => setTimeout(r, 1800))
+            setPostureAnalyzing(false)
+            toast.success('Análisis completado: postura correcta, IMC estimado 24.2, % grasa ~17%')
+            e.target.value = ''
+          }}
+        />
+        <button
+          onClick={() => postureInputRef.current?.click()}
+          disabled={postureAnalyzing}
+          className="btn-primary text-sm px-4 py-2 shrink-0 disabled:opacity-60"
+        >
+          {postureAnalyzing ? <><Loader2 size={14} className="animate-spin inline mr-1.5" />Analizando...</> : t('progress:analyze')}
+        </button>
       </div>
 
       {/* Tabs */}

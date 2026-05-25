@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Play, Pause, Square, Plus, Minus, Check,
-  Timer, ChevronDown, ChevronUp, Flame,
+  Timer, ChevronDown, ChevronUp, Flame, Dumbbell,
 } from 'lucide-react'
 import { cn } from '@utils/cn'
 import { useDailyStore } from '@store/dailyStore'
@@ -149,11 +149,15 @@ function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void })
   )
 }
 
+const emptyWorkout = { name: 'Nuevo entrenamiento', exercises: [] as Exercise[] }
+
 export default function WorkoutPage() {
   const { id }       = useParams()
   const navigate     = useNavigate()
   const { addWorkout } = useDailyStore()
-  const [exercises, setExercises] = useState<Exercise[]>(mockWorkout.exercises)
+  const isNew        = id === 'new'
+  const workoutData  = isNew ? emptyWorkout : mockWorkout
+  const [exercises, setExercises] = useState<Exercise[]>(workoutData.exercises)
   const [elapsed, setElapsed]     = useState(0)
   const [running, setRunning]     = useState(false)
   const [resting, setResting]     = useState(false)
@@ -219,7 +223,7 @@ export default function WorkoutPage() {
       <div className="card">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-2xl font-display font-bold">{mockWorkout.name}</h1>
+            <h1 className="text-2xl font-display font-bold">{workoutData.name}</h1>
             <p className="text-white/40 text-sm">{exercises.length} ejercicios · {doneSets}/{totalSets} series</p>
           </div>
           <div className="text-center">
@@ -254,6 +258,27 @@ export default function WorkoutPage() {
 
       {/* Exercise list */}
       <div className="space-y-4">
+        {isNew && exercises.length === 0 && (
+          <div className="card text-center py-10">
+            <Dumbbell size={36} className="text-white/20 mx-auto mb-3" />
+            <p className="text-white/40 text-sm mb-4">Añade ejercicios para empezar tu entrenamiento personalizado</p>
+            <button
+              onClick={() => {
+                const newEx: Exercise = {
+                  id: `e${Date.now()}`,
+                  name: 'Nuevo ejercicio',
+                  sets: [{ reps: 10, weight: 0, completed: false }],
+                  restSeconds: 90,
+                }
+                setExercises([newEx])
+                setExpanded(newEx.id)
+              }}
+              className="btn-primary px-6 py-2.5 mx-auto"
+            >
+              <Plus size={16} /> Añadir ejercicio
+            </button>
+          </div>
+        )}
         {exercises.map((ex, exIdx) => {
           const isExpanded = expanded === ex.id
           const doneEx     = ex.sets.filter((s) => s.completed).length
