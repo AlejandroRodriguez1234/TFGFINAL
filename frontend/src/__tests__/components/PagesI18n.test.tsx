@@ -7,7 +7,7 @@ import { render, screen } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import i18n from '../../i18n/config'
 
-// ── Mocks ─────────────────────────────────────────────────────────────────────
+// ── Mocks ─────────────────────────────────────────────────────────────────────────────────
 vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, ...p }: any) => <div {...p}>{children}</div>,
@@ -49,7 +49,6 @@ vi.mock('react-router-dom', async () => {
   return { ...actual, useNavigate: () => vi.fn() }
 })
 
-// Stub Zustand stores so pages don't crash without a real store
 vi.mock('@store/authStore', () => ({
   useAuthStore: () => ({
     user: { id: '1', firstName: 'Test', lastName: 'User', email: 't@t.com', role: 'CLIENT', level: 1, xp: 0, streakDays: 0, username: 'test' },
@@ -103,7 +102,6 @@ vi.mock('@services/n8nApi', () => ({
   n8nApi: { analyzeFood: vi.fn().mockResolvedValue({ items: [] }) },
 }))
 
-// Lazy import pages after mocks are registered
 import DashboardPage from '../../pages/Dashboard/DashboardPage'
 import GymPage from '../../pages/Gym/GymPage'
 import DietPage from '../../pages/Diet/DietPage'
@@ -124,7 +122,7 @@ beforeAll(async () => {
   }
 })
 
-// ── Dashboard ─────────────────────────────────────────────────────────────────
+// ── Dashboard ───────────────────────────────────────────────────────────────────────────────
 describe('DashboardPage — i18n', () => {
   it('shows greeting in ES', () => {
     i18n.changeLanguage('es')
@@ -153,7 +151,7 @@ describe('DashboardPage — i18n', () => {
   })
 })
 
-// ── Gym ───────────────────────────────────────────────────────────────────────
+// ── Gym ───────────────────────────────────────────────────────────────────────────────────
 describe('GymPage — i18n', () => {
   it('renders title in ES', () => {
     i18n.changeLanguage('es')
@@ -192,7 +190,7 @@ describe('GymPage — i18n', () => {
   })
 })
 
-// ── Diet ──────────────────────────────────────────────────────────────────────
+// ── Diet ────────────────────────────────────────────────────────────────────────────────────
 describe('DietPage — i18n', () => {
   it('renders title in ES', () => {
     i18n.changeLanguage('es')
@@ -219,7 +217,7 @@ describe('DietPage — i18n', () => {
   })
 })
 
-// ── Habits ────────────────────────────────────────────────────────────────────
+// ── Habits ──────────────────────────────────────────────────────────────────────────────────
 describe('HabitsPage — i18n', () => {
   it('renders title in ES', () => {
     i18n.changeLanguage('es')
@@ -258,7 +256,7 @@ describe('HabitsPage — i18n', () => {
   })
 })
 
-// ── Social ────────────────────────────────────────────────────────────────────
+// ── Social ──────────────────────────────────────────────────────────────────────────────────
 describe('SocialPage — i18n', () => {
   it('renders title in ES', () => {
     i18n.changeLanguage('es')
@@ -285,7 +283,7 @@ describe('SocialPage — i18n', () => {
   })
 })
 
-// ── Progress ──────────────────────────────────────────────────────────────────
+// ── Progress ─────────────────────────────────────────────────────────────────────────────────
 describe('ProgressPage — i18n', () => {
   it('renders title in ES', () => {
     i18n.changeLanguage('es')
@@ -308,13 +306,11 @@ describe('ProgressPage — i18n', () => {
   it('shows calculator tab in EN', () => {
     i18n.changeLanguage('en')
     wrap(<ProgressPage />)
-    // calculator tab label is hardcoded 'Calculadora' in this page version
     expect(screen.queryAllByText(/Calculadora/i).length).toBeGreaterThan(0)
   })
 })
 
-// ── Profile ───────────────────────────────────────────────────────────────────
-describe('ProfilePage — i18n', () => {
+// ── Profile ───────────────────────────────────────────────────────────────────────────────────ndescribe('ProfilePage — i18n', () => {
   it('shows edit profile in ES', () => {
     i18n.changeLanguage('es')
     wrap(<ProfilePage />)
@@ -324,7 +320,6 @@ describe('ProfilePage — i18n', () => {
   it('shows edit profile in EN', () => {
     i18n.changeLanguage('en')
     wrap(<ProfilePage />)
-    // button label is hardcoded 'Editar perfil' in this page version
     expect(screen.queryAllByText(/Editar perfil/i).length).toBeGreaterThan(0)
   })
 
@@ -341,8 +336,7 @@ describe('ProfilePage — i18n', () => {
   })
 })
 
-// ── Trainer ───────────────────────────────────────────────────────────────────
-describe('TrainerPage — i18n', () => {
+// ── Trainer ───────────────────────────────────────────────────────────────────────────────────ndescribe('TrainerPage — i18n', () => {
   it('renders Spanish panel title in ES', () => {
     i18n.changeLanguage('es')
     wrap(<TrainerPage />)
@@ -384,8 +378,7 @@ describe('TrainerPage — i18n', () => {
   })
 })
 
-// ── Admin ─────────────────────────────────────────────────────────────────────
-describe('AdminPage — i18n', () => {
+// ── Admin ─────────────────────────────────────────────────────────────────────────────────────ndescribe('AdminPage — i18n', () => {
   it('renders Spanish panel title in ES', () => {
     i18n.changeLanguage('es')
     wrap(<AdminPage />)

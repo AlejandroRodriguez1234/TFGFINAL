@@ -68,7 +68,6 @@ describe('LandingPage — renders in English', () => {
   beforeAll(() => i18n.changeLanguage('en'))
 
   it('shows English nav links', () => {
-    // nav text is hardcoded Spanish in this page version
     renderLanding()
     expect(screen.getByText('Funciones')).toBeTruthy()
     expect(screen.getAllByText('Precios').length).toBeGreaterThan(0)
@@ -76,7 +75,6 @@ describe('LandingPage — renders in English', () => {
   })
 
   it('shows English hero title parts', () => {
-    // hero text is hardcoded Spanish in this page version
     renderLanding()
     expect(screen.getByText('Forja tu')).toBeTruthy()
     expect(screen.getByText('mejor versión')).toBeTruthy()
@@ -117,7 +115,6 @@ describe('LandingPage — language toggle changes text', () => {
         <LandingPage />
       </MemoryRouter>,
     )
-    // nav is hardcoded Spanish, so it stays in ES regardless of language
     expect(screen.getByText('Funciones')).toBeTruthy()
   })
 })
@@ -126,7 +123,6 @@ describe('LandingPage — Sphere3D renders', () => {
   it('renders a sphere element', () => {
     i18n.changeLanguage('es')
     const { container } = renderLanding()
-    // sphere is rendered as an inline canvas or div, check for the hero section
     const hero = container.querySelector('nav')
     expect(hero).not.toBeNull()
   })
