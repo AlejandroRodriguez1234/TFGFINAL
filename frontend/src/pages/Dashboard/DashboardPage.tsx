@@ -1,4 +1,4 @@
-import { useEffect, Suspense, lazy } from 'react'
+import { useEffect } from 'react'
 import { useAuthStore } from '@store/authStore'
 import { useHabitsStore } from '@store/habitsStore'
 import { useDailyStore } from '@store/dailyStore'
@@ -15,7 +15,7 @@ import {
 } from 'recharts'
 import { Link } from 'react-router-dom'
 
-const WaterDrop3D = lazy(() => import('@components/ui/WaterDrop3D'))
+import WaterDrop3D from '@components/ui/WaterDrop3D'
 
 export default function DashboardPage() {
   const { user } = useAuthStore()
@@ -170,9 +170,7 @@ export default function DashboardPage() {
           <motion.div key={label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.07 }} className="card">
             <div className="flex items-center justify-between mb-3">
               {water ? (
-                <Suspense fallback={<div className={`w-9 h-9 rounded-xl ${bg} flex items-center justify-center`}><Icon size={18} className={color} /></div>}>
-                  <WaterDrop3D fillPct={bar} size={48} />
-                </Suspense>
+                <WaterDrop3D fillPct={bar} size={48} />
               ) : (
                 <div className={`w-9 h-9 rounded-xl ${bg} flex items-center justify-center`}>
                   <Icon size={18} className={color} />
