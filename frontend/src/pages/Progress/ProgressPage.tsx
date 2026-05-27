@@ -95,7 +95,7 @@ export default function ProgressPage() {
   const [calcAge, setCalcAge]           = useState('')
   const [calcGender, setCalcGender]     = useState<'male' | 'female'>('male')
   const [calcActivity, setCalcActivity] = useState<string>('moderate')
-  const [calcResult, setCalcResult]     = useState<null | { bmr: number; tdee: number; protein: number; fatGoal: string; bmi: number; bmiCategory: string; idealWeight: string }>(null)
+  const [calcResult, setCalcResult]     = useState<null | { bmr: number; tdee: number; protein: number; fatGoal: string; bmi: number; bmiCategory: string; idealWeight: string; muscleMass: number; fatPct: number }>(null)
 
   const fetchWeightData = useCallback(async () => {
     try {
@@ -169,7 +169,15 @@ export default function ProgressPage() {
     const protein = Math.round(w * 2.0)
     const fatGoal = bmi < 18.5 ? 'Volumen' : bmi >= 25 ? 'Definición' : 'Mantenimiento'
 
-    setCalcResult({ bmr: Math.round(bmr), tdee, protein, fatGoal, bmi, bmiCategory, idealWeight: `${minIdeal}–${maxIdeal} kg` })
+    // Deurenberg formula: estimate body fat % from BMI + age + sex
+    const rawFatPct = calcGender === 'male'
+      ? (1.20 * bmi) + (0.23 * a) - 16.2
+      : (1.20 * bmi) + (0.23 * a) - 5.4
+    const fatPct    = Math.max(5, Math.min(50, parseFloat(rawFatPct.toFixed(1))))
+    const leanMass  = w * (1 - fatPct / 100)
+    const muscleMass = parseFloat((leanMass * 0.84).toFixed(1))
+
+    setCalcResult({ bmr: Math.round(bmr), tdee, protein, fatGoal, bmi, bmiCategory, idealWeight: `${minIdeal}–${maxIdeal} kg`, muscleMass, fatPct })
   }
 
   const achievements = [
@@ -596,7 +604,7 @@ export default function ProgressPage() {
       {tab === 'calculator' && (
         <div className="card">
           <h2 className="font-semibold mb-1">Calculadora Nutricional</h2>
-          <p className="text-white/40 text-sm mb-5">TMB · TDEE · IMC · Peso ideal</p>
+          <p className="text-white/40 text-sm mb-5">TMB · TDEE · IMC · Masa muscular · Peso ideal</p>
           <form onSubmit={handleCalcSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div>
@@ -642,6 +650,8 @@ export default function ProgressPage() {
                   { label: 'TDEE (mantenimiento)', value: `${calcResult.tdee} kcal`, color: 'text-cyan-400' },
                   { label: 'Proteína diaria', value: `${calcResult.protein} g`, color: 'text-sky-400' },
                   { label: 'IMC', value: `${calcResult.bmi}`, color: calcResult.bmi < 18.5 || calcResult.bmi >= 25 ? 'text-warning' : 'text-success' },
+                  { label: 'Masa muscular est.', value: `${calcResult.muscleMass} kg`, color: 'text-purple-400' },
+                  { label: 'Grasa corporal est.', value: `${calcResult.fatPct}%`, color: calcResult.fatPct > 25 ? 'text-warning' : 'text-green-400' },
                 ].map(({ label, value, color }) => (
                   <div key={label} className="p-3 rounded-xl bg-surface-100">
                     <p className="text-xs text-white/40 mb-0.5">{label}</p>
