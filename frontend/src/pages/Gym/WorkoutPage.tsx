@@ -89,20 +89,22 @@ const mockWorkout = {
 
 function RestTimer({ seconds, onDone }: { seconds: number; onDone: () => void }) {
   const [left, setLeft] = useState(seconds)
-  const firedRef = useRef(false)
+  const firedRef  = useRef(false)
+  const onDoneRef = useRef(onDone)
+  onDoneRef.current = onDone
 
   useEffect(() => {
     if (left <= 0) {
       if (!firedRef.current) {
         firedRef.current = true
         notifyRestDone()
-        onDone()
+        onDoneRef.current()
       }
       return
     }
     const t = setTimeout(() => setLeft((p) => p - 1), 1000)
     return () => clearTimeout(t)
-  }, [left, onDone])
+  }, [left])
 
   useEffect(() => {
     if ('Notification' in window && Notification.permission === 'default') {
