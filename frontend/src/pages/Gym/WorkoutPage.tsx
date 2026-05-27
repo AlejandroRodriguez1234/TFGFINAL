@@ -189,7 +189,7 @@ export default function WorkoutPage() {
 
   const [exercises, setExercises] = useState<Exercise[]>(workoutData.exercises)
   const [elapsed, setElapsed]     = useState(0)
-  const [running, setRunning]     = useState(false)
+  const [running, setRunning]     = useState(true)
   const [resting, setResting]     = useState(false)
   const [restSecs, setRestSecs]   = useState(90)
   const [expanded, setExpanded]   = useState<string | null>(exercises[0]?.id ?? null)
