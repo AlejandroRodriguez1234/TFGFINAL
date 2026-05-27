@@ -56,6 +56,8 @@ const statusColors: Record<UserStatus, string> = {
 
 type Tab = 'overview' | 'users' | 'system'
 
+const EMPTY_FORM = { name: '', email: '', role: 'CLIENT' as UserRole }
+
 export default function AdminPage() {
   const { t } = useTranslation('admin')
   const [tab, setTab]           = useState<Tab>('overview')
@@ -65,6 +67,37 @@ export default function AdminPage() {
   const [editUser, setEditUser] = useState<AdminUser | null>(null)
   const [editRole, setEditRole] = useState<UserRole>('CLIENT')
   const [confirmDelete, setConfirmDelete] = useState<AdminUser | null>(null)
+  const [showCreate, setShowCreate] = useState(false)
+  const [createForm, setCreateForm] = useState(EMPTY_FORM)
+  const [createErrors, setCreateErrors] = useState<{ name?: string; email?: string }>({})
+
+  const handleCreate = () => {
+    const errors: { name?: string; email?: string } = {}
+    if (!createForm.name.trim()) errors.name = 'El nombre es obligatorio'
+    if (!createForm.email.trim()) errors.email = 'El email es obligatorio'
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(createForm.email)) errors.email = 'Email no válido'
+    else if (users.some(u => u.email === createForm.email)) errors.email = 'Este email ya existe'
+    if (Object.keys(errors).length) { setCreateErrors(errors); return }
+
+    const initials = createForm.name.trim().split(' ').slice(0, 2).map(w => w[0].toUpperCase()).join('')
+    const newUser: AdminUser = {
+      id: String(Date.now()),
+      name: createForm.name.trim(),
+      email: createForm.email.trim(),
+      role: createForm.role,
+      joined: new Date().toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' }),
+      lastLogin: 'Nunca',
+      status: 'active',
+      avatar: initials,
+      workouts: 0,
+      streak: 0,
+    }
+    setUsers(prev => [newUser, ...prev])
+    toast.success(`Usuario ${newUser.name} creado correctamente`)
+    setShowCreate(false)
+    setCreateForm(EMPTY_FORM)
+    setCreateErrors({})
+  }
 
   const filtered = users.filter(u => {
     const matchSearch = u.name.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase())
@@ -212,7 +245,7 @@ export default function AdminPage() {
               <option value="TRAINER">Trainers</option>
               <option value="ADMIN">Admins</option>
             </select>
-            <button onClick={() => toast.success('Añadir nuevo usuario — formulario disponible')} className="btn-primary text-sm px-3 py-2">
+            <button onClick={() => { setShowCreate(true); setCreateForm(EMPTY_FORM); setCreateErrors({}) }} className="btn-primary text-sm px-3 py-2">
               <Plus size={15} /> Nuevo usuario
             </button>
           </div>
@@ -394,6 +427,64 @@ export default function AdminPage() {
             <div className="flex gap-2">
               <button onClick={() => setEditUser(null)} className="btn-secondary flex-1 text-sm">Cancelar</button>
               <button onClick={handleRoleChange} className="btn-primary flex-1 text-sm">Guardar cambios</button>
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Create user modal */}
+      {showCreate && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={() => setShowCreate(false)}>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+            onClick={e => e.stopPropagation()}
+            className="glass border border-white/10 rounded-2xl p-6 w-full max-w-sm">
+            <div className="flex items-center justify-between mb-5">
+              <h3 className="font-semibold">Nuevo usuario</h3>
+              <button onClick={() => setShowCreate(false)} className="btn-ghost p-1.5"><X size={16} /></button>
+            </div>
+
+            <div className="space-y-4 mb-5">
+              <div>
+                <label className="text-xs text-white/50 mb-1.5 block">Nombre completo</label>
+                <input
+                  value={createForm.name}
+                  onChange={e => { setCreateForm(f => ({ ...f, name: e.target.value })); setCreateErrors(er => ({ ...er, name: undefined })) }}
+                  placeholder="Ej: Ana García"
+                  className={cn('input text-sm w-full', createErrors.name && 'border-danger/50')}
+                />
+                {createErrors.name && <p className="text-xs text-danger mt-1">{createErrors.name}</p>}
+              </div>
+
+              <div>
+                <label className="text-xs text-white/50 mb-1.5 block">Email</label>
+                <input
+                  type="email"
+                  value={createForm.email}
+                  onChange={e => { setCreateForm(f => ({ ...f, email: e.target.value })); setCreateErrors(er => ({ ...er, email: undefined })) }}
+                  placeholder="usuario@email.com"
+                  className={cn('input text-sm w-full', createErrors.email && 'border-danger/50')}
+                />
+                {createErrors.email && <p className="text-xs text-danger mt-1">{createErrors.email}</p>}
+              </div>
+
+              <div>
+                <label className="text-xs text-white/50 mb-1.5 block">Rol</label>
+                <div className="space-y-2">
+                  {(['CLIENT', 'TRAINER', 'ADMIN'] as UserRole[]).map(role => (
+                    <button key={role} onClick={() => setCreateForm(f => ({ ...f, role }))}
+                      className={cn('w-full flex items-center justify-between p-3 rounded-xl border transition-all',
+                        createForm.role === role ? 'border-brand-500/50 bg-brand-500/10' : 'border-transparent bg-surface-100 hover:border-white/10')}>
+                      <span className="text-sm font-medium">{role}</span>
+                      {createForm.role === role && <Check size={15} className="text-brand-400" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-2">
+              <button onClick={() => setShowCreate(false)} className="btn-secondary flex-1 text-sm">Cancelar</button>
+              <button onClick={handleCreate} className="btn-primary flex-1 text-sm">Crear usuario</button>
             </div>
           </motion.div>
         </div>
