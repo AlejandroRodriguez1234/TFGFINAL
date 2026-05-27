@@ -108,7 +108,34 @@ export default function TrainerPage() {
   const [newClientModal, setNewClientModal] = useState(false)
   const [clientDetail, setClientDetail] = useState<Client | null>(null)
   const [selectedPlanId, setSelectedPlanId] = useState<string>('p1')
-  const [plans] = useState<Plan[]>(INITIAL_PLANS)
+  const [plans, setPlans]       = useState<Plan[]>(INITIAL_PLANS)
+  const [showCreatePlan, setShowCreatePlan] = useState(false)
+  const [cpName, setCpName]     = useState('')
+  const [cpDesc, setCpDesc]     = useState('')
+  const [cpWeeks, setCpWeeks]   = useState(8)
+  const [cpDays, setCpDays]     = useState(3)
+  const [cpGoals, setCpGoals]   = useState('')
+
+  const handleCreatePlan = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!cpName.trim()) return
+    const newPlan: Plan = {
+      id: `p${Date.now()}`,
+      name: cpName.trim(),
+      desc: cpDesc.trim() || 'Plan personalizado creado por el entrenador.',
+      clients: 0,
+      sessions: cpWeeks * cpDays,
+      duration: `${cpWeeks} semanas`,
+      weeks: cpWeeks,
+      daysPerWeek: cpDays,
+      exercises: [],
+      goals: cpGoals.trim() ? cpGoals.split('\n').map(g => g.trim()).filter(Boolean) : ['Por definir'],
+    }
+    setPlans(prev => [...prev, newPlan])
+    toast.success(`Plan "${newPlan.name}" creado correctamente`)
+    setShowCreatePlan(false)
+    setCpName(''); setCpDesc(''); setCpWeeks(8); setCpDays(3); setCpGoals('')
+  }
 
   // New client form
   const [ncName, setNcName]     = useState('')
@@ -331,9 +358,9 @@ export default function TrainerPage() {
               </button>
             </motion.div>
           ))}
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.32 }}
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: plans.length * 0.08 }}
             className="card border-dashed border-white/10 flex items-center justify-center cursor-pointer hover:border-brand-500/30 transition-colors group"
-            onClick={() => toast.success('Funcionalidad de crear plan disponible. Por ahora usa los planes existentes.')}>
+            onClick={() => setShowCreatePlan(true)}>
             <div className="text-center py-8">
               <div className="w-12 h-12 rounded-full bg-brand-500/10 flex items-center justify-center mx-auto mb-3 group-hover:bg-brand-500/20 transition-colors">
                 <Plus size={20} className="text-brand-400" />
@@ -591,6 +618,71 @@ export default function TrainerPage() {
               <div className="flex gap-2">
                 <button type="button" onClick={() => setNewClientModal(false)} className="btn-secondary flex-1 text-sm">{t('common:cancel')}</button>
                 <button type="submit" className="btn-primary flex-1 text-sm"><Plus size={15} /> Añadir cliente</button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Create plan modal */}
+      {showCreatePlan && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4 backdrop-blur-sm" onClick={() => setShowCreatePlan(false)}>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }}
+            onClick={e => e.stopPropagation()}
+            className="glass border border-white/10 rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center gap-2">
+                <Dumbbell size={18} className="text-brand-400" />
+                <h3 className="font-semibold">Nuevo plan de entrenamiento</h3>
+              </div>
+              <button onClick={() => setShowCreatePlan(false)} className="btn-ghost p-1.5"><X size={16} /></button>
+            </div>
+            <form onSubmit={handleCreatePlan} className="space-y-4">
+              <div>
+                <label className="text-xs text-white/40 mb-1 block">Nombre del plan *</label>
+                <input required value={cpName} onChange={e => setCpName(e.target.value)}
+                  placeholder="Ej. Fuerza avanzada" className="input text-sm" />
+              </div>
+              <div>
+                <label className="text-xs text-white/40 mb-1 block">Descripción</label>
+                <textarea value={cpDesc} onChange={e => setCpDesc(e.target.value)}
+                  placeholder="Describe brevemente el enfoque del plan..." rows={2}
+                  className="input text-sm resize-none" />
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-xs text-white/40 mb-1 block">Duración (semanas)</label>
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => setCpWeeks(w => Math.max(1, w - 1))}
+                      className="w-8 h-8 rounded-lg bg-surface-100 hover:bg-surface-200 flex items-center justify-center transition-colors">−</button>
+                    <span className="flex-1 text-center font-semibold">{cpWeeks}</span>
+                    <button type="button" onClick={() => setCpWeeks(w => Math.min(52, w + 1))}
+                      className="w-8 h-8 rounded-lg bg-surface-100 hover:bg-surface-200 flex items-center justify-center transition-colors">+</button>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs text-white/40 mb-1 block">Días por semana</label>
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => setCpDays(d => Math.max(1, d - 1))}
+                      className="w-8 h-8 rounded-lg bg-surface-100 hover:bg-surface-200 flex items-center justify-center transition-colors">−</button>
+                    <span className="flex-1 text-center font-semibold">{cpDays}</span>
+                    <button type="button" onClick={() => setCpDays(d => Math.min(7, d + 1))}
+                      className="w-8 h-8 rounded-lg bg-surface-100 hover:bg-surface-200 flex items-center justify-center transition-colors">+</button>
+                  </div>
+                </div>
+              </div>
+              <div className="p-3 bg-surface-100 rounded-xl text-xs text-white/40 text-center">
+                {cpWeeks * cpDays} sesiones totales · {cpWeeks} semanas · {cpDays} días/semana
+              </div>
+              <div>
+                <label className="text-xs text-white/40 mb-1 block">Objetivos (uno por línea)</label>
+                <textarea value={cpGoals} onChange={e => setCpGoals(e.target.value)}
+                  placeholder={"Ganar fuerza en press banca\nMejorar técnica de sentadilla"} rows={3}
+                  className="input text-sm resize-none" />
+              </div>
+              <div className="flex gap-2 pt-1">
+                <button type="button" onClick={() => setShowCreatePlan(false)} className="btn-secondary flex-1 text-sm">Cancelar</button>
+                <button type="submit" className="btn-primary flex-1 text-sm"><Plus size={15} /> Crear plan</button>
               </div>
             </form>
           </motion.div>
